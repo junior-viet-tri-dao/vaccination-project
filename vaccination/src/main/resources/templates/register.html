@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Tạo User</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+    </head>
+    <body
+        class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex items-center justify-center px-4"
+    >
+        <div
+            class="w-full max-w-2xl bg-white shadow-2xl rounded-2xl p-6 sm:p-10"
+        >
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-blue-700">Tạo User</h2>
+                <p class="text-gray-500 mt-2">
+                    Nhập thông tin để tạo người dùng mới
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form id="createUserForm" class="space-y-5" novalidate>
+                <!-- Username -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Username</label
+                    >
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        required
+                        minlength="4"
+                        maxlength="20"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập username"
+                    />
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Password</label
+                    >
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        required
+                        minlength="6"
+                        maxlength="20"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập mật khẩu"
+                    />
+                </div>
+
+                <!-- Phân quyền -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Phân quyền</label
+                    >
+                    <select
+                        name="role"
+                        id="role"
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    >
+                        <option value="">-- Chọn phân quyền --</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <!-- Họ tên -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Họ tên</label
+                    >
+                    <input
+                        type="text"
+                        name="fullName"
+                        id="fullName"
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập họ tên"
+                    />
+                </div>
+
+                <!-- CMND -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >CMND</label
+                    >
+                    <input
+                        type="text"
+                        name="cmnd"
+                        id="cmnd"
+                        required
+                        pattern="\d{9,12}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập số CMND (9-12 chữ số)"
+                    />
+                </div>
+
+                <!-- Nơi ở -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Nơi ở</label
+                    >
+                    <input
+                        type="text"
+                        name="address"
+                        id="address"
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập nơi ở"
+                    />
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1"
+                        >Description</label
+                    >
+                    <textarea
+                        name="description"
+                        rows="3"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Nhập mô tả (nếu có)"
+                    ></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div
+                    class="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4 pt-4"
+                >
+                    <button
+                        type="submit"
+                        class="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition transform hover:scale-105"
+                    >
+                        Save
+                    </button>
+                    <button
+                        type="reset"
+                        class="w-full sm:w-1/2 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-lg font-semibold transition transform hover:scale-105"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("username").focus();
+            });
+
+            document
+                .getElementById("createUserForm")
+                .addEventListener("submit", function (e) {
+                    const username = document.getElementById("username");
+                    const password = document.getElementById("password");
+                    const role = document.getElementById("role");
+                    const fullName = document.getElementById("fullName");
+                    const cmnd = document.getElementById("cmnd");
+                    const address = document.getElementById("address");
+
+                    let errors = [];
+
+                    // Username: 4 - 20 ký tự
+                    const usernameVal = username.value.trim();
+                    if (usernameVal.length < 4 || usernameVal.length > 20) {
+                        errors.push("Username phải có từ 4 đến 20 ký tự.");
+                    }
+
+                    // Password: 6 - 20 ký tự
+                    const passwordVal = password.value.trim();
+                    if (passwordVal.length < 6 || passwordVal.length > 20) {
+                        errors.push("Password phải có từ 6 đến 20 ký tự.");
+                    }
+
+                    // Phân quyền
+                    if (!role.value) {
+                        errors.push("Vui lòng chọn phân quyền.");
+                    }
+
+                    // Họ tên: 3 - 50 ký tự
+                    const fullNameVal = fullName.value.trim();
+                    if (!fullNameVal) {
+                        errors.push("Họ tên không được để trống.");
+                    } else if (
+                        fullNameVal.length < 3 ||
+                        fullNameVal.length > 50
+                    ) {
+                        errors.push("Họ tên phải từ 3 đến 50 ký tự.");
+                    }
+
+                    // CMND: chỉ cho phép 9-12 chữ số
+                    const cmndVal = cmnd.value.trim();
+                    if (!/^\d{9,12}$/.test(cmndVal)) {
+                        errors.push(
+                            "CMND phải là số và có từ 9 đến 12 chữ số."
+                        );
+                    }
+
+                    // Địa chỉ: 10 - 100 ký tự
+                    const addressVal = address.value.trim();
+                    if (!addressVal) {
+                        errors.push("Nơi ở không được để trống.");
+                    } else if (
+                        addressVal.length < 10 ||
+                        addressVal.length > 100
+                    ) {
+                        errors.push("Địa chỉ phải từ 10 đến 100 ký tự.");
+                    }
+
+                    // Hiển thị lỗi nếu có
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        alert(errors.join("\n"));
+                    }
+                });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Quản lý kho vắc xin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen p-4">
+        <!-- Tiêu đề trang -->
+        <div class="max-w-7xl mx-auto mb-6">
+            <h1 class="text-4xl font-bold text-blue-700 text-center uppercase">
+                Quản lý kho
+            </h1>
+        </div>
+
+        <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-xl p-6">
+            <!-- Tabs -->
+            <div class="flex space-x-4 mb-6">
+                <a
+                    th:href="@{/warehouse}"
+                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                    >Xem tình hình kho</a
+                >
+                <a
+                    th:href="@{/importvaccine}"
+                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                    >Xem tình hình kho</a
+                >
+                <a
+                    th:href="@{/exportvaccine}"
+                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                    >Xuất vắc xin</a
+                >
+            </div>
+
+            <!-- Tìm kiếm -->
+            <div class="mb-6">
+                <label class="block mb-2 font-semibold text-gray-700"
+                    >Nhập thông tin cần tìm</label
+                >
+                <input
+                    type="text"
+                    placeholder="Nhập từ khóa..."
+                    class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+
+                <div
+                    class="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-4"
+                >
+                    <label class="flex items-center">
+                        <input
+                            type="radio"
+                            name="searchType"
+                            value="name"
+                            checked
+                            class="mr-2"
+                        />
+                        Tìm kiếm theo tên vắc xin
+                    </label>
+                    <label class="flex items-center">
+                        <input
+                            type="radio"
+                            name="searchType"
+                            value="type"
+                            class="mr-2"
+                        />
+                        Tìm kiếm theo loại vắc xin
+                    </label>
+                    <label class="flex items-center">
+                        <input
+                            type="radio"
+                            name="searchType"
+                            value="origin"
+                            class="mr-2"
+                        />
+                        Tìm kiếm theo nơi sản xuất
+                    </label>
+                    <label class="flex items-center">
+                        <input
+                            type="radio"
+                            name="searchType"
+                            value="age"
+                            class="mr-2"
+                        />
+                        Tìm kiếm theo độ tuổi tiêm chủng
+                    </label>
+                </div>
+
+                <button
+                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+                >
+                    Tìm kiếm
+                </button>
+            </div>
+            <!-- Bảng dữ liệu -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto border border-gray-300">
+                    <thead class="bg-blue-600 text-white text-sm">
+                        <tr>
+                            <th class="px-4 py-2 border">Mã lô</th>
+                            <th class="px-4 py-2 border">Tên vắc-xin</th>
+                            <th class="px-4 py-2 border">Loại vắc-xin</th>
+                            <th class="px-4 py-2 border">Ngày nhận</th>
+                            <th class="px-4 py-2 border">Số giấy phép</th>
+                            <th class="px-4 py-2 border">Nước sản xuất</th>
+                            <th class="px-4 py-2 border">Hàm lượng</th>
+                            <th class="px-4 py-2 border">SL</th>
+                            <th class="px-4 py-2 border">Hạn sử dụng</th>
+                            <th class="px-4 py-2 border">Điều kiện bảo quản</th>
+                            <th class="px-4 py-2 border">Độ tuổi tiêm chủng</th>
+                            <th class="px-4 py-2 border">Tình trạng vắc-xin</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-center bg-white">
+                        <tr class="bg-blue-50">
+                            <td class="px-4 py-2 border">11357</td>
+                            <td class="px-4 py-2 border">Phòng bệnh lao</td>
+                            <td class="px-4 py-2 border">BCG</td>
+                            <td class="px-4 py-2 border">1/1/2015</td>
+                            <td class="px-4 py-2 border">1</td>
+                            <td class="px-4 py-2 border">Việt Nam</td>
+                            <td class="px-4 py-2 border">0.1 ml</td>
+                            <td class="px-4 py-2 border">500</td>
+                            <td class="px-4 py-2 border">1 năm</td>
+                            <td class="px-4 py-2 border">2°C-8°C</td>
+                            <td class="px-4 py-2 border">Trẻ em</td>
+                            <td class="px-4 py-2 border">Còn</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border">23456</td>
+                            <td class="px-4 py-2 border">Phòng Viêm gan B</td>
+                            <td class="px-4 py-2 border">ENGERIX B</td>
+                            <td class="px-4 py-2 border">1/1/2015</td>
+                            <td class="px-4 py-2 border">2</td>
+                            <td class="px-4 py-2 border">Bỉ</td>
+                            <td class="px-4 py-2 border">1 ml</td>
+                            <td class="px-4 py-2 border">0</td>
+                            <td class="px-4 py-2 border">1 năm</td>
+                            <td class="px-4 py-2 border">2°C-8°C</td>
+                            <td class="px-4 py-2 border">
+                                Người lớn &gt; 20 tuổi
+                            </td>
+                            <td class="px-4 py-2 border">Hết</td>
+                        </tr>
+                        <tr class="bg-blue-50">
+                            <td class="px-4 py-2 border">21085</td>
+                            <td class="px-4 py-2 border">Phòng Viêm gan B</td>
+                            <td class="px-4 py-2 border">ENGERIX B</td>
+                            <td class="px-4 py-2 border">1/1/2015</td>
+                            <td class="px-4 py-2 border">3</td>
+                            <td class="px-4 py-2 border">Bỉ</td>
+                            <td class="px-4 py-2 border">0.5 ml</td>
+                            <td class="px-4 py-2 border">0</td>
+                            <td class="px-4 py-2 border">1 năm</td>
+                            <td class="px-4 py-2 border">2°C-8°C</td>
+                            <td class="px-4 py-2 border">
+                                Trẻ em &lt; 20 tuổi
+                            </td>
+                            <td class="px-4 py-2 border">Hết</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border">20050</td>
+                            <td class="px-4 py-2 border">Phòng bệnh uốn ván</td>
+                            <td class="px-4 py-2 border">TETAVAX</td>
+                            <td class="px-4 py-2 border">1/1/2015</td>
+                            <td class="px-4 py-2 border">4</td>
+                            <td class="px-4 py-2 border">Pháp</td>
+                            <td class="px-4 py-2 border">0.5 ml</td>
+                            <td class="px-4 py-2 border">500</td>
+                            <td class="px-4 py-2 border">1 năm</td>
+                            <td class="px-4 py-2 border">2°C-8°C</td>
+                            <td class="px-4 py-2 border">Trẻ em</td>
+                            <td class="px-4 py-2 border">Còn</td>
+                        </tr>
+                        <tr class="bg-blue-50">
+                            <td class="px-4 py-2 border">19050</td>
+                            <td class="px-4 py-2 border">Phòng bệnh sởi</td>
+                            <td class="px-4 py-2 border">TRIMOVAC</td>
+                            <td class="px-4 py-2 border">1/1/2015</td>
+                            <td class="px-4 py-2 border">5</td>
+                            <td class="px-4 py-2 border">Pháp</td>
+                            <td class="px-4 py-2 border">0.5 ml</td>
+                            <td class="px-4 py-2 border">500</td>
+                            <td class="px-4 py-2 border">1 năm</td>
+                            <td class="px-4 py-2 border">2°C-8°C</td>
+                            <td class="px-4 py-2 border">Trẻ em</td>
+                            <td class="px-4 py-2 border">Còn</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
