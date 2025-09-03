@@ -7,15 +7,21 @@ import lombok.Setter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Entity
 @Table(name = "account")
-public class AccountEntity {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class AccountEntity implements Serializable, UserDetails {
     @Id
     @Column(name = "account_id", columnDefinition = "CHAR(36)")
     private String accountId;
@@ -37,17 +43,39 @@ public class AccountEntity {
     @Column(nullable = false)
     private String email;
 
-    @ManyToMany
-    @JoinTable(
-            name = "account_role",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RoleEntity> roles = new HashSet<>();
+    // ✅ Một Account chỉ có một Role
+    @ManyToOne
+    @JoinColumn(name = "role_id") // cột FK nằm trong bảng account
+    private RoleEntity role;
 
     @OneToOne(mappedBy = "account")
     private PatientEntity patient;
 
     @OneToOne(mappedBy = "account")
     private EmployeeEntity employee;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
 }

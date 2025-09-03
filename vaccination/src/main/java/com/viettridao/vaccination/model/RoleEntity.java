@@ -8,14 +8,16 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-import java.security.Permission;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter@Setter@NoArgsConstructor
-@AllArgsConstructor @Builder
 @Entity
 @Table(name = "role")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RoleEntity {
     @Id
     @Column(name = "role_id", columnDefinition = "CHAR(36)")
@@ -27,9 +29,11 @@ public class RoleEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<AccountEntity> accounts = new HashSet<>();
-
-    @ManyToMany(mappedBy = "roles")
+    // Một Role có nhiều Permission
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PermissionEntity> permissions = new HashSet<>();
+
+    // Một Role có nhiều Account
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AccountEntity> accounts = new HashSet<>();
 }
