@@ -18,22 +18,32 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// vai trò
 public class RoleEntity {
     @Id
-    @Column(name = "role_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "role_id")
     private String roleId;
 
-    @Column(name = "role_name", nullable = false, length = 255)
+    @Column(name = "role_name", nullable = false)
     private String roleName;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // Một Role có nhiều Permission
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PermissionEntity> permissions = new HashSet<>();
+    private Boolean isDeleted = Boolean.FALSE;
 
-    // Một Role có nhiều Account
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AccountEntity> accounts = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "account_role",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id"))
+    private Set<AccountEntity> accounts;
+
+    @ManyToMany
+    @JoinTable(
+            name = "permission_role",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<PermissionEntity> permissions;
 }

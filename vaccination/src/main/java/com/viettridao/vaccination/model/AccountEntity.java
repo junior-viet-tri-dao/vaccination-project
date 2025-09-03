@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "account")
@@ -21,9 +22,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+//tài khoản
 public class AccountEntity implements Serializable, UserDetails {
     @Id
-    @Column(name = "account_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "account_id")
     private String accountId;
 
     @Column(unique = true, nullable = false)
@@ -32,27 +35,25 @@ public class AccountEntity implements Serializable, UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Column(name = "identity_number", unique = true, nullable = false)
+    @Column(name = "identity_number", unique = true)
     private String identityNumber;
 
-    @Column(nullable = false)
     private String address;
 
     private String description;
 
-    @Column(nullable = false)
     private String email;
 
-    // ✅ Một Account chỉ có một Role
-    @ManyToOne
-    @JoinColumn(name = "role_id") // cột FK nằm trong bảng account
-    private RoleEntity role;
+    @ManyToMany(mappedBy = "accounts")
+    private Set<RoleEntity> roles;
 
     @OneToOne(mappedBy = "account")
     private PatientEntity patient;
 
     @OneToOne(mappedBy = "account")
     private EmployeeEntity employee;
+
+    private Boolean isDeleted = Boolean.FALSE;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

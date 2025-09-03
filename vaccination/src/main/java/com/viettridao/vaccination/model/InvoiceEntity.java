@@ -4,20 +4,28 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "invoice")
+// hóa đơn
 public class InvoiceEntity {
     @Id
-    @Column(name = "invoice_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "invoice_id")
     private String invoiceId;
 
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
 
-    @OneToOne(mappedBy = "invoice")
-    private MedicalRecord medicalRecord;
+    private Boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "invoice")
-    private List<VaccineBatch> vaccineBatches;
+    @OneToOne(mappedBy = "invoice")
+    private MedicalRecordEntity medicalRecordEntity;
+
+    @OneToOne(mappedBy = "invoice")
+    private VaccineBatchEntity vaccineBatch;
 }

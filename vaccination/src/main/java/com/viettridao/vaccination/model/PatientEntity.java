@@ -2,24 +2,29 @@ package com.viettridao.vaccination.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "patient")
+// bệnh nhân
 public class PatientEntity {
     @Id
-    @Column(name = "patient_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "patient_id", length = 30)
     private String patientId;
-
-    @OneToOne @JoinColumn(name = "account_id", unique = true)
-    private AccountEntity account;
 
     @Column(name = "patient_name", nullable = false)
     private String patientName;
 
     @Column(name = "birth_date", nullable = false)
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private String address;
 
@@ -32,13 +37,19 @@ public class PatientEntity {
     @Column(nullable = false, length = 50)
     private String gender;
 
-    @OneToMany(mappedBy = "patient")
-    private List<Feedback> feedbacks;
+    @OneToOne
+    @JoinColumn(name = "account_id", unique = true)
+    private AccountEntity account;
+
+    private Boolean isDeleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "patient")
-    private List<Consultation> consultations;
+    private List<FeedbackEntity> feedbackEntities;
 
     @OneToMany(mappedBy = "patient")
-    private List<VaccinationRegistrationDetail> registrations;
+    private List<ConsultationEntity> consultationEntities;
+
+    @OneToMany(mappedBy = "patient")
+    private List<VaccinationRegistrationDetailEntity> registrations;
 }
 

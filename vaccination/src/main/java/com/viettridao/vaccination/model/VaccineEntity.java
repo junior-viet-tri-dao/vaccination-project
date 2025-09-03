@@ -2,24 +2,29 @@ package com.viettridao.vaccination.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "vaccine")
-public class Vaccine {
+// vắc xin
+public class VaccineEntity {
     @Id
-    @Column(name = "vaccine_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "vaccine_id")
     private String vaccineId;
-
-    @ManyToOne @JoinColumn(name = "vaccine_type_id")
-    private VaccineType vaccineType;
 
     @Column(name = "vaccine_name", nullable = false)
     private String vaccineName;
 
     @Column(name = "expiration_date", nullable = false)
-    private Date expirationDate;
+    private LocalDate expirationDate;
 
     @Column(nullable = false)
     private String dosage;
@@ -36,6 +41,12 @@ public class Vaccine {
     @Column(name = "storage_condition", nullable = false)
     private String storageCondition;
 
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @ManyToOne
+    @JoinColumn(name = "vaccine_type_id")
+    private VaccineTypeEntity vaccineType;
+
     @OneToMany(mappedBy = "vaccine")
-    private List<VaccineBatch> batches;
+    private List<VaccineBatchEntity> batches;
 }

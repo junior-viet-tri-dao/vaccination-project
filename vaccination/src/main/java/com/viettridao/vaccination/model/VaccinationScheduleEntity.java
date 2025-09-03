@@ -2,14 +2,22 @@ package com.viettridao.vaccination.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "vaccination_schedule")
-public class VaccinationSchedule {
+// lịch tiêm chủng
+public class VaccinationScheduleEntity {
     @Id
-    @Column(name = "schedule_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "schedule_id", length = 30)
     private String scheduleId;
 
     @Column(name = "target_group", nullable = false)
@@ -18,23 +26,23 @@ public class VaccinationSchedule {
     @Column(name = "general_time", nullable = false)
     private String generalTime;
 
+    @Column(columnDefinition = "Text")
     private String note;
 
     @Column(name = "number_of_people", nullable = false)
     private Integer numberOfPeople;
 
     @Column(name = "vaccination_date", nullable = false)
-    private Date vaccinationDate;
+    private LocalDate vaccinationDate;
 
     @Column(nullable = false)
     private String location;
 
-    @ManyToOne @JoinColumn(name = "vaccine_id")
-    private Vaccine vaccine;
+    private Boolean isDeleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "schedule")
-    private List<VaccinationRegistrationDetail> registrations;
+    private List<VaccinationRegistrationDetailEntity> registrations;
 
-    @OneToMany(mappedBy = "schedule")
-    private List<EmployeeParticipation> participations;
+    @ManyToMany(mappedBy = "scheduleEntities")
+    private Set<EmployeeEntity> employees;
 }

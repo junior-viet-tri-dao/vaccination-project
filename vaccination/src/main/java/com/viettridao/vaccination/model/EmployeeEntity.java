@@ -2,33 +2,48 @@ package com.viettridao.vaccination.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "employee")
+// nhân viên
 public class EmployeeEntity {
     @Id
-    @Column(name = "employee_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "employee_id")
     private String employeeId;
-
-    @OneToOne @JoinColumn(name = "account_id", unique = true)
-    private AccountEntity account;
 
     @Column(name = "employee_name", nullable = false)
     private String employeeName;
 
-    private Integer birthYear;
+    private LocalDate dateOfBirth;
 
     @Column(nullable = false)
     private String phone;
 
-    @OneToMany(mappedBy = "employee")
-    private List<EmployeeParticipation> participations;
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @OneToOne
+    @JoinColumn(name = "account_id", unique = true)
+    private AccountEntity account;
 
     @OneToMany(mappedBy = "employee")
-    private List<Epidemic> epidemics;
+    private List<EpidemicEntity> epidemicEntities;
 
     @OneToMany(mappedBy = "employee")
-    private List<Consultation> consultations;
+    private List<ConsultationEntity> consultationEntities;
+
+    @ManyToMany
+    @JoinTable(
+            name = "employee_vaccination_schedule",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "schedule_id"))
+    private Set<VaccinationScheduleEntity> scheduleEntities;
 }

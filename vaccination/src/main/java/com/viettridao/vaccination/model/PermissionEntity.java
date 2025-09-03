@@ -19,19 +19,21 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// quyền hạn
 public class PermissionEntity {
     @Id
-    @Column(name = "permission_id", columnDefinition = "CHAR(36)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "permission_id")
     private String permissionId;
 
-    @Column(name = "permission_name", nullable = false, length = 255)
+    @Column(name = "permission_name", nullable = false)
     private String permissionName;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    // ✅ Nhiều permission -> 1 role
-    @ManyToOne
-    @JoinColumn(name = "role_id") // FK nằm trong bảng permission
-    private RoleEntity role;
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Set<RoleEntity> roles;
 }
