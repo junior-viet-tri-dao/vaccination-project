@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Đăng ký tiêm phòng vắc xin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+<!-- Container -->
+<div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full p-8">
+    <!-- Title -->
+    <h1 class="text-xl font-bold text-blue-700 mb-4 text-center">
+        Đăng ký tiêm phòng vắc xin
+    </h1>
+
+    <!-- Message -->
+    <p class="text-center text-gray-700 mb-6">
+        Bạn có chắc chắn đồng ý đăng ký tiêm phòng loại vắc xin dưới đây:
+    </p>
+
+    <!-- Vaccine Info Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 text-sm text-center">
+            <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white">
+            <tr>
+                <th class="border px-3 py-2">STT</th>
+                <th class="border px-3 py-2">Mã vắc xin</th>
+                <th class="border px-3 py-2">Tên vắc xin</th>
+                <th class="border px-3 py-2">Phòng trị bệnh</th>
+                <th class="border px-3 py-2">Số lượng</th>
+                <th class="border px-3 py-2">Độ tuổi tiêm phòng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="bg-gray-50">
+                <td class="border px-3 py-2">1</td>
+                <td class="border px-3 py-2">10A4</td>
+                <td class="border px-3 py-2">Viêm Gan B</td>
+                <td class="border px-3 py-2">Viêm Gan B</td>
+                <td class="border px-3 py-2">1 liều</td>
+                <td class="border px-3 py-2">Mọi lứa tuổi</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-6 flex justify-center gap-6">
+        <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
+            Đồng ý
+        </button>
+        <a href="/view-vaccines"
+           class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow">
+            Hủy bỏ
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

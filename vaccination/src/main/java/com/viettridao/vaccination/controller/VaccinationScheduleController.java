@@ -9,17 +9,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class VaccinationScheduleController {
 
-    @GetMapping("/schedule")
+    @GetMapping("/search-schedule")
     public String view(Model model) {
         model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
-        return "schedule"; // templates/schedule.html
+        return "normalUser/search-vaccination-schedule";
     }
 
-    // Demo lưu (chưa bind model). Sau này map DTO/Entity tuỳ bạn.
-    @PostMapping("/schedule")
+    @PostMapping("/search-schedule")
     public String save(RedirectAttributes ra) {
         ra.addFlashAttribute("msg", "Đã lưu lịch tiêm chủng (demo).");
-        return "redirect:/schedule";
+        return "redirect:/search-schedule";
+    }
+
+    @GetMapping("/register-center")
+    public String register() {
+        return "normalUser/vaccine-register-center";
     }
 }
 

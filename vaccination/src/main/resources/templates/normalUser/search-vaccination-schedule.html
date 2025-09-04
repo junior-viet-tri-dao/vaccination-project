@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Lịch tiêm phòng vắc xin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen p-6">
+
+<!-- Container -->
+<div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+    <!-- Title -->
+    <h1 class="text-2xl font-bold text-blue-700 mb-6 text-center">
+        Lịch tiêm phòng vắc xin
+    </h1>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full border border-gray-300 text-sm">
+            <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white">
+            <tr>
+                <th class="px-3 py-2 border">STT</th>
+                <th class="px-3 py-2 border">Thời gian</th>
+                <th class="px-3 py-2 border">Địa điểm</th>
+                <th class="px-3 py-2 border">Tên vắc xin</th>
+                <th class="px-3 py-2 border">Loại vắc xin</th>
+                <th class="px-3 py-2 border">Số lượng</th>
+                <th class="px-3 py-2 border">Đối tượng</th>
+                <th class="px-3 py-2 border">Ghi chú</th>
+                <th class="px-3 py-2 border">Đăng ký</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white">
+            <!-- Dữ liệu mẫu -->
+            <tr class="hover:bg-gray-50">
+                <td class="border px-3 py-2 text-center">1</td>
+                <td class="border px-3 py-2 text-center">7h - 11h20</td>
+                <td class="border px-3 py-2">TTYT Hòa Khánh Bắc, Liên Chiểu</td>
+                <td class="border px-3 py-2">Viêm não Nhật Bản</td>
+                <td class="border px-3 py-2">Viêm não Nhật Bản</td>
+                <td class="border px-3 py-2 text-center">300 liều</td>
+                <td class="border px-3 py-2 text-center">&lt; 2 tuổi</td>
+                <td class="border px-3 py-2 text-center">Miễn phí</td>
+                <td class="border px-3 py-2 text-center">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded shadow">
+                        Đăng ký
+                    </button>
+                </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+                <td class="border px-3 py-2 text-center">2</td>
+                <td class="border px-3 py-2 text-center">13h - 16h30</td>
+                <td class="border px-3 py-2">Bệnh viện Quận Liên Chiểu</td>
+                <td class="border px-3 py-2">Covid-19</td>
+                <td class="border px-3 py-2">Pfizer</td>
+                <td class="border px-3 py-2 text-center">500 liều</td>
+                <td class="border px-3 py-2 text-center">&gt;= 12 tuổi</td>
+                <td class="border px-3 py-2 text-center">Có phí</td>
+                <td class="border px-3 py-2 text-center">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded shadow">
+                        Đăng ký
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- OK button -->
+    <div class="mt-6 text-center">
+        <button type="button"
+                class="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg shadow">
+            OK
+        </button>
+    </div>
+</div>
+</body>
+</html>

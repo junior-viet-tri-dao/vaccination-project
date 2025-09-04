@@ -9,7 +9,7 @@ public class DashboardController {
     // Khi người dùng truy cập /dashboard thì hiển thị giao diện Dashboard
     @GetMapping("/dashboard")
     public String showDashboard() {
-        return "dashboard"; // tên file HTML trong folder templates
+        return "adminPanel/dashboard";
     }
 }
 
