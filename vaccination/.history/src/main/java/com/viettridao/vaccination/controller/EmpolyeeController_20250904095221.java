@@ -4,25 +4,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @Controller
-public class WarehouseController {
-    @GetMapping("/warehouse/warehouse")
-    public String showWarehousePage(Model model) {
-        model.addAttribute("tab", "warehouse");
-        return "warehouse/warehouse"; 
+public class EmpolyeeController {
+
+      @GetMapping("/employee/view")
+    public String showEmployee(Model model) {
+        model.addAttribute("tab", "view");
+        return "/employee/view"; 
     }
 
-      @GetMapping("/warehouse/importvaccine")
-    public String showImportVaccineForm(Model model) {
+      @GetMapping("/employee/update")
+    public String updateEmployee(Model model) {
         model.addAttribute("tab", "import");
-        return "warehouse/importvaccine"; 
+        return "/employee/update"; 
     } 
 
 
-    @GetMapping("/warehouse/exportvaccine")
+    @GetMapping("/employee/exportvaccine")
     public String showExportVaccineForm(Model model) {
         model.addAttribute("tab", "export");
         return "warehouse/exportvaccine"; 
     } 
 }
+    
+

@@ -10,19 +10,12 @@ public class WarehouseController {
     @GetMapping("/warehouse/warehouse")
     public String showWarehousePage(Model model) {
         model.addAttribute("tab", "warehouse");
-        return "warehouse/warehouse"; 
+        return "warehouse/warehouse"; // Trả về template warehouse.html
     }
 
       @GetMapping("/warehouse/importvaccine")
     public String showImportVaccineForm(Model model) {
         model.addAttribute("tab", "import");
-        return "warehouse/importvaccine"; 
+        return "warehouse/import-vaccine"; // Tên file HTML trong /templates
     } 
-
-
-    @GetMapping("/warehouse/exportvaccine")
-    public String showExportVaccineForm(Model model) {
-        model.addAttribute("tab", "export");
-        return "warehouse/exportvaccine"; 
-    } 
-}
+} 

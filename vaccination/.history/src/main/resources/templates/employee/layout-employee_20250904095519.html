@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    th:fragment="areas(title, content)"
+>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title th:replace="${title}">Nhân Viên Y Tế</title>
+
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen p-4">
+        <!-- Tiêu đề -->
+        <div class="max-w-7xl mx-auto mb-6">
+            <h1 class="text-4xl font-bold text-blue-700 text-center uppercase">
+                Nhân Viên Y Tế
+            </h1>
+        </div>
+
+        <!-- Tabs điều hướng -->
+        <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-xl p-6">
+            <div class="flex space-x-4 mb-6">
+                <a
+                    th:href="@{/employee/view}"
+                    th:classappend="${tab == 'warehouse'} ? 'bg-blue-600 text-white shadow' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                    class="tab-button px-4 py-2 rounded-lg"
+                >
+                    Xem hồ sơ bệnh án
+                </a>
+                <a
+                    th:href="@{/employee/update}"
+                    th:classappend="${tab == 'import'} ? 'bg-blue-600 text-white shadow' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                    class="tab-button px-4 py-2 rounded-lg"
+                >
+                    Cập nhật hồ sơ
+                </a>
+                <a
+                    th:href="@{/employee/prescripe}"
+                    th:classappend="${tab == 'export'} ? 'bg-blue-600 text-white shadow' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
+                    class="tab-button px-4 py-2 rounded-lg"
+                >
+                    Kê đơn
+                </a>
+            </div>
+
+            <!-- Nội dung được truyền từ view con -->
+            <div th:replace="${content}"></div>
+        </div>
+    </body>
+</html>

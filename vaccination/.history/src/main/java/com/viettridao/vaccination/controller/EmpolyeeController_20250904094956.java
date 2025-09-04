@@ -4,10 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @Controller
-public class WarehouseController {
-    @GetMapping("/warehouse/warehouse")
+public class EmpolyeeController {
+
+      @GetMapping("/warehouse/warehouse")
     public String showWarehousePage(Model model) {
         model.addAttribute("tab", "warehouse");
         return "warehouse/warehouse"; 
@@ -25,4 +25,6 @@ public class WarehouseController {
         model.addAttribute("tab", "export");
         return "warehouse/exportvaccine"; 
     } 
+}
+    
 }
