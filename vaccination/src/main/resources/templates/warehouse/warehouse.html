@@ -1,98 +1,152 @@
-<!-- warehouse/warehouse.html -->
 <!DOCTYPE html>
 <html
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{warehouse/layout-warehouse :: areas(~{::title}, ~{::main})}"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        th:replace="~{warehouse/layout-warehouse :: areas(~{::title}, ~{::main})}"
 >
-    <head>
-        <title>Warehouse - Quản lý kho</title>
-    </head>
-    <body>
-        <main th:with="tab='warehouse'">
-            <div class="mb-6">
-                <label class="block mb-2 font-semibold text-gray-700">
-                    Nhập thông tin cần tìm
-                </label>
-                <input
-                    type="text"
-                    placeholder="Nhập từ khóa..."
-                    class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
+<head>
+    <title>Warehouse - Quản lý kho</title>
+</head>
+<body>
+<main th:with="tab='warehouse'">
+    <!-- Form tìm kiếm -->
+    <form method="get" th:action="@{/warehouse}" class="mb-6"
+          onsubmit="this.keyword.value = this.keyword.value.trim();">
+        <label class="block mb-2 font-semibold text-gray-700">
+            Nhập thông tin cần tìm
+        </label>
+        <input
+                type="text"
+                name="keyword"
+                th:value="${keyword != null ? keyword : ''}"
+                placeholder="Nhập từ khóa..."
+                class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                onblur="this.value = this.value.trim();"
+        />
 
-                <div
-                    class="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-4"
-                >
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="name"
-                            checked
-                            class="mr-2"
-                        />
-                        Tìm theo tên
-                    </label>
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="type"
-                            class="mr-2"
-                        />
-                        Tìm theo loại
-                    </label>
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="origin"
-                            class="mr-2"
-                        />
-                        Tìm theo nơi SX
-                    </label>
-                    <label class="flex items-center">
-                        <input
-                            type="radio"
-                            name="searchType"
-                            value="age"
-                            class="mr-2"
-                        />
-                        Tìm theo độ tuổi
-                    </label>
-                </div>
+        <div class="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-4">
+            <label class="flex items-center">
+                <input type="radio" name="searchType" value="name"
+                       th:checked="${searchType == null or searchType == 'name'}" class="mr-2"/>
+                Tìm theo tên
+            </label>
 
-                <button
-                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
-                >
-                    Tìm kiếm
-                </button>
-            </div>
+            <label class="flex items-center">
+                <input type="radio" name="searchType" value="type"
+                       th:checked="${searchType == 'type'}" class="mr-2"/>
+                Tìm theo loại
+            </label>
+            <label class="flex items-center">
+                <input type="radio" name="searchType" value="origin"
+                       th:checked="${searchType == 'origin'}" class="mr-2"/>
+                Tìm theo nơi SX
+            </label>
+            <label class="flex items-center">
+                <input type="radio" name="searchType" value="age"
+                       th:checked="${searchType == 'age'}" class="mr-2"/>
+                Tìm theo độ tuổi
+            </label>
+        </div>
 
-            <!-- Bảng -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full table-auto border border-gray-300">
-                    <thead class="bg-blue-600 text-white text-sm">
-                        <tr>
-                            <th class="px-4 py-2 border">Mã lô</th>
-                            <th class="px-4 py-2 border">Tên</th>
-                            <th class="px-4 py-2 border">Loại</th>
-                            <th class="px-4 py-2 border">Ngày nhận</th>
-                            <th class="px-4 py-2 border">Số giấy phép</th>
-                            <th class="px-4 py-2 border">Nước SX</th>
-                            <th class="px-4 py-2 border">Hàm lượng</th>
-                            <th class="px-4 py-2 border">SL</th>
-                            <th class="px-4 py-2 border">Hạn sử dụng</th>
-                            <th class="px-4 py-2 border">Bảo quản</th>
-                            <th class="px-4 py-2 border">Độ tuổi</th>
-                            <th class="px-4 py-2 border">Tình trạng</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm text-center bg-white">
-                        <!-- Thymeleaf loop sẽ được render tại đây -->
-                    </tbody>
-                </table>
-            </div>
-        </main>
-    </body>
+        <button type="submit"
+                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+            Tìm kiếm
+        </button>
+    </form>
+
+    <!-- Bảng -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-auto border border-gray-300">
+            <thead class="bg-blue-600 text-white text-sm">
+            <tr>
+                <th class="px-4 py-2 border">Mã lô</th>
+                <th class="px-4 py-2 border">Tên</th>
+                <th class="px-4 py-2 border">Loại</th>
+                <th class="px-4 py-2 border">Ngày nhận</th>
+                <th class="px-4 py-2 border">Số giấy phép</th>
+                <th class="px-4 py-2 border">Nước SX</th>
+                <th class="px-4 py-2 border">Hàm lượng</th>
+                <th class="px-4 py-2 border">SL</th>
+                <th class="px-4 py-2 border">Hạn sử dụng</th>
+                <th class="px-4 py-2 border">Bảo quản</th>
+                <th class="px-4 py-2 border">Độ tuổi</th>
+                <th class="px-4 py-2 border">Tình trạng</th>
+            </tr>
+            </thead>
+            <tbody class="text-sm text-center bg-white">
+            <tr th:each="item : ${warehousePage.content}">
+                <td class="px-4 py-2 border" th:text="${item.batchId}"></td>
+                <td class="px-4 py-2 border" th:text="${item.vaccineName}"></td>
+                <td class="px-4 py-2 border" th:text="${item.vaccineTypeName}"></td>
+                <td class="px-4 py-2 border" th:text="${item.receivedDate}"></td>
+                <td class="px-4 py-2 border" th:text="${item.licenseNumber}"></td>
+                <td class="px-4 py-2 border" th:text="${item.countryOfOrigin}"></td>
+                <td class="px-4 py-2 border" th:text="${item.dosage}"></td>
+                <td class="px-4 py-2 border" th:text="${item.quantity}"></td>
+                <td class="px-4 py-2 border" th:text="${item.expirationDate}"></td>
+                <td class="px-4 py-2 border" th:text="${item.storageCondition}"></td>
+                <td class="px-4 py-2 border" th:text="${item.ageGroup}"></td>
+                <td class="px-4 py-2 border" th:text="${item.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Nếu không có dữ liệu -->
+    <div th:if="${warehousePage.totalElements == 0}"
+         class="mt-4 text-center text-red-600 font-semibold">
+        Không tìm thấy kết quả phù hợp với từ khóa "<span th:text="${keyword}"></span>".
+    </div>
+
+    <!-- Phân trang -->
+    <div class="flex justify-center items-center mt-6 space-x-2">
+
+        <!-- Nếu có dữ liệu -->
+        <div th:if="${warehousePage.totalPages > 0}"
+             class="inline-flex items-center gap-2">
+
+            <!-- Nút Trước -->
+            <a th:if="${!warehousePage.first}"
+               th:href="@{/warehouse(page=${warehousePage.number - 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
+               class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                Trước
+            </a>
+            <span th:if="${warehousePage.first}"
+                  class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Trước
+        </span>
+
+            <!-- Số trang -->
+            <span th:each="i : ${#numbers.sequence(1, warehousePage.totalPages)}">
+            <a th:href="@{/warehouse(page=${i - 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
+               th:text="${i}"
+               th:classappend="${i - 1 == warehousePage.number} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+               class="px-3 py-1 rounded-lg mx-1 transition"></a>
+        </span>
+
+            <!-- Nút Sau -->
+            <a th:if="${!warehousePage.last}"
+               th:href="@{/warehouse(page=${warehousePage.number + 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
+               class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                Sau
+            </a>
+            <span th:if="${warehousePage.last}"
+                  class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sau
+        </span>
+        </div>
+
+        <!-- Nếu không có dữ liệu -->
+        <div th:if="${warehousePage.totalPages == 0}" class="inline-flex items-center gap-2">
+        <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Trước
+        </span>
+            <span class="px-3 py-1 rounded-lg bg-blue-600 text-white">1</span>
+            <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sau
+        </span>
+        </div>
+    </div>
+</main>
+</body>
 </html>

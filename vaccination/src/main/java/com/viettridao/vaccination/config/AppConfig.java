@@ -96,14 +96,4 @@ public class AppConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
-
-    /**
-     * Bean hỗ trợ mapping giữa entity và DTO.
-     *
-     * @return ModelMapper
-     */
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
 }

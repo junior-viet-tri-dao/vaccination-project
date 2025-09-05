@@ -3,7 +3,7 @@ package com.viettridao.vaccination.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -40,7 +40,7 @@ public class EpidemicEntity {
     private Boolean isDeleted = Boolean.FALSE;
 
     @Column(name = "survey_time", nullable = false)
-    private LocalDateTime surveyTime;
+    private LocalDate surveyTime;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
