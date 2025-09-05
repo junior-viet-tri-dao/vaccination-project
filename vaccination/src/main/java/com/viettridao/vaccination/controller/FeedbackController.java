@@ -10,6 +10,6 @@ public class FeedbackController {
     @GetMapping("/feedback")
     public String showFeedbackForm(Model model) {
         model.addAttribute("pageTitle", "Gửi phản hồi sau tiêm phòng");
-        return "normalUser/feedback-form"; // feedback-form.html
+        return "normalUser/feedback-form";
     }
 }
