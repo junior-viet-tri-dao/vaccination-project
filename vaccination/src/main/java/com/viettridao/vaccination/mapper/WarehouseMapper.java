@@ -60,6 +60,4 @@ public interface WarehouseMapper {
     @Mapping(target = "countryOfOrigin", source = "request.originCountry")
     @Mapping(target = "vaccine", source = "vaccineEntity") // gán VaccineEntity vào field vaccine
     VaccineBatchEntity toVaccineBatchEntity(ImportRequest request, VaccineEntity vaccineEntity);
-
-
 }

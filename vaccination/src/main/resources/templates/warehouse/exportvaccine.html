@@ -9,130 +9,182 @@
     </head>
 
     <body>
-        <main th:with="tab='export'">
+        <main th:with="tab='export'" >
             <h2 class="text-2xl font-bold mb-4">Chọn vắc-xin cần xuất</h2>
-
             <!-- Bảng danh sách vắc-xin -->
             <div class="overflow-x-auto mb-6">
-                <table
-                    class="min-w-full table-auto border border-gray-300 text-sm text-center bg-white"
-                >
+            <!-- Form xuất vắc-xin -->
+                <form method="post" th:action="@{/warehouse/exportvaccine}" th:object="${exportRequest}">
+
+                <table class="min-w-full table-auto border border-gray-300 text-sm text-center bg-white">
                     <thead class="bg-blue-600 text-white">
-                        <tr>
-                            <th class="px-4 py-2 border">Tên vắc-xin</th>
-                            <th class="px-4 py-2 border">Loại vắc-xin</th>
-                            <th class="px-4 py-2 border">Ngày nhận</th>
-                            <th class="px-4 py-2 border">Số giấy phép</th>
-                            <th class="px-4 py-2 border">Nước sản xuất</th>
-                            <th class="px-4 py-2 border">Hàm lượng</th>
-                            <th class="px-4 py-2 border">Số lô</th>
-                            <th class="px-4 py-2 border">Hạn sử dụng</th>
-                            <th class="px-4 py-2 border">Điều kiện bảo quản</th>
-                            <th class="px-4 py-2 border">Độ tuổi tiêm chủng</th>
-                            <th class="px-4 py-2 border">Tình trạng vắc-xin</th>
-                        </tr>
+                    <tr>
+                        <th class="px-4 py-2 border">Chọn</th>
+                        <th class="px-4 py-2 border">Tên vắc-xin</th>
+                        <th class="px-4 py-2 border">Loại vắc-xin</th>
+                        <th class="px-4 py-2 border">Ngày nhận</th>
+                        <th class="px-4 py-2 border">Số giấy phép</th>
+                        <th class="px-4 py-2 border">Nước sản xuất</th>
+                        <th class="px-4 py-2 border">Hàm lượng</th>
+                        <th class="px-4 py-2 border">Số lượng</th>
+                        <th class="px-4 py-2 border">Hạn sử dụng</th>
+                        <th class="px-4 py-2 border">Điều kiện bảo quản</th>
+                        <th class="px-4 py-2 border">Độ tuổi tiêm chủng</th>
+                        <th class="px-4 py-2 border">Tình trạng vắc-xin</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <!-- Thymeleaf loop example -->
-                        <tr
-                            th:each="item : ${vaccines}"
-                            th:classappend="${item.selected} ? 'bg-blue-100'"
-                            class="cursor-pointer hover:bg-gray-100"
-                        >
-                            <td class="px-4 py-2 border" th:text="${item.name}">
-                                Phòng bệnh lao
-                            </td>
-                            <td class="px-4 py-2 border" th:text="${item.type}">
-                                BCG
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.receiveDate}"
-                            >
-                                1/1/2015
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.license}"
-                            >
-                                1
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.origin}"
-                            >
-                                Việt Nam
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.dosage}"
-                            >
-                                0.1 ml
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.batch}"
-                            >
-                                500
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.expiry}"
-                            >
-                                1 năm
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.storage}"
-                            >
-                                2°C-8°C
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.ageGroup}"
-                            >
-                                Trẻ em
-                            </td>
-                            <td
-                                class="px-4 py-2 border"
-                                th:text="${item.status}"
-                            >
-                                Có
-                            </td>
-                        </tr>
+                    <tr th:each="warehouse : ${warehousePage.content}"
+                        class="cursor-pointer hover:bg-gray-100">
+                        <td class="px-4 py-2 border">
+                            <input type="radio" name="selectedBatch"
+                                   th:field="*{batchId}"
+                                   th:value="${warehouse.batchId}"
+                                   th:data-quantity="${warehouse.quantity}" required/>
+                        </td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.vaccineName}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.vaccineTypeName}"></td>
+                        <td class="px-4 py-2 border" th:text="${#temporals.format(warehouse.receivedDate, 'dd/MM/yyyy')}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.licenseNumber}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.countryOfOrigin}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.dosage}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.quantity}"></td>
+                        <td class="px-4 py-2 border" th:text="${#temporals.format(warehouse.expirationDate, 'dd/MM/yyyy')}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.storageCondition}"></td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.ageGroup}"></td>
+                        <td class="px-4 py-2 border"
+                            th:text="${warehouse.quantity > 0 ? 'Có' : 'Hết'}"></td>
+                    </tr>
                     </tbody>
                 </table>
-            </div>
 
-            <!-- Form xuất vắc-xin -->
-            <form
-                method="post"
-                th:action="@{/warehouse/exportvaccine}"
-                class="flex items-center space-x-4"
-            >
-                <label class="font-semibold text-gray-700"
-                    >Nhập số lô cần xuất:</label
-                >
-                <input
-                    type="number"
-                    name="quantity"
-                    required
-                    class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-32"
-                />
+                <!-- Phân trang -->
+                <div class="flex justify-center items-center mt-6 space-x-2">
 
-                <button
-                    type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
-                >
-                    Xuất
-                </button>
-                <button
-                    type="reset"
-                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg font-semibold transition"
-                >
-                    Hủy
-                </button>
+                    <!-- Nếu có dữ liệu -->
+                    <div th:if="${warehousePage.totalPages > 0}"
+                         class="inline-flex items-center gap-2">
+
+                        <!-- Nút Trước -->
+                        <a th:if="${!warehousePage.first}"
+                           th:href="@{/warehouse/exportvaccine(page=${warehousePage.number - 1}, size=${warehousePage.size})}"
+                           class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                            Trước
+                        </a>
+                        <span th:if="${warehousePage.first}"
+                              class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Trước
+        </span>
+
+                        <!-- Số trang -->
+                        <span th:each="i : ${#numbers.sequence(1, warehousePage.totalPages)}">
+            <a th:href="@{/warehouse/exportvaccine(page=${i - 1}, size=${warehousePage.size})}"
+               th:text="${i}"
+               th:classappend="${i - 1 == warehousePage.number} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+               class="px-3 py-1 rounded-lg mx-1 transition"></a>
+        </span>
+
+                        <!-- Nút Sau -->
+                        <a th:if="${!warehousePage.last}"
+                           th:href="@{/warehouse/exportvaccine(page=${warehousePage.number + 1}, size=${warehousePage.size})}"
+                           class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                            Sau
+                        </a>
+                        <span th:if="${warehousePage.last}"
+                              class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sau
+        </span>
+                    </div>
+
+                    <!-- Nếu không có dữ liệu -->
+                    <div th:if="${warehousePage.totalPages == 0}" class="inline-flex items-center gap-2">
+        <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Trước
+        </span>
+                        <span class="px-3 py-1 rounded-lg bg-blue-600 text-white">1</span>
+                        <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sau
+        </span>
+                    </div>
+                </div>
+
+                <!-- Form xuất vắc-xin -->
+                <div class="flex items-center space-x-4 mt-4">
+                    <label class="font-semibold text-gray-700" for="quantity">Nhập số lượng cần xuất:</label>
+                    <div class="flex flex-col">
+                        <!-- Thêm th:field để bind với DTO -->
+                        <input id="quantity"
+                               type="number"
+                               th:field="*{quantity}"
+                               min="1"
+                               class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-32" />
+
+                        <!-- Hiển thị lỗi validate -->
+                        <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('quantity')}"
+                           th:errors="*{quantity}"></p>
+                        <p id="quantityError" class="text-red-500 text-sm mt-1 hidden"></p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 mt-2">
+                    <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Xuất
+                    </button>
+                    <button type="reset"
+                            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg font-semibold transition">
+                        Hủy
+                    </button>
+                </div>
             </form>
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                    const form = document.querySelector("form");
+                        const quantityInput = document.getElementById("quantity");
+                        const errorMsg = document.getElementById("quantityError");
+
+
+                        form.addEventListener("submit", (e) => {
+                            // Lấy lô đang chọn
+                            const selectedRadio = document.querySelector("input[name='batchId']:checked");
+                            if (!selectedRadio) {
+                                e.preventDefault();
+                                alert("Bạn phải chọn lô vắc-xin.");
+                                return;
+                            }
+
+                            const maxQuantity = parseInt(selectedRadio.dataset.quantity) || 0;
+                            const entered = parseInt(quantityInput.value);
+
+                            if (!entered || entered < 1) {
+                                e.preventDefault();
+                                errorMsg.textContent = "Số lượng phải >= 1.";
+                                errorMsg.classList.remove("hidden");
+                                quantityInput.classList.add("border-red-500");
+                            } else if (entered > maxQuantity) {
+                                e.preventDefault();
+                                errorMsg.textContent = `Không được vượt quá ${maxQuantity}.`;
+                                errorMsg.classList.remove("hidden");
+                                quantityInput.classList.add("border-red-500");
+                            } else {
+                                // hợp lệ → submit bình thường
+                                errorMsg.textContent = "";
+                                errorMsg.classList.add("hidden");
+                                quantityInput.classList.remove("border-red-500");
+                            }
+                        });
+
+                        const radios = document.querySelectorAll("input[name='batchId']");
+                        radios.forEach(radio => {
+                            radio.addEventListener("change", () => {
+                                document.querySelectorAll("tbody tr")
+                                    .forEach(tr => tr.classList.remove("bg-blue-100"));
+                                radio.closest("tr").classList.add("bg-blue-100");
+                            });
+                        });
+                    });
+                </script>
+            </div>
         </main>
     </body>
 </html>

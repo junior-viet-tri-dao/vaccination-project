@@ -17,7 +17,7 @@ import java.util.*;
 public class PatientEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "patient_id", length = 30)
+    @Column(name = "patient_id", length = 36)
     private String patientId;
 
     @Column(name = "patient_name", nullable = false)

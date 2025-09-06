@@ -1,5 +1,6 @@
 package com.viettridao.vaccination.controller;
 
+import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
@@ -64,9 +65,6 @@ public class WarehouseController {
         model.addAttribute("tab", "import");
         model.addAttribute("importRequest", new ImportRequest()); // DTO trống cho form
 
-        // Lấy danh sách loại vắc-xin từ DB
-        List<String> vaccineTypes = warehouseService.getAllVaccineTypeNames();
-        model.addAttribute("vaccineTypes", vaccineTypes);
         return "warehouse/importvaccine";
     }
 
@@ -80,26 +78,68 @@ public class WarehouseController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        // Nếu có lỗi validate → trả lại form
+        // Luôn đẩy danh sách loại vắc-xin trở lại form nếu có lỗi
+        model.addAttribute("tab", "import");
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("tab", "import");
-            return "warehouse/importvaccine";
+            return "warehouse/importvaccine"; // trả lại form với dữ liệu người dùng nhập
         }
 
         // Gọi Service import
         ImportResponse response = warehouseService.importVaccine(importRequest);
 
         // Thêm thông báo thành công vào redirect
-        redirectAttributes.addFlashAttribute("successMessage",
+        redirectAttributes.addFlashAttribute("success",
                 "Nhập kho vắc-xin thành công! Batch ID: " + response.getBatchId());
 
         // Chuyển về trang import (hoặc danh sách kho)
-        return "redirect:/warehouse/importvaccine";
+        return "redirect:/warehouse";
     }
 
+    /**
+     * Hiển thị form export vắc-xin + danh sách lô
+     */
     @GetMapping("/exportvaccine")
-    public String showExportVaccineForm(Model model) {
+    public String showExportVaccineForm(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            Model model
+    ) {
+        // Lấy tất cả lô vắc-xin có phân trang
+        Page<WarehouseResponse> warehousePage =
+                warehouseService.getWarehouses(null, null, page, size);
+
+        // Fix lại nếu page vượt ngoài range
+        if (page != warehousePage.getNumber()) {
+            warehousePage = warehouseService.getWarehouses(null, null, page, size);
+        }
+
         model.addAttribute("tab", "export");
+        model.addAttribute("pageTitle", "Xuất vắc xin");
+        model.addAttribute("warehousePage", warehousePage);
+        model.addAttribute("currentPage", warehousePage.getNumber());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("exportRequest", new ExportRequest());
+
         return "warehouse/exportvaccine";
+    }
+
+    /**
+     * Xử lý submit form export
+     */
+    @PostMapping("/exportvaccine")
+    public String exportVaccine(@Valid @ModelAttribute("exportRequest") ExportRequest request,
+                                BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "warehouse/exportvaccine"; // trả lại view nếu có lỗi
+        }
+
+        WarehouseResponse response = warehouseService.exportVaccine(request.getBatchId(), request.getQuantity());
+        redirectAttributes.addFlashAttribute("success",
+                "Xuất thành công lô " + response.getBatchId() +
+                        " - Số lượng còn lại: " + response.getQuantity());
+
+        return "redirect:/warehouse";
     }
 }

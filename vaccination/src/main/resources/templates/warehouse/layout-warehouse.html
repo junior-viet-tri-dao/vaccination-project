@@ -8,8 +8,14 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title th:replace="${title}">Quản lý kho</title>
+        <!-- Thêm flatpickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <script src="https://cdn.tailwindcss.com"></script>
+        <script th:src="@{/js/alert-utils.js}"></script>
     </head>
     <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen p-4">
         <!-- Tiêu đề -->
@@ -48,5 +54,6 @@
             <!-- Nội dung được truyền từ view con -->
             <div th:replace="${content}"></div>
         </div>
+        <div th:replace="~{alert :: alerts}"></div>
     </body>
 </html>

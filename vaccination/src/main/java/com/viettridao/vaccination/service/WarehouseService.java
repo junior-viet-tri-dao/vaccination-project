@@ -27,9 +27,7 @@ public interface WarehouseService {
      */
     ImportResponse importVaccine(ImportRequest request);
 
-    /**
-     * Lấy danh sách tên các loại vắc-xin (VaccineType)
-     */
-    List<String> getAllVaccineTypeNames();
+    // Xuất kho
+    WarehouseResponse exportVaccine(String batchId, int quantity);
 }
 

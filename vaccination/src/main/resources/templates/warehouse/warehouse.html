@@ -78,12 +78,12 @@
                 <td class="px-4 py-2 border" th:text="${item.batchId}"></td>
                 <td class="px-4 py-2 border" th:text="${item.vaccineName}"></td>
                 <td class="px-4 py-2 border" th:text="${item.vaccineTypeName}"></td>
-                <td class="px-4 py-2 border" th:text="${item.receivedDate}"></td>
+                <td class="px-4 py-2 border" th:text="${#temporals.format(item.receivedDate, 'dd/MM/yyyy')}"></td>
                 <td class="px-4 py-2 border" th:text="${item.licenseNumber}"></td>
                 <td class="px-4 py-2 border" th:text="${item.countryOfOrigin}"></td>
                 <td class="px-4 py-2 border" th:text="${item.dosage}"></td>
                 <td class="px-4 py-2 border" th:text="${item.quantity}"></td>
-                <td class="px-4 py-2 border" th:text="${item.expirationDate}"></td>
+                <td class="px-4 py-2 border" th:text="${#temporals.format(item.expirationDate, 'dd/MM/yyyy')}"></td>
                 <td class="px-4 py-2 border" th:text="${item.storageCondition}"></td>
                 <td class="px-4 py-2 border" th:text="${item.ageGroup}"></td>
                 <td class="px-4 py-2 border" th:text="${item.status}"></td>

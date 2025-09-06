@@ -1,11 +1,15 @@
 package com.viettridao.vaccination.repository;
 
 import com.viettridao.vaccination.model.VaccineBatchEntity;
+import com.viettridao.vaccination.model.VaccineEntity;
+import java.util.Optional;
+
 import com.viettridao.vaccination.model.VaccineTypeEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,6 +25,9 @@ public interface WarehouseRepository extends JpaRepository<VaccineBatchEntity, S
      */
     @Override
     Page<VaccineBatchEntity> findAll(Pageable pageable);
+
+    @Query("SELECT v FROM VaccineEntity v WHERE LOWER(v.vaccineName) = LOWER(:name) AND LOWER(v.vaccineType.vaccineTypeName) = LOWER(:type)")
+    Optional<VaccineEntity> findVaccineByNameAndType(@Param("name") String name, @Param("type") String type);
 
     /**
      * Tìm kiếm theo tên vắc xin

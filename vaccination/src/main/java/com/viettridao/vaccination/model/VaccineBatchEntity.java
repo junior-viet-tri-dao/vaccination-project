@@ -17,7 +17,7 @@ import java.util.*;
 public class VaccineBatchEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "batch_id", length = 30)
+    @Column(name = "batch_id", length = 36)
     private String batchId;
 
     @Column(nullable = false)

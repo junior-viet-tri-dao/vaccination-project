@@ -17,7 +17,7 @@ import java.util.*;
 public class VaccinationScheduleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "schedule_id", length = 30)
+    @Column(name = "schedule_id", length = 36)
     private String scheduleId;
 
     @Column(name = "target_group", nullable = false)

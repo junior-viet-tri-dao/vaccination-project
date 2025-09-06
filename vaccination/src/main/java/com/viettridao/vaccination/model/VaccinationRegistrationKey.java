@@ -11,12 +11,12 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class VaccinationRegistrationKey {
-    @Column(length = 30)
+    @Column(length = 36)
     private String scheduleId;
 
-    @Column(length = 30)
+    @Column(length = 36)
     private String patientId;
 
-    @Column(length = 30)
+    @Column(length = 36)
     private String batchId;
 }
