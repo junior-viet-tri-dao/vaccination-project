@@ -1,5 +1,8 @@
 package com.viettridao.vaccination.service.impl;
 
+import com.viettridao.vaccination.dto.request.finance.UpdateVaccinePriceRequest;
+import com.viettridao.vaccination.model.VaccineEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +26,51 @@ public class VaccinePriceServiceImpl implements VaccinePriceService {
     @Override
     public Page<VaccinePriceResponse> getPagedBatches(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("productionYear").descending());
-        Page<VaccineBatchEntity> entityPage = batchRepository.findAll(pageable);
+        Page<VaccineBatchEntity> entityPage = batchRepository.findAllActive(pageable);
 
         return entityPage.map(mapper::toResponse);
     }
+
+    @Override
+    public VaccinePriceResponse getById(String batchId) {
+        VaccineBatchEntity entity = batchRepository.findById(batchId)
+                .orElseThrow(() -> new RuntimeException("Batch not found"));
+        return mapper.toResponse(entity);
+    }
+
+    @Override
+    @Transactional
+    public void update(String batchId, UpdateVaccinePriceRequest request) {
+        VaccineBatchEntity entity = batchRepository.findById(batchId)
+                .orElseThrow(() -> new RuntimeException("Batch not found"));
+
+        // Update thông tin
+        entity.setProductionYear(request.getProductionYear());
+
+        // Update vaccine info
+        if (entity.getVaccine() != null) {
+            entity.getVaccine().setVaccineCode(request.getVaccineCode());
+            entity.getVaccine().setUnit(request.getUnit());
+            entity.getVaccine().setUnitPrice(request.getUnitPrice());
+        } else {
+            // Trường hợp chưa có vaccine (an toàn)
+            VaccineEntity vaccine = new VaccineEntity();
+            vaccine.setVaccineCode(request.getVaccineCode());
+            vaccine.setUnit(request.getUnit());
+            vaccine.setUnitPrice(request.getUnitPrice());
+            entity.setVaccine(vaccine);
+        }
+
+        batchRepository.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteBatch(String batchId) {
+        VaccineBatchEntity entity = batchRepository.findById(batchId)
+                .orElseThrow(() -> new RuntimeException("Batch not found"));
+        entity.setIsDeleted(true);
+        batchRepository.save(entity);
+    }
+
 }

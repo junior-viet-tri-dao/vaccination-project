@@ -2,10 +2,10 @@ package com.viettridao.vaccination.mapper;
 
 import java.util.List;
 
+import com.viettridao.vaccination.dto.request.finance.UpdateVaccinePriceRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.viettridao.vaccination.dto.request.finance.VaccinePriceRequest;
 import com.viettridao.vaccination.dto.response.finance.VaccinePriceResponse;
 import com.viettridao.vaccination.model.VaccineBatchEntity;
 
@@ -37,5 +37,5 @@ public interface VaccinePriceMapper {
 	@Mapping(target = "licenseNumber", ignore = true)
 	@Mapping(target = "supplier", ignore = true)
 	@Mapping(target = "isDeleted", ignore = true)
-	VaccineBatchEntity toEntity(VaccinePriceRequest request);
+	VaccineBatchEntity toEntity(UpdateVaccinePriceRequest request);
 }

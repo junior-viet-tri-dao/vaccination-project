@@ -39,7 +39,7 @@ public class VaccineEntity {
     private String ageGroup;
 
     @Column(name = "unit_price", nullable = false)
-    private Double unitPrice;
+    private Integer unitPrice;
 
     @Column(name = "storage_condition", nullable = false)
     private String storageCondition;

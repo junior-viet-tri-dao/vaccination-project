@@ -16,11 +16,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class VaccinePriceRequest {
+public class UpdateVaccinePriceRequest {
 
 	@NotBlank(message = "Mã vắc xin không được để trống")
 	@Size(max = 10, message = "Mã vắc xin không được vượt quá 10 ký tự")
 	private String vaccineCode;
+
+	private String batchId;
 
 	@NotBlank(message = "Đơn vị không được để trống")
 	@Size(max = 5, message = "Đơn vị không được vượt quá 5 ký tự")

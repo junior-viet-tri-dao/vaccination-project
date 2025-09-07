@@ -15,5 +15,5 @@ public class VaccinePriceResponse {
 	private String vaccineCode; // mã vắc xin
 	private String unit; // đơn vị
 	private String productionYear;// năm sản xuất
-	private Double unitPrice;
+	private Integer unitPrice;
 }
