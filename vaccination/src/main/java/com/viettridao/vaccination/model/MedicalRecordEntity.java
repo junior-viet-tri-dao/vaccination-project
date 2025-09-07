@@ -33,7 +33,7 @@ public class MedicalRecordEntity {
     @OneToOne
     @JoinColumns({
             @JoinColumn(name = "patient_id", referencedColumnName = "patient_id"),
-            @JoinColumn(name = "batch_id", referencedColumnName = "batch_id"),
+            @JoinColumn(name = "vaccine_id", referencedColumnName = "vaccine_id"),
             @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_id")
     })
     private VaccinationRegistrationDetailEntity registrationDetail;

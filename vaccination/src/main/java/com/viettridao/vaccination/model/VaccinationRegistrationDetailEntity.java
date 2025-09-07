@@ -25,17 +25,17 @@ public class VaccinationRegistrationDetailEntity {
     private MedicalRecordEntity medicalRecordEntity;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id", columnDefinition = "varchar(30)")
+    @JoinColumn(name = "patient_id", columnDefinition = "varchar(36)")
     @MapsId("patientId")
     private PatientEntity patient;
 
     @ManyToOne
-    @JoinColumn(name = "batch_id", columnDefinition = "varchar(30)")
-    @MapsId("batchId")
-    private VaccineBatchEntity batch;
-
-    @ManyToOne
-    @JoinColumn(name = "schedule_id", columnDefinition = "varchar(30)")
+    @JoinColumn(name = "schedule_id", columnDefinition = "varchar(36)")
     @MapsId("scheduleId")
     private VaccinationScheduleEntity schedule;
+    
+    @ManyToOne
+    @JoinColumn(name = "vaccine_id", columnDefinition = "varchar(36)")
+    @MapsId("vaccineId")
+    private VaccineEntity vaccine;
 }

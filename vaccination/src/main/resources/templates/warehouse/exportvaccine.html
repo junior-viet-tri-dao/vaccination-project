@@ -20,6 +20,7 @@
                     <thead class="bg-blue-600 text-white">
                     <tr>
                         <th class="px-4 py-2 border">Chọn</th>
+                        <th class="px-4 py-2 border">Mã lô</th>
                         <th class="px-4 py-2 border">Tên vắc-xin</th>
                         <th class="px-4 py-2 border">Loại vắc-xin</th>
                         <th class="px-4 py-2 border">Ngày nhận</th>
@@ -38,10 +39,11 @@
                         class="cursor-pointer hover:bg-gray-100">
                         <td class="px-4 py-2 border">
                             <input type="radio" name="selectedBatch"
-                                   th:field="*{batchId}"
-                                   th:value="${warehouse.batchId}"
+                                   th:field="*{batchCode}"
+                                   th:value="${warehouse.batchCode}"
                                    th:data-quantity="${warehouse.quantity}" required/>
                         </td>
+                        <td class="px-4 py-2 border" th:text="${warehouse.batchCode}"></td>
                         <td class="px-4 py-2 border" th:text="${warehouse.vaccineName}"></td>
                         <td class="px-4 py-2 border" th:text="${warehouse.vaccineTypeName}"></td>
                         <td class="px-4 py-2 border" th:text="${#temporals.format(warehouse.receivedDate, 'dd/MM/yyyy')}"></td>
@@ -146,7 +148,7 @@
 
                         form.addEventListener("submit", (e) => {
                             // Lấy lô đang chọn
-                            const selectedRadio = document.querySelector("input[name='batchId']:checked");
+                            const selectedRadio = document.querySelector("input[name='batchCode']:checked");
                             if (!selectedRadio) {
                                 e.preventDefault();
                                 alert("Bạn phải chọn lô vắc-xin.");
@@ -174,7 +176,7 @@
                             }
                         });
 
-                        const radios = document.querySelectorAll("input[name='batchId']");
+                        const radios = document.querySelectorAll("input[name='batchCode']");
                         radios.forEach(radio => {
                             radio.addEventListener("change", () => {
                                 document.querySelectorAll("tbody tr")

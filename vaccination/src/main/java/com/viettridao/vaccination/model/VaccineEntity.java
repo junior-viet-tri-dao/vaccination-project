@@ -17,8 +17,11 @@ import java.util.*;
 public class VaccineEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "vaccine_id")
+    @Column(name = "vaccine_id",length = 36)
     private String vaccineId;
+    
+    @Column(name = "vaccine_code", nullable = false)
+    private String vaccineCode;
 
     @Column(name = "vaccine_name", nullable = false)
     private String vaccineName;
@@ -40,13 +43,23 @@ public class VaccineEntity {
 
     @Column(name = "storage_condition", nullable = false)
     private String storageCondition;
+    
+    @Column(name = "unit", nullable = false)
+    private String unit;
 
     private Boolean isDeleted = Boolean.FALSE;
 
     @ManyToOne
     @JoinColumn(name = "vaccine_type_id")
     private VaccineTypeEntity vaccineType;
+    
+    @OneToOne
+    @JoinColumn(name = "invoice_id")
+    private InvoiceEntity invoice;
 
     @OneToMany(mappedBy = "vaccine")
     private List<VaccineBatchEntity> batches;
+    
+    @OneToMany(mappedBy = "vaccine")
+    private List<VaccinationRegistrationDetailEntity> registrations;
 }

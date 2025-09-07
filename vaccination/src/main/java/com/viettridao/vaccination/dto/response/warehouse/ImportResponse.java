@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ImportResponse {
-    private String batchId;
+    private String batchCode;
 
     private String vaccineName;
 
@@ -35,4 +35,7 @@ public class ImportResponse {
     private String storageConditions;
 
     private String vaccinationAge;
+    
+    private String vaccineCode;
+
 }

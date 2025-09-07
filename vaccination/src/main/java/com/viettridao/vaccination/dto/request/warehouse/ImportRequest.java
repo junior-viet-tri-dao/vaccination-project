@@ -57,4 +57,12 @@ public class ImportRequest {
     @NotBlank(message = "Độ tuổi tiêm chủng không được để trống")
     @Size(max = 10, message = "Độ tuổi tiêm chủng tối đa 10 ký tự")
     private String vaccinationAge;
+    
+    @NotBlank(message = "Tên mã lô không được để trống")
+    @Size(max = 10, message = "Tên mã lô  tối đa 10 ký tự")
+    private String batchCode;
+    
+    @NotBlank(message = "Tên mã vắc xin không được để trống")
+    @Size(max = 10, message = "Tên mã vắc xin tối đa 10 ký tự")
+    private String vaccineCode;
 }

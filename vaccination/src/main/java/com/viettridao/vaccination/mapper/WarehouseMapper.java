@@ -15,7 +15,7 @@ public interface WarehouseMapper {
     WarehouseMapper INSTANCE = Mappers.getMapper(WarehouseMapper.class);
 
     // Mapper cho WarehouseResponse
-    @Mapping(target = "batchId", source = "batchId")
+    @Mapping(target = "batchCode", source = "batchCode")
     @Mapping(target = "vaccineName", source = "vaccine.vaccineName")
     @Mapping(target = "vaccineTypeName", source = "vaccine.vaccineType.vaccineTypeName")
     @Mapping(target = "receivedDate", source = "receivedDate")
@@ -30,7 +30,7 @@ public interface WarehouseMapper {
     WarehouseResponse toResponse(VaccineBatchEntity entity);
 
     // Mapper cho ImportResponse
-    @Mapping(target = "batchId", source = "batchId")
+    @Mapping(target = "batchCode", source = "batchCode")
     @Mapping(target = "vaccineName", source = "vaccine.vaccineName")
     @Mapping(target = "vaccineType", source = "vaccine.vaccineType.vaccineTypeName")
     @Mapping(target = "receivedDate", source = "receivedDate")

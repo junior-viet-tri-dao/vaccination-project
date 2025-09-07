@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class WarehouseResponse {
-    private String batchId;           // Mã lô
+    private String batchCode;           // Mã lô
     private String vaccineName;       // Tên vắc xin
     private String vaccineTypeName;   // Loại vắc xin
     private LocalDate receivedDate;   // Ngày nhận

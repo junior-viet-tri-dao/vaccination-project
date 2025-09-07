@@ -1,10 +1,20 @@
 package com.viettridao.vaccination.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.LocalDate;
-import java.util.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -19,6 +29,12 @@ public class VaccineBatchEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "batch_id", length = 36)
     private String batchId;
+    
+    @Column(name = "batch_code",nullable = false)
+    private String batchCode;
+    
+    @Column(name = "production_year",nullable = false)
+    private String productionYear;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -45,10 +61,4 @@ public class VaccineBatchEntity {
 
     private Boolean isDeleted = Boolean.FALSE;
 
-    @OneToOne
-    @JoinColumn(name = "invoice_id")
-    private InvoiceEntity invoice;
-
-    @OneToMany(mappedBy = "batch")
-    private List<VaccinationRegistrationDetailEntity> registrations;
 }

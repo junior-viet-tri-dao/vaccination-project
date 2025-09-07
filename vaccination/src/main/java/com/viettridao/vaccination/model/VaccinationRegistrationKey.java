@@ -18,5 +18,5 @@ public class VaccinationRegistrationKey {
     private String patientId;
 
     @Column(length = 36)
-    private String batchId;
+    private String vaccineId;
 }

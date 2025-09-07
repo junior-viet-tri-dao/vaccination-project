@@ -75,7 +75,7 @@
             </thead>
             <tbody class="text-sm text-center bg-white">
             <tr th:each="item : ${warehousePage.content}">
-                <td class="px-4 py-2 border" th:text="${item.batchId}"></td>
+                <td class="px-4 py-2 border" th:text="${item.batchCode}"></td>
                 <td class="px-4 py-2 border" th:text="${item.vaccineName}"></td>
                 <td class="px-4 py-2 border" th:text="${item.vaccineTypeName}"></td>
                 <td class="px-4 py-2 border" th:text="${#temporals.format(item.receivedDate, 'dd/MM/yyyy')}"></td>

@@ -90,7 +90,7 @@ public class WarehouseController {
 
         // Thêm thông báo thành công vào redirect
         redirectAttributes.addFlashAttribute("success",
-                "Nhập kho vắc-xin thành công! Batch ID: " + response.getBatchId());
+                "Nhập kho vắc-xin thành công!");
 
         // Chuyển về trang import (hoặc danh sách kho)
         return "redirect:/warehouse";
@@ -135,9 +135,9 @@ public class WarehouseController {
             return "warehouse/exportvaccine"; // trả lại view nếu có lỗi
         }
 
-        WarehouseResponse response = warehouseService.exportVaccine(request.getBatchId(), request.getQuantity());
+        WarehouseResponse response = warehouseService.exportVaccine(request.getBatchCode(), request.getQuantity());
         redirectAttributes.addFlashAttribute("success",
-                "Xuất thành công lô " + response.getBatchId() +
+                "Xuất thành công lô " + response.getBatchCode() +
                         " - Số lượng còn lại: " + response.getQuantity());
 
         return "redirect:/warehouse";
