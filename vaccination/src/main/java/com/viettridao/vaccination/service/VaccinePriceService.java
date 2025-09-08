@@ -15,7 +15,4 @@ public interface VaccinePriceService {
     VaccinePriceResponse getById(String batchId);
     
     UpdateVaccinePriceRequest getByBatchId(String batchId);
-
-    
-
 }

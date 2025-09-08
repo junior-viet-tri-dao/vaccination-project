@@ -23,6 +23,9 @@ public class PatientEntity {
     @Column(name = "patient_name", nullable = false)
     private String patientName;
 
+    @Column(name = "patient_code", nullable = false, unique = true)
+    private String patientCode;
+
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 

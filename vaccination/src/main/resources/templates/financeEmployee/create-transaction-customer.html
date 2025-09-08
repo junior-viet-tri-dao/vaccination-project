@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm giao dịch khách hàng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-rose-100 min-h-screen p-6 flex items-center justify-center">
+
+<div class="bg-white shadow-xl rounded-2xl w-full max-w-2xl p-8">
+  <!-- Tiêu đề -->
+  <h2 class="text-2xl font-bold text-rose-700 text-center mb-6">
+    Thêm giao dịch khách hàng
+  </h2>
+
+  <!-- Form thêm giao dịch -->
+  <form th:action="@{/finance/transactions-customer/create}" th:object="${transactionRequest}" method="post" class="space-y-4">
+
+    <!-- Ngày -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Ngày giao dịch</label>
+      <input type="datetime-local" th:field="*{dateTime}"
+             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+    </div>
+
+    <!-- Mã Bệnh Nhân -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Mã Bệnh Nhân</label>
+      <select id="patientCodeSelect" th:field="*{patientCode}"
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2">
+        <option value="" disabled selected>-- Chọn Mã Bệnh Nhân --</option>
+        <option th:each="code : ${patientCodes}"
+                th:value="${code}"
+                th:text="${code}">
+        </option>
+      </select>
+    </div>
+
+    <!-- Tên Khách Hàng -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Tên Khách Hàng</label>
+      <input type="text" id="customerNameInput" th:field="*{customerName}" readonly
+             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+    </div>
+
+    <!-- Mã Hóa Đơn -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Mã Hóa Đơn</label>
+      <input type="text" th:field="*{invoiceCode}" required minlength="3" maxlength="20"
+             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+    </div>
+
+    <!-- Mã Vắc xin -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Mã Vắc xin</label>
+      <select th:field="*{vaccineCode}"
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2">
+        <option value="" disabled selected>-- Chọn Mã Vắc xin --</option>
+        <option th:each="v : ${vaccines}"
+                th:value="${v.vaccineCode}"
+                th:text="${v.vaccineCode}">
+        </option>
+      </select>
+    </div>
+
+
+    <!-- Số Lượng -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Số Lượng</label>
+      <input type="number" th:field="*{quantity}" min="1" required
+             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+    </div>
+
+    <!-- Giá -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Giá (VND)</label>
+      <input type="number" th:field="*{price}" min="1000" step="1000" required
+             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+    </div>
+
+    <!-- Nút -->
+    <div class="flex justify-end space-x-3 mt-6">
+      <a th:href="@{/transactions-customer}"
+         class="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400">Hủy</a>
+      <button type="submit"
+              class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Lưu</button>
+    </div>
+  </form>
+    <!-- Script để tự động điền tên khách hàng dựa trên mã bệnh nhân -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+        const patientNameMap = [[${patientNameMap}]];
+        document.getElementById('patientCodeSelect').addEventListener('change', function() {
+            const selectedCode = this.value;
+            const nameInput = document.getElementById('customerNameInput');
+            nameInput.value = patientNameMap[selectedCode] || '';
+        });
+    /*]]>*/
+  </script>
+
+</div>
+<script th:src="@{/js/global.js}"></script>
+<div th:replace="~{alert :: alerts}"></div>
+</body>
+</html>

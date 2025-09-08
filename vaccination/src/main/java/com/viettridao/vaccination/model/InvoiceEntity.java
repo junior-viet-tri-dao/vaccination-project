@@ -21,6 +21,9 @@ public class InvoiceEntity {
     @Column(name = "invoice_id")
     private String invoiceId;
 
+    @Column(name = "invoice_code", nullable = false, unique = true)
+    private String invoiceCode;
+
     @Column(name = "total_amount", nullable = false)
     private Integer totalAmount;
 
