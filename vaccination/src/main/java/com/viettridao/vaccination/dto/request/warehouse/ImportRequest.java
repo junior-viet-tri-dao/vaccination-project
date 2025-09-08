@@ -65,4 +65,15 @@ public class ImportRequest {
     @NotBlank(message = "Tên mã vắc xin không được để trống")
     @Size(max = 10, message = "Tên mã vắc xin tối đa 10 ký tự")
     private String vaccineCode;
+    
+  
+    
+    @NotBlank(message = "Đơn vị không được để trống")
+    @Size(max = 10, message = "Đơn vị tối đa 10 ký tự")
+    private String unit;
+
+    @NotBlank(message = "Năm sản xuất không được để trống")
+    @Pattern(regexp = "^\\d{4}$", message = "Năm sản xuất phải gồm 4 chữ số")
+    private String productionYear;
+
 }

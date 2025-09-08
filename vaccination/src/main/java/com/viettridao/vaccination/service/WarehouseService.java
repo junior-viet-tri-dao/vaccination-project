@@ -1,13 +1,10 @@
 package com.viettridao.vaccination.service;
 
+import org.springframework.data.domain.Page;
+
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
-import com.viettridao.vaccination.model.VaccineTypeEntity;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public interface WarehouseService {
 

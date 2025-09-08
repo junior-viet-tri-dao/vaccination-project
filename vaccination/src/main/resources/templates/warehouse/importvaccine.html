@@ -134,6 +134,21 @@
                 <p th:if="${#fields.hasErrors('vaccinationAge')}" th:errors="*{vaccinationAge}" class="text-red-500 text-sm"></p>
             </div>
             
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Năm sản xuất</label>
+                <input type="text" th:field="*{productionYear}" required maxlength="10"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <small class="text-gray-500 text-sm"></small>
+                <p th:if="${#fields.hasErrors('productionYear')}" th:errors="*{productionYear}" class="text-red-500 text-sm"></p>
+            </div>
+            
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Đơn vị</label>
+                <input type="text" th:field="*{unit}" required maxlength="10"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <small class="text-gray-500 text-sm"></small>
+                <p th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}" class="text-red-500 text-sm"></p>
+            </div>
             
             
      

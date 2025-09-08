@@ -12,30 +12,34 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ImportResponse {
-    private String batchCode;
+	private String batchCode;
 
-    private String vaccineName;
+	private String vaccineName;
 
-    private String vaccineType;
+	private String vaccineType;
 
-    private LocalDate receivedDate;
+	private LocalDate receivedDate;
 
-    private String licenseNumber;
+	private String licenseNumber;
 
-    private String originCountry;
+	private String originCountry;
 
-    private Integer price;
+	private Integer price;
 
-    private String dosage;
+	private String dosage;
 
-    private Integer quantity;
+	private Integer quantity;
 
-    private LocalDate expiryDate;
+	private LocalDate expiryDate;
 
-    private String storageConditions;
+	private String storageConditions;
 
-    private String vaccinationAge;
-    
-    private String vaccineCode;
+	private String vaccinationAge;
+
+	private String vaccineCode;
+
+	private String productionYear;
+
+	private String unit;
 
 }

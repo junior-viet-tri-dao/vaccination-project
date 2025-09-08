@@ -15,7 +15,7 @@ import java.util.*;
 public class SupplierEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "supplier_id")
+    @Column(name = "supplier_id",columnDefinition = "CHAR(36)")
     private String supplierId;
 
     @Column(name = "supplier_name", nullable = false)
@@ -25,4 +25,7 @@ public class SupplierEntity {
 
     @OneToMany(mappedBy = "supplier")
     private List<VaccineBatchEntity> batches;
+    
+    @OneToMany(mappedBy = "supplier")
+    private List<InvoiceEntity> invoices;
 }

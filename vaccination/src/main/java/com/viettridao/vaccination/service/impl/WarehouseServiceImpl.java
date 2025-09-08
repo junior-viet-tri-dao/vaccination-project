@@ -35,7 +35,13 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public ImportResponse importVaccine(ImportRequest request) {
-        // 1️⃣ Lấy hoặc tạo VaccineTypeEntity
+        // 🔹 1.  Kiểm tra trùng mã lô
+              warehouseRepository.findByBatchCodeIgnoreCase(request.getBatchCode())
+            .ifPresent(existing -> {
+                throw new IllegalArgumentException("Mã lô '" + request.getBatchCode() + "' đã tồn tại!");
+            });
+
+        // 3️⃣ Lấy hoặc tạo VaccineTypeEntity
         VaccineTypeEntity type = vaccineTypeRepository
                 .findByVaccineTypeNameIgnoreCase(request.getVaccineType())
                 .orElseGet(() -> {
@@ -45,39 +51,43 @@ public class WarehouseServiceImpl implements WarehouseService {
                     return vaccineTypeRepository.save(newType);
                 });
 
-        // 2️⃣ Lấy hoặc tạo VaccineEntity
+        // 4️⃣ Lấy hoặc tạo VaccineEntity
         VaccineEntity vaccine = warehouseRepository.findVaccineByNameAndType(
                         request.getVaccineName(), type.getVaccineTypeName())
                 .orElseGet(() -> {
                     VaccineEntity newVaccine = warehouseMapper.toVaccineEntity(request);
                     newVaccine.setVaccineType(type);
-
-                    // 🔹 Giá trị mặc định
                     newVaccine.setPreventDisease("Unknown");
                     newVaccine.setIsDeleted(false);
-
-                    return newVaccine;
+                    return vaccineRepository.save(newVaccine);
                 });
 
-        // 🚨 Nếu vaccine mới tạo (chưa có id) → save trước
         if (vaccine.getVaccineId() == null) {
             vaccine = vaccineRepository.save(vaccine);
         }
 
-        // 3️⃣ Tạo VaccineBatchEntity từ request + VaccineEntity
+        // 🔹 Cập nhật các trường từ request
+        vaccine.setUnit(request.getUnit());
+        vaccine.setVaccineCode(request.getVaccineCode());
+        vaccine.setDosage(request.getDosage());
+        vaccine.setExpirationDate(request.getExpiryDate());
+        vaccine.setStorageCondition(request.getStorageConditions());
+        vaccine.setAgeGroup(request.getVaccinationAge());
+        vaccine.setUnitPrice(request.getPrice());
+        vaccineRepository.save(vaccine);
+
+        // 5️⃣ Tạo VaccineBatchEntity
         VaccineBatchEntity batch = warehouseMapper.toVaccineBatchEntity(request, vaccine);
         batch.setVaccine(vaccine);
-
-        // 🔹 Set giá trị mặc định cho status
+        batch.setProductionYear(request.getProductionYear());
         batch.setStatus("AVAILABLE");
         batch.setIsDeleted(false);
 
-        // 4️⃣ Save batch
         VaccineBatchEntity saved = warehouseRepository.save(batch);
 
-        // 5️⃣ Trả về response
         return warehouseMapper.toImportResponse(saved);
     }
+
 
     @Override
     @Transactional

@@ -1,12 +1,6 @@
 package com.viettridao.vaccination.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +22,16 @@ public class InvoiceEntity {
     private String invoiceId;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private Integer totalAmount;
+
+    @Column(name = "customer_price")
+    private Integer customerPrice;
+
+    @Column(name = "supplier_price")
+    private Integer supplierPrice;
+
+    @Column(name = "quantity_invoice", nullable = false)
+    private Integer quantityInvoice;
 
     private Boolean isDeleted = Boolean.FALSE;
 
@@ -37,4 +40,8 @@ public class InvoiceEntity {
 
     @OneToOne(mappedBy = "invoice")
     private VaccineEntity vaccine;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private SupplierEntity supplier;
 }

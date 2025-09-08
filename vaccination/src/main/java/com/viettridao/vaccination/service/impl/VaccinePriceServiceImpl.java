@@ -37,6 +37,26 @@ public class VaccinePriceServiceImpl implements VaccinePriceService {
                 .orElseThrow(() -> new RuntimeException("Batch not found"));
         return mapper.toResponse(entity);
     }
+    
+    
+    @Override
+    public UpdateVaccinePriceRequest getByBatchId(String batchId) {
+        VaccineBatchEntity entity = batchRepository.findById(batchId)
+                .orElseThrow(() -> new RuntimeException("Batch not found"));
+
+        UpdateVaccinePriceRequest request = new UpdateVaccinePriceRequest();
+        request.setBatchId(entity.getBatchId());
+
+        if (entity.getVaccine() != null) {
+            request.setVaccineCode(entity.getVaccine().getVaccineCode());
+            request.setUnit(entity.getVaccine().getUnit());
+            request.setUnitPrice(entity.getVaccine().getUnitPrice());
+        }
+
+        request.setProductionYear(entity.getProductionYear());
+        return request;
+    }
+
 
     @Override
     @Transactional

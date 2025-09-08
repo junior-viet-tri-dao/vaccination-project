@@ -43,15 +43,10 @@
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Nút sửa -->
-                        <button type="button"
-                                class="btn-edit bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md"
-                                th:data-id="${vp.batchId}"
-                                th:data-code="${vp.vaccineCode ?: ''}"
-                                th:data-unit="${vp.unit ?: ''}"
-                                th:data-year="${vp.productionYear ?: ''}"
-                                th:data-price="${vp.unitPrice ?: ''}">
-                            Sửa
-                        </button>
+                         <a th:href="@{/finance/vaccine-price/edit(batchId=${vp.batchId})}"
+                           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+                           Sửa
+                        </a>
 
                         <!-- Nút xóa -->
                         <form th:id="'deleteForm-' + ${vp.batchId}"
@@ -106,27 +101,7 @@
 </div>
 
 <!-- Modal sửa đặt ngoài bảng, chỉ có 1 cái -->
-<div th:replace="~{financeEmployee/edit-vaccine-price :: editVaccinePriceModal}"></div>
 
-<script>
-    // Mở modal khi click nút sửa
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.getElementById("editBatchId").value = this.dataset.id || "";
-            document.getElementById("editVaccineCode").value = this.dataset.code || "";
-            document.getElementById("editUnit").value = this.dataset.unit || "";
-            document.getElementById("editProductionYear").value = this.dataset.year || "";
-            document.getElementById("editUnitPrice").value = this.dataset.price || "";
-
-            document.getElementById("editModal").classList.remove("hidden");
-        });
-    });
-
-    // Hàm đóng modal
-    function closeEditModal() {
-        document.getElementById("editModal").classList.add("hidden");
-    }
-</script>
 
 <script th:src="@{/js/global.js}"></script>
 <div th:replace="~{alert :: alerts}"></div>

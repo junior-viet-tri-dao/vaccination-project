@@ -86,6 +86,14 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("<br/>"));
         return buildErrorPage(model, "Dữ liệu không hợp lệ", errorMessages, "error/validation");
     }
+    
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleIllegalArgument(IllegalArgumentException ex, Model model) {
+        return buildErrorPage(model, "Dữ liệu không hợp lệ", ex.getMessage(), "error/validation");
+    }
+
+    
 
     /**
      * Handle constraint violations when using @RequestParam or @PathVariable.

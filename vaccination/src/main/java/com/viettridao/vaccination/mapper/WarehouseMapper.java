@@ -1,13 +1,14 @@
 package com.viettridao.vaccination.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
+
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.model.VaccineBatchEntity;
 import com.viettridao.vaccination.model.VaccineEntity;
-import com.viettridao.vaccination.model.VaccineTypeEntity;
-import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface WarehouseMapper {
@@ -52,6 +53,8 @@ public interface WarehouseMapper {
     @Mapping(target = "storageCondition", source = "storageConditions")
     @Mapping(target = "ageGroup", source = "vaccinationAge")
     @Mapping(target = "vaccineType.vaccineTypeName", source = "vaccineType")
+    @Mapping(target = "unit", source = "unit")
+    @Mapping(target = "vaccineCode", source = "vaccineCode")
     VaccineEntity toVaccineEntity(ImportRequest request);
 
     @Mapping(target = "quantity", source = "request.quantity")
@@ -59,5 +62,6 @@ public interface WarehouseMapper {
     @Mapping(target = "licenseNumber", source = "request.licenseNumber")
     @Mapping(target = "countryOfOrigin", source = "request.originCountry")
     @Mapping(target = "vaccine", source = "vaccineEntity") // gán VaccineEntity vào field vaccine
+    @Mapping(target = "productionYear", source = "request.productionYear")
     VaccineBatchEntity toVaccineBatchEntity(ImportRequest request, VaccineEntity vaccineEntity);
 }

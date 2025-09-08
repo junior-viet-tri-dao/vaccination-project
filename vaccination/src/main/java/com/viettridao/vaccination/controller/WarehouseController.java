@@ -1,20 +1,24 @@
 package com.viettridao.vaccination.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.service.WarehouseService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -78,23 +82,34 @@ public class WarehouseController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        // Luôn đẩy danh sách loại vắc-xin trở lại form nếu có lỗi
         model.addAttribute("tab", "import");
 
+        // Nếu validate ở DTO có lỗi
         if (bindingResult.hasErrors()) {
-            return "warehouse/importvaccine"; // trả lại form với dữ liệu người dùng nhập
+            return "warehouse/importvaccine";
         }
 
-        // Gọi Service import
-        ImportResponse response = warehouseService.importVaccine(importRequest);
+        try {
+            // Gọi Service import
+            ImportResponse response = warehouseService.importVaccine(importRequest);
 
-        // Thêm thông báo thành công vào redirect
-        redirectAttributes.addFlashAttribute("success",
-                "Nhập kho vắc-xin thành công!");
+            // Thêm thông báo thành công vào redirect
+            redirectAttributes.addFlashAttribute("success", "Nhập kho vắc-xin thành công!");
+            return "redirect:/warehouse";
 
-        // Chuyển về trang import (hoặc danh sách kho)
-        return "redirect:/warehouse";
+        } catch (IllegalArgumentException ex) {
+            // Bắt lỗi do service ném ra và gắn vào đúng field
+            if (ex.getMessage().contains("Mã lô")) {
+                bindingResult.rejectValue("batchCode", "error.batchCode", ex.getMessage());
+            } else {
+                bindingResult.reject("error.global", ex.getMessage());
+            }
+
+            // Trả lại form để hiển thị lỗi ngay dưới input
+            return "warehouse/importvaccine";
+        }
     }
+
 
     /**
      * Hiển thị form export vắc-xin + danh sách lô
