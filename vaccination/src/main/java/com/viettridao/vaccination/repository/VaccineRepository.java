@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface VaccineRepository extends JpaRepository<VaccineEntity, String> {
 
-    Optional<VaccineEntity> findByVaccineCode(String vaccineCode);
+    Optional<VaccineEntity> findByVaccineCodeAndIsDeletedFalse(String vaccineCode);
 
     List<VaccineEntity> findByIsDeletedFalse();
 }

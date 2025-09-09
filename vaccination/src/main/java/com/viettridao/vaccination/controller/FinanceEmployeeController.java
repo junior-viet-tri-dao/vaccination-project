@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.viettridao.vaccination.dto.request.finance.*;
+import com.viettridao.vaccination.dto.response.finance.TransactionSupplierResponse;
+import com.viettridao.vaccination.service.SupplierService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.viettridao.vaccination.dto.request.finance.CreateTransactionCustomerRequest;
-import com.viettridao.vaccination.dto.request.finance.UpdateTransactionCustomerRequest;
-import com.viettridao.vaccination.dto.request.finance.UpdateVaccinePriceRequest;
 import com.viettridao.vaccination.dto.response.finance.TransactionCustomerResponse;
 import com.viettridao.vaccination.dto.response.finance.VaccinePriceResponse;
 import com.viettridao.vaccination.service.InvoiceService;
@@ -37,6 +37,7 @@ public class FinanceEmployeeController {
 	private final VaccinePriceService vaccinePriceService;
 	private final InvoiceService invoiceService;
 	private final PatientService patientService;
+	private final SupplierService invoiceSupplierService;
 
 	@GetMapping("/vaccine-price")
 	public String showVaccinePriceManagement(@RequestParam(defaultValue = "0") int page,
@@ -197,10 +198,88 @@ public class FinanceEmployeeController {
 	    return "redirect:/finance/transactions-customer";
 	}
 
-
-
+	// 🆕 Quản lý giao dịch nhà cung cấp
 	@GetMapping("/transactions-supplier")
-	public String showTransactionSupplier(Model model) {
-		return "financeEmployee/transaction-supplier";
+	public String showTransactionSupplier(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size,
+			Model model) {
+
+		Page<TransactionSupplierResponse> transactions = invoiceSupplierService.getAllSupplierTransactions(page, size);
+
+		model.addAttribute("transactions", transactions.getContent()); // danh sách hóa đơn NCC
+		model.addAttribute("currentPage", page);
+		model.addAttribute("totalPages", transactions.getTotalPages());
+		model.addAttribute("pageSize", size);
+
+		return "financeEmployee/transaction-supplier"; // view Thymeleaf
 	}
+
+	// --- Hiển thị form thêm mới ---
+	@GetMapping("/transactions-supplier/new")
+	public String showCreateSupplierForm(Model model) {
+		model.addAttribute("transactionRequest", new CreateTransactionSupplierRequest());
+		model.addAttribute("vaccines", invoiceService.getActiveVaccines());
+		return "financeEmployee/create-transaction-supplier";
+	}
+
+	// --- Submit form thêm mới ---
+	@PostMapping("/transactions-supplier/create")
+	public String createSupplierTransaction(
+			@Valid @ModelAttribute("transactionRequest") CreateTransactionSupplierRequest request,
+			BindingResult result,
+			RedirectAttributes redirectAttributes,
+			Model model) {
+
+		if (result.hasErrors()) {
+			model.addAttribute("vaccines", invoiceService.getActiveVaccines());
+			return "financeEmployee/create-transaction-supplier";
+		}
+
+		invoiceSupplierService.createSupplierTransaction(request);
+		redirectAttributes.addFlashAttribute("success", "Thêm giao dịch nhà cung cấp thành công!");
+		return "redirect:/finance/transactions-supplier";
+	}
+
+	// --- Xóa mềm NCC transaction ---
+	@PostMapping("/transactions-supplier/delete")
+	public String deleteSupplierTransaction(@RequestParam("invoiceId") String invoiceId,
+											RedirectAttributes redirectAttributes) {
+		invoiceSupplierService.deleteSupplierTransaction(invoiceId);
+		redirectAttributes.addFlashAttribute("success", "Xóa giao dịch NCC thành công!");
+		return "redirect:/finance/transactions-supplier";
+	}
+
+	// --- Hiển thị form sửa ---
+	@GetMapping("/transactions-supplier/edit/{invoiceId}")
+	public String showEditSupplierForm(@PathVariable String invoiceId, Model model) {
+		TransactionSupplierResponse dto = invoiceSupplierService.getSupplierTransactionById(invoiceId);
+
+		// format datetime cho input type="datetime-local"
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+		String formattedDateTime = dto.getDateTimeSupplier() != null ? dto.getDateTimeSupplier().format(formatter) : "";
+
+		model.addAttribute("transactionRequest", dto);
+		model.addAttribute("formattedDateTime", formattedDateTime);
+
+		return "financeEmployee/edit-transaction-supplier";
+	}
+
+	// --- Submit update ---
+	@PostMapping("/transactions-supplier/update")
+	public String updateSupplierTransaction(
+			@Valid @ModelAttribute("transactionRequest") UpdateTransactionSupplierRequest request,
+			BindingResult result,
+			RedirectAttributes redirectAttributes,
+			Model model) {
+
+		if (result.hasErrors()) {
+			return "financeEmployee/edit-transaction-supplier";
+		}
+
+		invoiceSupplierService.updateSupplierTransaction(request);
+		redirectAttributes.addFlashAttribute("success", "Cập nhật giao dịch nhà cung cấp thành công!");
+		return "redirect:/finance/transactions-supplier";
+	}
+
 }

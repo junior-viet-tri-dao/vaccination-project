@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,6 +25,9 @@ public class InvoiceEntity {
 
     @Column(name = "invoice_code", nullable = false, unique = true)
     private String invoiceCode;
+
+    @Column(name = "date_time_supplier")
+    private LocalDateTime dateTimeSupplier;
 
     @Column(name = "total_amount", nullable = false)
     private Integer totalAmount;

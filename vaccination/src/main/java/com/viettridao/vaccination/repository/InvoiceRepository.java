@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.viettridao.vaccination.model.InvoiceEntity;
 
+import java.util.List;
+
 @Repository
 public interface InvoiceRepository extends JpaRepository<InvoiceEntity, String> {
 
@@ -19,5 +21,14 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, String> 
             "WHERE i.isDeleted = false " +
             "ORDER BY e.dateTime DESC")
      Page<InvoiceEntity> findAllSortedByDateTime(Pageable pageable);
+
+    // Tìm hóa đơn theo mã code (nếu cần check trùng code)
+    boolean existsByInvoiceCode(String invoiceCode);
+
+    // Lấy tất cả hóa đơn theo supplierId, có phân trang
+    Page<InvoiceEntity> findBySupplier_SupplierIdAndIsDeletedFalse(String supplierId, Pageable pageable);
+
+    // Tìm theo vaccine code, có phân trang
+    Page<InvoiceEntity> findByVaccine_VaccineCodeAndIsDeletedFalse(String vaccineCode, Pageable pageable);
 }
 
