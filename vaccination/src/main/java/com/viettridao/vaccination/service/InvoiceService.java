@@ -1,11 +1,13 @@
 package com.viettridao.vaccination.service;
 
-import com.viettridao.vaccination.dto.request.finance.CreateTransactionCustomerRequest;
-import com.viettridao.vaccination.dto.response.finance.TransactionCustomerResponse;
-import com.viettridao.vaccination.model.VaccineEntity;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import com.viettridao.vaccination.dto.request.finance.CreateTransactionCustomerRequest;
+import com.viettridao.vaccination.dto.request.finance.UpdateTransactionCustomerRequest;
+import com.viettridao.vaccination.dto.response.finance.TransactionCustomerResponse;
+import com.viettridao.vaccination.model.VaccineEntity;
 
 public interface InvoiceService {
     Page<TransactionCustomerResponse> getAllTransactions(int page, int size);
@@ -17,4 +19,9 @@ public interface InvoiceService {
     TransactionCustomerResponse createTransaction(CreateTransactionCustomerRequest request);
 
     List<VaccineEntity> getActiveVaccines();
+    
+    TransactionCustomerResponse updateTransaction(UpdateTransactionCustomerRequest request); // <-- thêm dòng này
+
+    TransactionCustomerResponse getTransactionById(String invoiceId); // nếu cần
+
 }

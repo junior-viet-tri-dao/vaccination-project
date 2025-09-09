@@ -1,31 +1,33 @@
 package com.viettridao.vaccination.controller;
 
-import com.viettridao.vaccination.dto.request.finance.CreateTransactionCustomerRequest;
-import com.viettridao.vaccination.dto.response.finance.TransactionCustomerResponse;
-import com.viettridao.vaccination.repository.VaccineRepository;
-import com.viettridao.vaccination.service.InvoiceService;
-import com.viettridao.vaccination.service.PatientService;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.viettridao.vaccination.dto.request.finance.CreateTransactionCustomerRequest;
+import com.viettridao.vaccination.dto.request.finance.UpdateTransactionCustomerRequest;
 import com.viettridao.vaccination.dto.request.finance.UpdateVaccinePriceRequest;
+import com.viettridao.vaccination.dto.response.finance.TransactionCustomerResponse;
 import com.viettridao.vaccination.dto.response.finance.VaccinePriceResponse;
+import com.viettridao.vaccination.service.InvoiceService;
+import com.viettridao.vaccination.service.PatientService;
 import com.viettridao.vaccination.service.VaccinePriceService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -149,6 +151,53 @@ public class FinanceEmployeeController {
 		redirectAttributes.addFlashAttribute("success", "Xóa hóa đơn thành công!");
 		return "redirect:/finance/transactions-customer";
 	}
+	
+	@GetMapping("/transactions-customer/edit/{invoiceId}")
+	public String showEditForm(@PathVariable String invoiceId, Model model) {
+	    TransactionCustomerResponse dto = invoiceService.getTransactionById(invoiceId);
+
+	    // ✅ Format LocalDateTime sang dạng yyyy-MM-dd'T'HH:mm cho input datetime-local
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+	    String formattedDateTime = dto.getDateTime() != null ? dto.getDateTime().format(formatter) : "";
+
+	    model.addAttribute("transactionRequest", dto);
+	    model.addAttribute("formattedDateTime", formattedDateTime);
+
+	    model.addAttribute("vaccines", invoiceService.getActiveVaccines());
+
+	    List<String> patientCodes = patientService.getAllPatientCodes();
+	    model.addAttribute("patientCodes", patientCodes);
+
+	    Map<String, String> patientNameMap = patientCodes.stream()
+	            .collect(Collectors.toMap(
+	                    code -> code,
+	                    code -> patientService.getPatientNameByCode(code)
+	            ));
+	    model.addAttribute("patientNameMap", patientNameMap);
+
+	    return "financeEmployee/edit-transaction-customer";
+	}
+
+
+	@PostMapping("/transactions-customer/update")
+	public String updateTransaction(
+	        @Valid @ModelAttribute("transactionRequest") UpdateTransactionCustomerRequest request,
+	        BindingResult result,
+	        RedirectAttributes redirectAttributes,
+	        Model model) {
+
+	    if (result.hasErrors()) {
+	        model.addAttribute("vaccines", invoiceService.getActiveVaccines());
+	        model.addAttribute("patientCodes", patientService.getAllPatientCodes());
+	        return "financeEmployee/edit-transaction-customer";
+	    }
+
+	    invoiceService.updateTransaction(request);
+	    redirectAttributes.addFlashAttribute("success", "Cập nhật giao dịch khách hàng thành công!");
+	    return "redirect:/finance/transactions-customer";
+	}
+
+
 
 	@GetMapping("/transactions-supplier")
 	public String showTransactionSupplier(Model model) {

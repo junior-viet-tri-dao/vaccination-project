@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Tình hình dịch bệnh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r mt-20 from-cyan-100 to-green-100 min-h-screen flex items-start justify-center px-6">
+<div class="bg-white shadow-2xl rounded-2xl w-full max-w-[90rem] p-8 relative">
+
+    <!-- Icon đóng (góc trên bên trái) -->
+    <button onclick="window.close()"
+            class="absolute top-4 right-4 text-red-600 hover:text-red-800 text-2xl font-bold">
+        ✖
+    </button>
+
+    <!-- Tiêu đề -->
+    <h2 class="text-center text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text
+               bg-gradient-to-r from-blue-600 to-green-600 mb-8 border-b-4 border-blue-200 pb-4">
+        TÌNH HÌNH DỊCH BỆNH TẠI <span class="not-italic">ĐỊA PHƯƠNG</span>
+    </h2>
+
+    <!-- Bảng dữ liệu -->
+    <div class="overflow-x-auto">
+        <table class="table-fixed w-full border border-gray-300 text-sm md:text-base text-center rounded-lg shadow">
+            <thead class="bg-blue-100 text-gray-800 font-semibold">
+            <tr>
+                <th class="border px-4 py-3 w-[3%]">STT</th>
+                <th class="border px-4 py-3 w-[16%]">Thời điểm khảo sát</th>
+                <th class="border px-4 py-3 w-[15%]">Địa chỉ</th>
+                <th class="border px-4 py-3 w-[10%]">Loại bệnh dịch</th>
+                <th class="border px-4 py-3 w-[10%]">Số người bị nhiễm</th>
+                <th class="border px-4 py-3 w-[15%]">Đường lây nhiễm</th>
+                <th class="border px-4 py-3 w-[15%]">Tác hại sức khỏe</th>
+                <th class="border px-4 py-3 w-[20%]">Loại vắc xin phòng bệnh<br/>(nếu có)</th>
+                <th class="border px-4 py-3 w-[10%]">Ghi chú</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Lặp danh sách epidemic -->
+            <tr th:each="epidemic, stat : ${epidemicPage.content}" class="hover:bg-blue-50 transition">
+                <td class="border px-4 py-3" th:text="${stat.index + 1 + epidemicPage.number * epidemicPage.size}"></td>
+                <td class="border px-4 py-3" th:text="${#temporals.format(epidemic.surveyTime, 'dd/MM/yyyy')}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.address}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.epidemicName}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.infectedCount}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.transmissionMode}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.healthImpact}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.vaccineType}"></td>
+                <td class="border px-4 py-3" th:text="${epidemic.note}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="flex justify-center items-center mt-6 space-x-2">
+        <!-- Nút Trước -->
+        <span th:if="${epidemicPage.first}"
+              class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+        Trước
+    </span>
+        <a th:if="${!epidemicPage.first}"
+           th:href="@{/epidemic(page=${epidemicPage.number - 1}, size=${epidemicPage.size})}"
+           class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
+            Trước
+        </a>
+
+        <!-- Số trang -->
+        <span th:each="i : ${#numbers.sequence(0, epidemicPage.totalPages - 1)}">
+        <a th:href="@{/epidemic(page=${i}, size=${epidemicPage.size})}"
+           th:text="${i + 1}"
+           th:classappend="${i == epidemicPage.number} ?
+               'bg-blue-600 text-white' :
+               'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+           class="px-3 py-1 rounded-lg mx-1 transition"></a>
+    </span>
+
+        <!-- Nút Sau -->
+        <span th:if="${epidemicPage.last}"
+              class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+        Sau
+    </span>
+        <a th:if="${!epidemicPage.last}"
+           th:href="@{/epidemic(page=${epidemicPage.number + 1}, size=${epidemicPage.size})}"
+           class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
+            Sau
+        </a>
+    </div>
+</div>
+</body>
+</html>

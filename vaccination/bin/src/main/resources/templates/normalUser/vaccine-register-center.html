@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký tiêm phòng vắc xin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+
+<div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-center bg-blue-700 text-white py-3 rounded">
+        Đăng ký tiêm phòng vắc xin
+    </h2>
+
+    <p class="text-center text-gray-700 mt-4">
+        Bạn có chắc chắn đồng ý đăng ký tiêm phòng loại vắc xin dưới đây:
+    </p>
+
+    <div class="overflow-x-auto mt-4">
+        <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+            <thead>
+            <tr class="bg-blue-100 text-gray-700">
+                <th class="border border-gray-300 px-3 py-2">STT</th>
+                <th class="border border-gray-300 px-3 py-2">Thời gian</th>
+                <th class="border border-gray-300 px-3 py-2">Địa điểm</th>
+                <th class="border border-gray-300 px-3 py-2">Tên vắc xin</th>
+                <th class="border border-gray-300 px-3 py-2">Phòng trị bệnh</th>
+                <th class="border border-gray-300 px-3 py-2">Số lượng</th>
+                <th class="border border-gray-300 px-3 py-2">Độ tuổi tiêm phòng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="border px-3 py-2">1</td>
+                <td class="border px-3 py-2">9h 13/2/2014</td>
+                <td class="border px-3 py-2">TTYT Dự Phòng Đà Nẵng</td>
+                <td class="border px-3 py-2">Viêm Gan B</td>
+                <td class="border px-3 py-2">Viêm Gan B</td>
+                <td class="border px-3 py-2">1 liều</td>
+                <td class="border px-3 py-2">Mọi lứa tuổi</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-center mt-6 space-x-6">
+        <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">Đồng ý</button>
+        <button class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded">Hủy bỏ</button>
+    </div>
+</div>
+
+</body>
+</html>

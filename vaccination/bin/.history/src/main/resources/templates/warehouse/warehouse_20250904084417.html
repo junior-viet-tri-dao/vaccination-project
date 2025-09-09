@@ -1,0 +1,91 @@
+<!-- warehouse.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+    <body th:replace="~{warehouse/layout-warehouse :: content}">
+        <div th:with="tab='warehouse'">
+            <div class="mb-6">
+                <label class="block mb-2 font-semibold text-gray-700"
+                    >Nhập thông tin cần tìm</label
+                >
+                <input
+                    type="text"
+                    placeholder="Nhập từ khóa..."
+                    class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+
+                <div
+                    class="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-4"
+                >
+                    <label class="flex items-center"
+                        ><input
+                            type="radio"
+                            name="searchType"
+                            value="name"
+                            checked
+                            class="mr-2"
+                        />
+                        Tìm theo tên</label
+                    >
+                    <label class="flex items-center"
+                        ><input
+                            type="radio"
+                            name="searchType"
+                            value="type"
+                            class="mr-2"
+                        />
+                        Tìm theo loại</label
+                    >
+                    <label class="flex items-center"
+                        ><input
+                            type="radio"
+                            name="searchType"
+                            value="origin"
+                            class="mr-2"
+                        />
+                        Tìm theo nơi SX</label
+                    >
+                    <label class="flex items-center"
+                        ><input
+                            type="radio"
+                            name="searchType"
+                            value="age"
+                            class="mr-2"
+                        />
+                        Tìm theo độ tuổi</label
+                    >
+                </div>
+
+                <button
+                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+                >
+                    Tìm kiếm
+                </button>
+            </div>
+
+            <!-- Bảng -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto border border-gray-300">
+                    <thead class="bg-blue-600 text-white text-sm">
+                        <tr>
+                            <th class="px-4 py-2 border">Mã lô</th>
+                            <th class="px-4 py-2 border">Tên</th>
+                            <th class="px-4 py-2 border">Loại</th>
+                            <th class="px-4 py-2 border">Ngày nhận</th>
+                            <th class="px-4 py-2 border">Số giấy phép</th>
+                            <th class="px-4 py-2 border">Nước SX</th>
+                            <th class="px-4 py-2 border">Hàm lượng</th>
+                            <th class="px-4 py-2 border">SL</th>
+                            <th class="px-4 py-2 border">Hạn sử dụng</th>
+                            <th class="px-4 py-2 border">Bảo quản</th>
+                            <th class="px-4 py-2 border">Độ tuổi</th>
+                            <th class="px-4 py-2 border">Tình trạng</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-center bg-white">
+                        <!-- Thymeleaf loop hoặc dữ liệu sẽ hiển thị ở đây -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
