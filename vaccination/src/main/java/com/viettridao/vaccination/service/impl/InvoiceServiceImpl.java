@@ -46,7 +46,6 @@ public class InvoiceServiceImpl implements InvoiceService {
 	                extra -> {
 	                    dto.setCustomerName(extra.getCustomerName());
 	                    dto.setVaccineCode(extra.getVaccineCode());
-	                    dto.setDateTime(extra.getDateTime());
 	                },
 	                () -> {
 	                    // fallback từ MedicalRecordEntity nếu tồn tại

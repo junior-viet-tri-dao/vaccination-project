@@ -1,5 +1,9 @@
 package com.viettridao.vaccination.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+
 import com.viettridao.vaccination.dto.request.finance.CreateTransactionSupplierRequest;
 import com.viettridao.vaccination.dto.request.finance.UpdateTransactionSupplierRequest;
 import com.viettridao.vaccination.dto.response.finance.TransactionSupplierResponse;
@@ -7,17 +11,14 @@ import com.viettridao.vaccination.mapper.TransactionSupplierMapper;
 import com.viettridao.vaccination.model.InvoiceEntity;
 import com.viettridao.vaccination.model.SupplierEntity;
 import com.viettridao.vaccination.model.VaccineEntity;
+import com.viettridao.vaccination.repository.InvoiceExtraRepository;
 import com.viettridao.vaccination.repository.InvoiceRepository;
 import com.viettridao.vaccination.repository.SupplierRepository;
 import com.viettridao.vaccination.repository.VaccineRepository;
 import com.viettridao.vaccination.service.SupplierService;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,23 +28,48 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository supplierRepository;
     private final TransactionSupplierMapper supplierMapper;
     private final VaccineRepository vaccineRepository;
+    private final InvoiceExtraRepository invoiceExtraRepository; 
 
     @Override
     public Page<TransactionSupplierResponse> getAllSupplierTransactions(int page, int size) {
-        Page<InvoiceEntity> invoices = invoiceRepository.findByIsDeletedFalse(PageRequest.of(page, size));
+        Page<InvoiceEntity> invoices =
+                invoiceRepository.findAllSortedByDateTime(PageRequest.of(page, size));
 
-        // Map entity -> dto và set thủ công supplierName + vaccineCode
-        return invoices.map(entity -> {
-            TransactionSupplierResponse dto = supplierMapper.toDto(entity);
-            if (entity.getSupplier() != null) {
-                dto.setSupplierName(entity.getSupplier().getSupplierName());
-            }
-            if (entity.getVaccine() != null) {
-                dto.setVaccineCode(entity.getVaccine().getVaccineCode());
-            }
+        return invoices.map(invoice -> {
+            TransactionSupplierResponse dto = supplierMapper.toDto(invoice);
+
+            invoiceExtraRepository.findByInvoice_InvoiceId(invoice.getInvoiceId())
+                .ifPresentOrElse(
+                    extra -> {
+                        // Lấy vaccine từ InvoiceExtra
+                        dto.setVaccineCode(extra.getVaccineCode());
+
+                        // Supplier vẫn phải lấy từ InvoiceEntity
+                        dto.setSupplierName(
+                                invoice.getSupplier() != null
+                                        ? invoice.getSupplier().getSupplierName()
+                                        : "Không rõ"
+                        );
+                    },
+                    () -> {
+                        // fallback cả hai từ InvoiceEntity
+                        dto.setSupplierName(
+                                invoice.getSupplier() != null
+                                        ? invoice.getSupplier().getSupplierName()
+                                        : "Không rõ"
+                        );
+                        dto.setVaccineCode(
+                                invoice.getVaccine() != null
+                                        ? invoice.getVaccine().getVaccineCode()
+                                        : "Không rõ"
+                        );
+                    }
+                );
+
             return dto;
         });
     }
+
 
     @Override
     @Transactional

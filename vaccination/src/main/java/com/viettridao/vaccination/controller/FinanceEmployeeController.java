@@ -218,10 +218,11 @@ public class FinanceEmployeeController {
 	// --- Hiển thị form thêm mới ---
 	@GetMapping("/transactions-supplier/new")
 	public String showCreateSupplierForm(Model model) {
-		model.addAttribute("transactionRequest", new CreateTransactionSupplierRequest());
-		model.addAttribute("vaccines", invoiceService.getActiveVaccines());
-		return "financeEmployee/create-transaction-supplier";
+	    model.addAttribute("transactionRequest", new CreateTransactionSupplierRequest());
+	    model.addAttribute("vaccines", invoiceService.getActiveVaccines());
+	    return "financeEmployee/create-transaction-supplier"; // 🔥
 	}
+
 
 	// --- Submit form thêm mới ---
 	@PostMapping("/transactions-supplier/create")
