@@ -30,12 +30,13 @@
             </tr>
             </thead>
             <tbody>
+            <!-- Lặp qua danh sách vaccinePrices -->
             <tr th:each="vp, iterStat : ${vaccinePrices}" class="bg-white hover:bg-rose-50">
                 <td class="border px-4 py-2"
                     th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
-                <td class="border px-4 py-2" th:text="${vp.vaccineCode}"></td>
-                <td class="border px-4 py-2" th:text="${vp.unit}"></td>
-                <td class="border px-4 py-2" th:text="${vp.productionYear}"></td>
+                <td class="border px-4 py-2" th:text="${vp.maCode}"></td>
+                <td class="border px-4 py-2" th:text="${vp.donVi}"></td>
+                <td class="border px-4 py-2" th:text="${vp.namSanXuat}"></td>
                 <td class="border px-4 py-2"
                     th:text="${#numbers.formatInteger(vp.unitPrice, 3, 'POINT')}"></td>
 
@@ -43,9 +44,9 @@
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Nút sửa -->
-                         <a th:href="@{/finance/vaccine-price/edit(batchId=${vp.batchId})}"
+                        <a th:href="@{/finance/vaccine-price/edit(batchId=${vp.batchId})}"
                            class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                           Sửa
+                            Sửa
                         </a>
 
                         <!-- Nút xóa -->
@@ -56,7 +57,7 @@
                             <button type="button"
                                     class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
                                     th:data-id="${vp.batchId}"
-                                    th:data-name="${vp.vaccineCode}">
+                                    th:data-name="${vp.maCode}">
                                 Xóa
                             </button>
                         </form>
@@ -100,9 +101,7 @@
 
 </div>
 
-<!-- Modal sửa đặt ngoài bảng, chỉ có 1 cái -->
-
-
+<!-- Script JS -->
 <script th:src="@{/js/global.js}"></script>
 <div th:replace="~{alert :: alerts}"></div>
 </body>

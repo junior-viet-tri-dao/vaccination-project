@@ -1,8 +1,11 @@
 package com.viettridao.vaccination.service;
 
+import com.viettridao.vaccination.model.TaiKhoanEntity;
 import com.viettridao.vaccination.repository.AccountRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,7 +33,14 @@ public class UserServiceDetail implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return accountRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản có username = " + username));
+        TaiKhoanEntity account = accountRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Không tìm thấy tài khoản có username = " + username));
+
+        // Trả về UserDetails mặc định của Spring Security
+        return User.withUsername(account.getUsername())
+                .password(account.getMatKhauHash()) // BCrypt password hash
+                .roles(account.getVaiTro().getTen()) // Vai trò từ entity VaiTroEntity
+                .build();
     }
 }

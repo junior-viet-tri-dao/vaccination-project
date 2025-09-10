@@ -1,5 +1,7 @@
 package com.viettridao.vaccination.dto.response.finance;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class VaccinePriceResponse {
-	private String batchId; // để check chọn (radio/checkbox)
-	private Integer stt; // số thứ tự
-	private String vaccineCode; // mã vắc xin
-	private String unit; // đơn vị
-	private String productionYear;// năm sản xuất
-	private Integer unitPrice;
+	private UUID vaccineId; // ID vắc xin
+	private String maCode; // Mã vắc xin
+	private String ten; // Tên vắc xin
+	private String donVi; // Đơn vị (lấy từ LoVacXinEntity.hamLuong hoặc cột riêng)
+	private Integer namSanXuat; // Năm sản xuất (LoVacXinEntity.ngaySanXuat)
+	private Integer gia;
 }
