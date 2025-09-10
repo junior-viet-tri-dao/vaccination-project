@@ -32,8 +32,8 @@ public class TaiKhoanEntity {
     @Column(name = "ma_tai_khoan", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "user_name", nullable = false, unique = true)
-    private String username;
+    @Column(name = "ten_dang_nhap", nullable = false, unique = true)
+    private String tenDangNhap;
 
     @Column(name = "mat_khau_hash", nullable = false)
     private String matKhauHash;

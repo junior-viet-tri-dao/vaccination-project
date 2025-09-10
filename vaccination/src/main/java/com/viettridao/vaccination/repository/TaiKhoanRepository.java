@@ -10,13 +10,13 @@ import org.springframework.stereotype.Repository;
 import com.viettridao.vaccination.model.TaiKhoanEntity;
 
 @Repository
-public interface AccountRepository extends JpaRepository<TaiKhoanEntity, UUID> {
+public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, UUID> {
     /**
      * Tìm tài khoản theo tên đăng nhập.
      *
      * @param username tên đăng nhập
      * @return Optional<AccountEntity>
      */
-    @Query("SELECT a FROM TaiKhoanEntity a WHERE a.username = :username")
-    Optional<TaiKhoanEntity> findByUsername(String username);
+    @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap")
+    Optional<TaiKhoanEntity> findByUsername(String tenDangNhap);
 }
