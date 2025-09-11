@@ -62,11 +62,11 @@
                 <th class="px-4 py-2 border">Mã lô</th>
                 <th class="px-4 py-2 border">Tên</th>
                 <th class="px-4 py-2 border">Loại</th>
-                <th class="px-4 py-2 border">Ngày nhận</th>
+                <th class="px-4 py-2 border">Ngày nhập</th>
                 <th class="px-4 py-2 border">Số giấy phép</th>
                 <th class="px-4 py-2 border">Nước SX</th>
                 <th class="px-4 py-2 border">Hàm lượng</th>
-                <th class="px-4 py-2 border">SL</th>
+                <th class="px-4 py-2 border">Số lượng</th>
                 <th class="px-4 py-2 border">Hạn sử dụng</th>
                 <th class="px-4 py-2 border">Bảo quản</th>
                 <th class="px-4 py-2 border">Độ tuổi</th>
@@ -75,18 +75,18 @@
             </thead>
             <tbody class="text-sm text-center bg-white">
             <tr th:each="item : ${warehousePage.content}">
-                <td class="px-4 py-2 border" th:text="${item.batchCode}"></td>
-                <td class="px-4 py-2 border" th:text="${item.vaccineName}"></td>
-                <td class="px-4 py-2 border" th:text="${item.vaccineTypeName}"></td>
-                <td class="px-4 py-2 border" th:text="${#temporals.format(item.receivedDate, 'dd/MM/yyyy')}"></td>
-                <td class="px-4 py-2 border" th:text="${item.licenseNumber}"></td>
-                <td class="px-4 py-2 border" th:text="${item.countryOfOrigin}"></td>
-                <td class="px-4 py-2 border" th:text="${item.dosage}"></td>
-                <td class="px-4 py-2 border" th:text="${item.quantity}"></td>
-                <td class="px-4 py-2 border" th:text="${#temporals.format(item.expirationDate, 'dd/MM/yyyy')}"></td>
-                <td class="px-4 py-2 border" th:text="${item.storageCondition}"></td>
-                <td class="px-4 py-2 border" th:text="${item.ageGroup}"></td>
-                <td class="px-4 py-2 border" th:text="${item.status}"></td>
+                <td class="px-4 py-2 border" th:text="${item.maLoCode}"></td>
+                <td class="px-4 py-2 border" th:text="${item.tenVacXin}"></td>
+                <td class="px-4 py-2 border" th:text="${item.loaiVacXin}"></td>
+                <td class="px-4 py-2 border" th:text="${#temporals.format(item.ngayNhap, 'dd/MM/yyyy')}"></td>
+                <td class="px-4 py-2 border" th:text="${item.soGiayPhep}"></td>
+                <td class="px-4 py-2 border" th:text="${item.nuocSanXuat}"></td>
+                <td class="px-4 py-2 border" th:text="${item.hamLuong}"></td>
+                <td class="px-4 py-2 border" th:text="${item.soLuong}"></td>
+                <td class="px-4 py-2 border" th:text="${#temporals.format(item.hanSuDung, 'dd/MM/yyyy')}"></td>
+                <td class="px-4 py-2 border" th:text="${item.dieuKienBaoQuan}"></td>
+                <td class="px-4 py-2 border" th:text="${item.doiTuongTiem}"></td>
+                <td class="px-4 py-2 border" th:text="${item.tinhTrangVacXin}"></td>
             </tr>
             </tbody>
         </table>

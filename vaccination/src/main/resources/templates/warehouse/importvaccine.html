@@ -12,7 +12,7 @@
 <body>
 <main th:with="tab='import'" th:fragment="main">
     <h1 class="text-2xl font-bold mb-4">Nhập vắc-xin</h1>
-    
+
     <form id="importForm"
           method="post"
           th:action="@{/warehouse/importvaccine}"
@@ -22,137 +22,93 @@
         <!-- Cột 1 -->
         <div class="space-y-4">
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Tên vắc-xin</label>
-                <input type="text" th:field="*{vaccineName}" required minlength="2" maxlength="20"
+                <label class="block text-gray-700 font-medium mb-1">Mã lô</label>
+                <input type="text" th:field="*{maLoCode}" required maxlength="10"
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('vaccineName')}" th:errors="*{vaccineName}" class="text-red-500 text-sm"></p>
-            </div>
-            
-             <div>
-                <label class="block text-gray-700 font-medium mb-1">Mã vắc xin</label>
-                <input type="text" th:field="*{vaccineCode}" required minlength="2" maxlength="10"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('vaccineCode')}" th:errors="*{vaccineCode}" class="text-red-500 text-sm"></p>
-            </div>
-            
-           
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Loại vắc-xin</label>
-                <input type="text" th:field="*{vaccineType}" required maxlength="20"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('vaccineType')}" th:errors="*{vaccineType}" class="text-red-500 text-sm"></p>
-            </div>
-            
-              <div>
-                <label class="block text-gray-700 font-medium mb-1">Mã Lô</label>
-                <input type="text" th:field="*{batchCode}" required minlength="2" maxlength="10"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('batchCode')}" th:errors="*{batchCode}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('maLoCode')}" th:errors="*{maLoCode}" class="text-red-500 text-sm"></p>
             </div>
 
-          
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Số giấy phép</label>
-                <input type="text" th:field="*{licenseNumber}" required maxlength="20"
+                <label class="block text-gray-700 font-medium mb-1">Tên vắc-xin</label>
+                <input type="text" th:field="*{tenVacXin}" required maxlength="10"
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('licenseNumber')}" th:errors="*{licenseNumber}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('tenVacXin')}" th:errors="*{tenVacXin}" class="text-red-500 text-sm"></p>
             </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Loại vắc-xin</label>
+                <input type="text" th:field="*{loaiVacXin}" required maxlength="10"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <p th:if="${#fields.hasErrors('loaiVacXin')}" th:errors="*{loaiVacXin}" class="text-red-500 text-sm"></p>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Ngày nhập</label>
+                <input type="text" th:field="*{ngayNhap}" id="receivedDate" required readonly
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50"/>
+                <p th:if="${#fields.hasErrors('ngayNhap')}" th:errors="*{ngayNhap}" class="text-red-500 text-sm"></p>
+            </div>
+
         </div>
 
         <!-- Cột 2 -->
         <div class="space-y-4">
-        
-         <!-- Ngày nhập -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Ngày nhập</label>
-                <input type="text" th:field="*{receivedDate}" id="receivedDate" required readonly
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50"/>
-                <p th:if="${#fields.hasErrors('receivedDate')}" th:errors="*{receivedDate}" class="text-red-500 text-sm"></p>
-            </div>
-        
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Nước sản xuất</label>
-                <input type="text" th:field="*{originCountry}" required maxlength="10"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('originCountry')}" th:errors="*{originCountry}" class="text-red-500 text-sm"></p>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Đơn giá</label>
-                <input type="number" th:field="*{price}" min="1" max="1000000" required
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="text-red-500 text-sm"></p>
-            </div>
 
             <div>
                 <label class="block text-gray-700 font-medium mb-1">Hàm lượng</label>
-                <input type="text" th:field="*{dosage}" required maxlength="10"
+                <input type="text" th:field="*{hamLuong}" required maxlength="30"
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('dosage')}" th:errors="*{dosage}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('hamLuong')}" th:errors="*{hamLuong}" class="text-red-500 text-sm"></p>
             </div>
 
             <div>
                 <label class="block text-gray-700 font-medium mb-1">Số lượng</label>
-                <input type="number" th:field="*{quantity}" min="1" max="100000" required
+                <input type="number" th:field="*{soLuong}" min="1" max="100000" required
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('soLuong')}" th:errors="*{soLuong}" class="text-red-500 text-sm"></p>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Đơn giá</label>
+                <input type="number" th:field="*{donGia}" min="1" max="1000000000" required
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <p th:if="${#fields.hasErrors('donGia')}" th:errors="*{donGia}" class="text-red-500 text-sm"></p>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Hạn sử dụng</label>
+                <input type="text" th:field="*{hanSuDung}" id="expiryDate" required readonly
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50"/>
+                <p th:if="${#fields.hasErrors('hanSuDung')}" th:errors="*{hanSuDung}" class="text-red-500 text-sm"></p>
             </div>
         </div>
 
         <!-- Cột 3 -->
         <div class="space-y-4">
-            <!-- Hạn sử dụng -->
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Hạn sử dụng</label>
-                <input type="text" th:field="*{expiryDate}" id="expiryDate" required readonly
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50"/>
-                <p th:if="${#fields.hasErrors('expiryDate')}" th:errors="*{expiryDate}" class="text-red-500 text-sm"></p>
+                <label class="block text-gray-700 font-medium mb-1">Số giấy phép</label>
+                <input type="text" th:field="*{soGiayPhep}" required maxlength="20"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <p th:if="${#fields.hasErrors('soGiayPhep')}" th:errors="*{soGiayPhep}" class="text-red-500 text-sm"></p>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Nước sản xuất</label>
+                <input type="text" th:field="*{nuocSanXuat}" required maxlength="10"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
+                <p th:if="${#fields.hasErrors('nuocSanXuat')}" th:errors="*{nuocSanXuat}" class="text-red-500 text-sm"></p>
             </div>
 
             <div>
                 <label class="block text-gray-700 font-medium mb-1">Điều kiện bảo quản</label>
-                <input type="text" th:field="*{storageConditions}" required maxlength="30"
+                <input type="text" th:field="*{dieuKienBaoQuan}" required maxlength="10"
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('storageConditions')}" th:errors="*{storageConditions}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('dieuKienBaoQuan')}" th:errors="*{dieuKienBaoQuan}" class="text-red-500 text-sm"></p>
             </div>
-
             <div>
-                <label class="block text-gray-700 font-medium mb-1">Độ tuổi tiêm chủng</label>
-                <input type="text" th:field="*{vaccinationAge}" required maxlength="10"
+                <label class="block text-gray-700 font-medium mb-1">Đối tượng tiêm chủng</label>
+                <input type="text" th:field="*{doiTuongTiem}" required maxlength="20"
                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('vaccinationAge')}" th:errors="*{vaccinationAge}" class="text-red-500 text-sm"></p>
+                <p th:if="${#fields.hasErrors('doiTuongTiem')}" th:errors="*{doiTuongTiem}" class="text-red-500 text-sm"></p>
             </div>
-            
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Năm sản xuất</label>
-                <input type="text" th:field="*{productionYear}" required maxlength="10"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('productionYear')}" th:errors="*{productionYear}" class="text-red-500 text-sm"></p>
-            </div>
-            
-            <div>
-                <label class="block text-gray-700 font-medium mb-1">Đơn vị</label>
-                <input type="text" th:field="*{unit}" required maxlength="10"
-                       class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"/>
-                <small class="text-gray-500 text-sm"></small>
-                <p th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}" class="text-red-500 text-sm"></p>
-            </div>
-            
-            
-     
-            <div class="flex justify-end items-end space-x-4">
+            <div class="flex justify-end items-end space-x-4 pt-8">
                 <button type="submit"
                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition w-full sm:w-auto">
                     Nhập
@@ -174,7 +130,7 @@
 
             // Ngày nhập
             const receivedDatePicker = flatpickr("#receivedDate", {
-                dateFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
                 locale: "vn",
                 defaultDate: "today",
                 maxDate: "today"
@@ -182,7 +138,7 @@
 
             // Ngày hết hạn
             const expiryDatePicker = flatpickr("#expiryDate", {
-                dateFormat: "d/m/Y",
+                dateFormat: "Y-m-d",
                 locale: "vn",
                 minDate: new Date().fp_incr(1)
             });

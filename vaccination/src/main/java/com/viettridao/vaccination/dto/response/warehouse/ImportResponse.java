@@ -12,34 +12,16 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ImportResponse {
-	private String batchCode;
-
-	private String vaccineName;
-
-	private String vaccineType;
-
-	private LocalDate receivedDate;
-
-	private String licenseNumber;
-
-	private String originCountry;
-
-	private Integer price;
-
-	private String dosage;
-
-	private Integer quantity;
-
-	private LocalDate expiryDate;
-
-	private String storageConditions;
-
-	private String vaccinationAge;
-
-	private String vaccineCode;
-
-	private String productionYear;
-
-	private String unit;
-
+	private String maLoCode;           // Mã lô
+	private String tenVacXin;          // Tên vắc xin
+	private String loaiVacXin;         // Loại vắc xin
+	private LocalDate ngayNhap;        // Ngày nhập
+	private String soGiayPhep;         // Số giấy phép
+	private String nuocSanXuat;        // Nước sản xuất
+	private String hamLuong;           // Hàm lượng
+	private Integer soLuong;           // Số lượng
+	private Integer donGia;            // Đơn giá
+	private LocalDate hanSuDung;       // Hạn sử dụng
+	private String dieuKienBaoQuan;    // Điều kiện bảo quản
+	private String doiTuongTiem;       // Độ tuổi tiêm chủng
 }

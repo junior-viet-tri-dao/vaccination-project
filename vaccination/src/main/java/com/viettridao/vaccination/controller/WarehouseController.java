@@ -1,24 +1,18 @@
 package com.viettridao.vaccination.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.service.WarehouseService;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -35,21 +29,13 @@ public class WarehouseController {
             @RequestParam(value = "size", defaultValue = "3") int size,
             Model model
     ) {
-        // Gán mặc định nếu keyword chưa nhập
-        if (keyword == null || keyword.isBlank()) {
-            searchType = "name";
-        }
-
-        // Lấy dữ liệu đã xử lý logic page từ Service
-        Page<WarehouseResponse> warehousePage =
-                warehouseService.getWarehouses(searchType, keyword, page, size);
+        Page<WarehouseResponse> warehousePage = warehouseService.getWarehouses(searchType, keyword, page, size);
 
         // Nếu page bị chỉnh -> lấy lại dữ liệu
         if (page != warehousePage.getNumber()) {
             warehousePage = warehouseService.getWarehouses(searchType, keyword, page, size);
         }
 
-        // Gửi dữ liệu xuống view
         model.addAttribute("tab", "warehouse");
         model.addAttribute("pageTitle", "Quản lý kho vắc xin");
         model.addAttribute("warehousePage", warehousePage);
@@ -67,8 +53,7 @@ public class WarehouseController {
     @GetMapping("/importvaccine")
     public String showImportVaccineForm(Model model) {
         model.addAttribute("tab", "import");
-        model.addAttribute("importRequest", new ImportRequest()); // DTO trống cho form
-
+        model.addAttribute("importRequest", new ImportRequest());
         return "warehouse/importvaccine";
     }
 
@@ -84,32 +69,23 @@ public class WarehouseController {
     ) {
         model.addAttribute("tab", "import");
 
-        // Nếu validate ở DTO có lỗi
         if (bindingResult.hasErrors()) {
             return "warehouse/importvaccine";
         }
 
         try {
-            // Gọi Service import
             ImportResponse response = warehouseService.importVaccine(importRequest);
-
-            // Thêm thông báo thành công vào redirect
             redirectAttributes.addFlashAttribute("success", "Nhập kho vắc-xin thành công!");
             return "redirect:/warehouse";
-
         } catch (IllegalArgumentException ex) {
-            // Bắt lỗi do service ném ra và gắn vào đúng field
             if (ex.getMessage().contains("Mã lô")) {
-                bindingResult.rejectValue("batchCode", "error.batchCode", ex.getMessage());
+                bindingResult.rejectValue("maLoCode", "error.maLoCode", ex.getMessage());
             } else {
                 bindingResult.reject("error.global", ex.getMessage());
             }
-
-            // Trả lại form để hiển thị lỗi ngay dưới input
             return "warehouse/importvaccine";
         }
     }
-
 
     /**
      * Hiển thị form export vắc-xin + danh sách lô
@@ -120,11 +96,8 @@ public class WarehouseController {
             @RequestParam(value = "size", defaultValue = "5") int size,
             Model model
     ) {
-        // Lấy tất cả lô vắc-xin có phân trang
-        Page<WarehouseResponse> warehousePage =
-                warehouseService.getWarehouses(null, null, page, size);
+        Page<WarehouseResponse> warehousePage = warehouseService.getWarehouses(null, null, page, size);
 
-        // Fix lại nếu page vượt ngoài range
         if (page != warehousePage.getNumber()) {
             warehousePage = warehouseService.getWarehouses(null, null, page, size);
         }
@@ -143,18 +116,33 @@ public class WarehouseController {
      * Xử lý submit form export
      */
     @PostMapping("/exportvaccine")
-    public String exportVaccine(@Valid @ModelAttribute("exportRequest") ExportRequest request,
-                                BindingResult bindingResult,
-                                RedirectAttributes redirectAttributes) {
+    public String exportVaccine(
+            @Valid @ModelAttribute("exportRequest") ExportRequest request,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model
+    ) {
+        model.addAttribute("tab", "export");
+
         if (bindingResult.hasErrors()) {
-            return "warehouse/exportvaccine"; // trả lại view nếu có lỗi
+            return "warehouse/exportvaccine";
         }
 
-        WarehouseResponse response = warehouseService.exportVaccine(request.getBatchCode(), request.getQuantity());
-        redirectAttributes.addFlashAttribute("success",
-                "Xuất thành công lô " + response.getBatchCode() +
-                        " - Số lượng còn lại: " + response.getQuantity());
-
-        return "redirect:/warehouse";
+        try {
+            WarehouseResponse response = warehouseService.exportVaccine(request);
+            redirectAttributes.addFlashAttribute("success",
+                    "Xuất thành công lô " + response.getMaLoCode()
+                            + " - Số lượng còn lại: " + response.getSoLuong());
+            return "redirect:/warehouse";
+        } catch (IllegalArgumentException ex) {
+            if (ex.getMessage().contains("Số lượng")) {
+                bindingResult.rejectValue("quantity", "error.quantity", ex.getMessage());
+            } else if (ex.getMessage().contains("Không tìm thấy")) {
+                bindingResult.rejectValue("maLoCode", "error.maLoCode", ex.getMessage());
+            } else {
+                bindingResult.reject("error.global", ex.getMessage());
+            }
+            return "warehouse/exportvaccine";
+        }
     }
 }
