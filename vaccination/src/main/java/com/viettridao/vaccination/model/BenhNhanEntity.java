@@ -3,13 +3,13 @@ package com.viettridao.vaccination.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -31,9 +31,9 @@ import lombok.Setter;
 public class BenhNhanEntity {
 
     @Id
-    @GeneratedValue
-    @Column(name = "ma_benh_nhan", columnDefinition = "BINARY(16)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ma_benh_nhan",columnDefinition = "CHAR(36)")
+    private String id;
 
     @Column(name = "ho_ten", nullable = false)
     private String hoTen;
@@ -57,6 +57,8 @@ public class BenhNhanEntity {
 
     @Column(name = "dia_chi")
     private String diaChi;
+    
+    private Boolean isDeleted = Boolean.FALSE;
 
     @ManyToOne
     @JoinColumn(name = "tao_boi_tai_khoan")

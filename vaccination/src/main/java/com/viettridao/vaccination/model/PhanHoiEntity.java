@@ -1,13 +1,13 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -28,9 +28,9 @@ import lombok.Setter;
 public class PhanHoiEntity {
 
 	@Id
-	@GeneratedValue
-	@Column(name = "ma_ph", columnDefinition = "BINARY(16)")
-	private UUID id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "ma_ph", columnDefinition = "CHAR(36)")
+	private String id;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_benh_nhan")
@@ -47,9 +47,10 @@ public class PhanHoiEntity {
 	@Builder.Default
 	private LoaiPhanHoi loaiPhanHoi = LoaiPhanHoi.PHAN_NAN;
 
-
 	@Column(name = "ngay_tao")
 	private LocalDateTime ngayTao;
+	
+	private Boolean isDeleted = Boolean.FALSE;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "trang_thai")
@@ -60,11 +61,9 @@ public class PhanHoiEntity {
 	private TaiKhoanEntity taoBoi;
 
 	public enum LoaiPhanHoi {
-	    PHAN_NAN,
-	    DONG_VIEN,
-	    GOP_Y,
-	    CAU_HOI
+		PHAN_NAN, DONG_VIEN, GOP_Y, CAU_HOI
 	}
+
 	public enum TrangThai {
 		MOI, DA_XEM, DA_XU_LY
 	}

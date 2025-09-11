@@ -4,46 +4,47 @@
     <meta charset="UTF-8">
     <title>Sửa giá vắc xin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/alert-utils.js}"></script>
 </head>
 <body class="bg-rose-100 min-h-screen p-4 flex items-start justify-center">
 <div class="bg-white shadow-xl rounded-lg w-full max-w-lg p-6">
-    <h3 class="text-xl font-semibold text-yellow-600 mb-4">Sửa giá vắc xin</h3>
-    <form th:action="@{/finance/vaccine-price/update}"
-          th:object="${vaccinePriceRequest}"
-          method="post"
-          class="space-y-4">
+    <h3 class="text-xl font-semibold text-yellow-600 mb-4">Sửa giá vắc xin</h3>    
+    
+       <form th:action="@{/finance/vaccine-price/edit}" th:object="${updateRequest}" method="post" class="space-y-4">
 
-        <input type="hidden" th:field="*{batchId}"/>
+      <div>
+	    <label>Mã Vắc xin</label>
+	    <input type="text" th:field="*{maCode}" 
+	           readonly
+	           class="w-full border rounded-lg px-3 py-2 bg-gray-100 cursor-not-allowed"/>
+	    <p th:if="${#fields.hasErrors('maCode')}" th:errors="*{maCode}"
+	       class="text-red-500 text-sm mt-1"></p>
+	</div>
 
-        <div>
-    <label>Mã Vắc xin</label>
-    <input type="text" th:field="*{vaccineCode}" maxlength="10" required
-           class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
-    <p th:if="${#fields.hasErrors('vaccineCode')}" th:errors="*{vaccineCode}"
-       class="text-red-500 text-sm mt-1"></p>
-</div>
+
 
 <div>
     <label>Đơn vị</label>
-    <input type="text" th:field="*{unit}" maxlength="5" required
+    <input type="text" th:field="*{donVi}" maxlength="5" required
            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
-    <p th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}"
+    <p th:if="${#fields.hasErrors('donVi')}" th:errors="*{donVi}"
        class="text-red-500 text-sm mt-1"></p>
 </div>
 
 <div>
     <label>Năm sản xuất</label>
-    <input type="text" th:field="*{productionYear}" placeholder="" required
+    <input type="date" th:field="*{namSX}" placeholder="" required
            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
-    <p th:if="${#fields.hasErrors('productionYear')}" th:errors="*{productionYear}"
+    <p th:if="${#fields.hasErrors('namSX')}" th:errors="*{namSX}"
        class="text-red-500 text-sm mt-1"></p>
 </div>
 
 <div>
     <label>Giá</label>
-    <input type="number" th:field="*{unitPrice}" min="1000" max="100000000" required
+    <input type="number" th:field="*{gia}" min="1000" max="100000000" required
            class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
-    <p th:if="${#fields.hasErrors('unitPrice')}" th:errors="*{unitPrice}"
+    <p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}"
        class="text-red-500 text-sm mt-1"></p>
 </div>
 
@@ -54,5 +55,7 @@
         </div>
     </form>
 </div>
+<script th:src="@{/js/global.js}"></script>
+<div th:replace="~{alert :: alerts}"></div>
 </body>
 </html>

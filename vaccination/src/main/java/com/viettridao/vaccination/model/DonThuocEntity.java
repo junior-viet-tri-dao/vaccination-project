@@ -1,11 +1,11 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,9 +26,9 @@ import lombok.Setter;
 public class DonThuocEntity {
 
 	@Id
-	@GeneratedValue
-	@Column(name = "ma_don", columnDefinition = "BINARY(16)")
-	private UUID id;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "ma_don", columnDefinition = "CHAR(36)")
+	private String id;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_benh_nhan", nullable = false)
@@ -50,4 +50,6 @@ public class DonThuocEntity {
 
 	@Column(name = "ghi_chu")
 	private String ghiChu;
+	
+	private Boolean isDeleted = Boolean.FALSE;
 }

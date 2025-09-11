@@ -2,11 +2,11 @@ package com.viettridao.vaccination.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,10 +26,10 @@ import lombok.Setter;
 @Table(name = "bang_gia_vac_xin")
 public class BangGiaVacXinEntity {
 
-	@Id
-	@GeneratedValue
-	@Column(name = "ma_bg", columnDefinition = "BINARY(16)")
-	private UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ma_bg", columnDefinition = "CHAR(36)")
+    private String id;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_vac_xin", nullable = false)
@@ -50,4 +50,6 @@ public class BangGiaVacXinEntity {
 
 	@Column(name = "ngay_tao")
 	private LocalDateTime ngayTao;
+	
+	private Boolean isDeleted = Boolean.FALSE;
 }

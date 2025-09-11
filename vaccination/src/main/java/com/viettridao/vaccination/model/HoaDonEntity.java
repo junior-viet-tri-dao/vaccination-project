@@ -1,12 +1,12 @@
 package com.viettridao.vaccination.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
-import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -27,34 +27,33 @@ import lombok.Setter;
 @Table(name = "hoa_don")
 public class HoaDonEntity {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "ma_hd", columnDefinition = "BINARY(16)")
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "ma_hd", columnDefinition = "CHAR(36)")
+	private String id;
 
-    @Column(name = "so_hoa_don", nullable = false, unique = true)
-    private String soHoaDon;
+	@Column(name = "so_hoa_don", nullable = false, unique = true)
+	private String maHoaDon;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_benh_nhan")
-    private BenhNhanEntity benhNhan;
+	@ManyToOne
+	@JoinColumn(name = "ma_benh_nhan")
+	private BenhNhanEntity benhNhan;
 
-    @ManyToOne
-    @JoinColumn(name = "tao_boi")
-    private TaiKhoanEntity taoBoi;
+	@ManyToOne
+	@JoinColumn(name = "tao_boi")
+	private TaiKhoanEntity taoBoi;
 
-    @Column(name = "ngay_hd")
-    private LocalDateTime ngayHD;
+	@Column(name = "ngay_hd")
+	private LocalDate ngayHD;
 
-    @Column(name = "tong_tien")
-    private Double tongTien;
+	@Column(name = "tong_tien")
+	private Integer tongTien;
 
-    @Column(name = "da_xoa")
-    private Boolean daXoa = false;
+	@Column(name = "ghi_chu")
+	private String ghiChu;
 
-    @Column(name = "ghi_chu")
-    private String ghiChu;
+	private Boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "hoaDon")
-    private Set<ChiTietHDEntity> chiTietHDs;
+	@OneToMany(mappedBy = "hoaDon")
+	private Set<ChiTietHDEntity> chiTietHDs;
 }

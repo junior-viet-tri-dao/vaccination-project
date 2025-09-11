@@ -1,10 +1,9 @@
 package com.viettridao.vaccination.model;
 
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,30 +23,31 @@ import lombok.Setter;
 @Table(name = "chi_tiet_hd")
 public class ChiTietHDEntity {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "ma_ct", columnDefinition = "BINARY(16)")
-    private UUID id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "ma_ct", columnDefinition = "CHAR(36)")
+	private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_hd", nullable = false)
-    private HoaDonEntity hoaDon;
+	@ManyToOne
+	@JoinColumn(name = "ma_hd", nullable = false)
+	private HoaDonEntity hoaDon;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_vac_xin")
-    private VacXinEntity vacXin;
+	@ManyToOne
+	@JoinColumn(name = "ma_vac_xin")
+	private VacXinEntity vacXin;
 
-    @ManyToOne
-    @JoinColumn(name = "ma_lo")
-    private LoVacXinEntity loVacXin;
+	@ManyToOne
+	@JoinColumn(name = "ma_lo")
+	private LoVacXinEntity loVacXin;
 
-    @Column(name = "so_luong", nullable = false)
-    private Integer soLuong;
+	@Column(name = "so_luong", nullable = false)
+	private Integer soLuong;
 
-    @Column(name = "don_gia")
-    private Double donGia;
+	@Column(name = "don_gia")
+	private Integer donGia;
 
-    @Column(name = "thanh_tien")
-    private Double thanhTien;
+	@Column(name = "thanh_tien")
+	private Integer thanhTien;
+	
+	private Boolean isDeleted = Boolean.FALSE;
 }
-
