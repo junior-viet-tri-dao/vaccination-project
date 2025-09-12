@@ -1,6 +1,6 @@
 package com.viettridao.vaccination.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +34,7 @@ public class HoaDonEntity {
 	private String id;
 
 	@Column(name = "so_hoa_don", nullable = false, unique = true)
-	private String maHoaDon;
+	private String soHoaDon;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_benh_nhan")
@@ -44,7 +45,7 @@ public class HoaDonEntity {
 	private TaiKhoanEntity taoBoi;
 
 	@Column(name = "ngay_hd")
-	private LocalDate ngayHD;
+	private LocalDateTime ngayHD;
 
 	@Column(name = "tong_tien")
 	private Integer tongTien;
@@ -56,4 +57,6 @@ public class HoaDonEntity {
 
 	@OneToMany(mappedBy = "hoaDon")
 	private Set<ChiTietHDEntity> chiTietHDs;
+
+
 }

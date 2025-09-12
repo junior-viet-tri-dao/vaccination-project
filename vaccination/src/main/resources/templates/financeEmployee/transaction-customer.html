@@ -49,7 +49,7 @@
                     th:text="${tc.ngayHD != null} ? ${#temporals.format(tc.ngayHD, 'dd/MM/yyyy HH:mm')} : '-'"></td>
 
                 <!-- Mã Hóa Đơn -->
-                <td class="border px-4 py-2" th:text="${tc.maHoaDon}"></td>
+                <td class="border px-4 py-2" th:text="${tc.soHoaDon}"></td>
 
                 <!-- Mã Vắc xin -->
                 <td class="border px-4 py-2" th:text="${tc.maVacXin}"></td>
@@ -67,20 +67,20 @@
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Sửa -->
-                        <a th:href="@{/finance/transactions-customer/edit/{id}(id=${tc.maHoaDon})}"
+                        <a th:href="@{/finance/transactions-customer/edit/{id}(id=${tc.soHoaDon})}"
                            class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                             Sửa
                         </a>
 
                         <!-- Xóa -->
-                        <form th:id="'deleteForm-' + ${tc.maHoaDon}"
+                        <form th:id="'deleteForm-' + ${tc.soHoaDon}"
                               th:action="@{/finance/transactions-customer/delete}" method="post"
                               class="inline-block">
-                            <input type="hidden" name="maHoaDon" th:value="${tc.maHoaDon}">
+                            <input type="hidden" name="maHoaDon" th:value="${tc.soHoaDon}">
                             <button type="button"
                                     class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                                    th:data-id="${tc.maHoaDon}"
-                                    th:data-name="${tc.maHoaDon}">
+                                    th:data-id="${tc.soHoaDon}"
+                                    th:data-name="${tc.soHoaDon}">
                                 Xóa
                             </button>
                         </form>

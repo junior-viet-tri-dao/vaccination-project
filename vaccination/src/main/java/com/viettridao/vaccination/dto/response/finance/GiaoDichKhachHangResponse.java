@@ -1,6 +1,6 @@
 package com.viettridao.vaccination.dto.response.finance;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +15,8 @@ import lombok.Setter;
 @Builder
 public class GiaoDichKhachHangResponse {
 
-	private LocalDate ngayHD; // Ngày hóa đơn
-	private String maHoaDon; // Mã Hóa Đơn
+	private LocalDateTime ngayHD; // Ngày hóa đơn
+	private String soHoaDon; // Mã Hóa Đơn
 	private String maVacXin; // Mã Vắc xin
 	private Integer soLuong; // Số lượng
 	private String tenKhachHang; // Tên khách hàng
