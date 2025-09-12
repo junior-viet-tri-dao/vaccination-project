@@ -1,6 +1,6 @@
 package com.viettridao.vaccination.dto.request.finance;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,13 +21,13 @@ import lombok.Setter;
 @Builder
 public class GiaoDichKhachHangRequest {
 
-	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	@NotNull(message = "Ngày hóa đơn không được để trống")
-	private LocalDate ngayHD;
+	private LocalDateTime ngayHD;
 
 
 	@NotBlank(message = "Mã hóa đơn không được để trống")
-	private String maHoaDon;
+	private String soHoaDon;
 
 	@NotBlank(message = "Mã vắc xin không được để trống")
 	private String maVacXin;

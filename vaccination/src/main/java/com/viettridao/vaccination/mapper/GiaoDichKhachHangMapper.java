@@ -18,7 +18,7 @@ public interface GiaoDichKhachHangMapper {
 
 	// Entity -> Response
 	@Mapping(source = "hoaDon.ngayHD", target = "ngayHD")
-	@Mapping(source = "hoaDon.maHoaDon", target = "maHoaDon")
+	@Mapping(source = "hoaDon.soHoaDon", target = "soHoaDon")
 	@Mapping(source = "chiTiet.vacXin.maCode", target = "maVacXin")
 	@Mapping(source = "chiTiet.soLuong", target = "soLuong")
 	@Mapping(source = "hoaDon.benhNhan.hoTen", target = "tenKhachHang")
@@ -29,7 +29,7 @@ public interface GiaoDichKhachHangMapper {
 
 	// Request -> Entity
 	@Mapping(source = "ngayHD", target = "ngayHD")
-	@Mapping(source = "maHoaDon", target = "maHoaDon")
+	@Mapping(source = "soHoaDon", target = "soHoaDon")
 	@Mapping(source = "tenKhachHang", target = "benhNhan.hoTen")
 	HoaDonEntity toHoaDonEntity(GiaoDichKhachHangRequest request);
 

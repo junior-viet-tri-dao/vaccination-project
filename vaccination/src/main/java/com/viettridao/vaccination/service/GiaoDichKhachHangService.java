@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.viettridao.vaccination.dto.request.finance.GiaoDichKhachHangRequest;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
 import com.viettridao.vaccination.model.LoVacXinEntity;
+import com.viettridao.vaccination.model.TaiKhoanEntity;
 
 public interface GiaoDichKhachHangService {
 
@@ -20,5 +21,5 @@ public interface GiaoDichKhachHangService {
     void softDeleteByLoVacXin(LoVacXinEntity loVacXin);
 
     void softDeleteByMaHoaDon(String maHoaDon);
-    
+       
 }
