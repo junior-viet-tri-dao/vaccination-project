@@ -125,6 +125,31 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 
 	@Transactional
 	@Override
+	public void update(GiaoDichKhachHangRequest request) {
+		// Lấy hóa đơn hiện tại theo số hóa đơn
+		HoaDonEntity hoaDon = hoaDonRepository.findBySoHoaDonAndIsDeletedFalse(request.getSoHoaDon())
+				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn"));
+
+		// Update các trường cơ bản trong hóa đơn
+		hoaDon.setNgayHD(request.getNgayHD());
+		hoaDonRepository.save(hoaDon);
+
+		// Giả sử mỗi hóa đơn chỉ có 1 chi tiết, lấy chi tiết đầu tiên
+		ChiTietHDEntity chiTiet = hoaDon.getChiTietHDs().stream().filter(ct -> !Boolean.TRUE.equals(ct.getIsDeleted()))
+				.findFirst().orElseThrow(() -> new IllegalArgumentException("Không có chi tiết hóa đơn"));
+
+		// Update chi tiết
+		chiTiet.setSoLuong(request.getSoLuong());
+		chiTiet.setDonGia(request.getGia());
+		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
+				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vắc xin"));
+		chiTiet.setVacXin(vacXin);
+
+		chiTietHdRepository.save(chiTiet);
+	}
+
+	@Transactional
+	@Override
 	public void deleteByMaHoaDon(String soHoaDon) {
 		HoaDonEntity hoaDon = hoaDonRepository.findBySoHoaDonAndIsDeletedFalse(soHoaDon)
 				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn"));

@@ -12,4 +12,5 @@ public interface ChiTietHdNccService {
 	 // Xóa mềm theo lô vắc xin
     void softDeleteByLoVacXin(LoVacXinEntity loVacXin);
 
+    
 }

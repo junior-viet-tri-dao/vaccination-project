@@ -24,7 +24,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final LoVacXinRepository loVacXinRepository;
     private final BienDongKhoRepository bienDongKhoRepository;
     private final WarehouseMapper warehouseMapper;
-    private final ChiTietHDNCCRepository chiTietHDNCCRepository;
+    private final ChiTietHdNccRepository chiTietHDNCCRepository;
     private final TaiKhoanRepository taiKhoanRepository;
 
     @Override

@@ -144,6 +144,52 @@ public class FinanceEmployeeController {
 
 	    return "redirect:/finance/transactions-customer";
 	}
+	
+	@GetMapping("/transactions-customer/update")
+	public String showEditTransaction(@RequestParam("soHoaDon") String soHoaDon, Model model) {
+	    GiaoDichKhachHangResponse transaction = giaoDichKhachHangService.getByMaHoaDon(soHoaDon);
+
+	    GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
+	    request.setNgayHD(transaction.getNgayHD());
+	    request.setSoHoaDon(transaction.getSoHoaDon());
+	    request.setMaVacXin(transaction.getMaVacXin());
+	    request.setSoLuong(transaction.getSoLuong());
+	    request.setTenKhachHang(transaction.getTenKhachHang());
+	    request.setGia(transaction.getGia());
+
+	    model.addAttribute("transactionRequest", request);
+	    model.addAttribute("vaccines", vacXinService.getAllVaccines());
+	    model.addAttribute("patients", benhNhanService.getAllPatients());
+
+	    return "financeEmployee/edit-transaction-customer"; // file edit.html
+	}
+
+	// Xử lý update giao dịch
+	@PostMapping("/transactions-customer/update")
+	public String updateTransaction(@Valid @ModelAttribute("transactionRequest") GiaoDichKhachHangRequest request,
+	                                BindingResult bindingResult,
+	                                Model model,
+	                                RedirectAttributes redirectAttrs) {
+
+	    if (bindingResult.hasErrors()) {
+	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
+	        model.addAttribute("patients", benhNhanService.getAllPatients());
+	        return "financeEmployee/edit-transaction-customer";
+	    }
+
+	    try {
+	        giaoDichKhachHangService.update(request);
+	        redirectAttrs.addFlashAttribute("success", "Cập nhật giao dịch thành công!");
+	    } catch (Exception e) {
+	        model.addAttribute("transactionRequest", request);
+	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
+	        model.addAttribute("patients", benhNhanService.getAllPatients());
+	        model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+	        return "financeEmployee/edit-transaction-customer";
+	    }
+
+	    return "redirect:/finance/transactions-customer";
+	}
 
 
 	@PostMapping("/transactions-customer/delete")
