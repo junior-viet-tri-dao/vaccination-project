@@ -1,9 +1,14 @@
 package com.viettridao.vaccination.model;
 
 
-import java.util.UUID;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,11 +25,9 @@ import lombok.Setter;
 public class ChiTietHDNCCEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ma_ct", columnDefinition = "CHAR(36)")
     private String id;
-
-    private Boolean isDeleted = Boolean.FALSE;
 
     @ManyToOne
     @JoinColumn(name = "ma_hd_ncc", nullable = false)
@@ -45,6 +48,10 @@ public class ChiTietHDNCCEntity {
     private Integer soLuong;
 
     @Column(name = "don_gia")
-    private Double donGia;
+    private Integer donGia;
+
+    private Boolean isDeleted = Boolean.FALSE;
 }
+
+
 

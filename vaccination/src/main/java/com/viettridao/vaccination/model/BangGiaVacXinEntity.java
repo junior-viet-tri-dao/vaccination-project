@@ -19,12 +19,11 @@ import lombok.Setter;
 @Entity
 @Table(name = "bang_gia_vac_xin")
 public class BangGiaVacXinEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "ma_bg", columnDefinition = "CHAR(36)")
-	private String id;
 
-	private Boolean isDeleted = Boolean.FALSE;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ma_bg", columnDefinition = "CHAR(36)")
+    private String id;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_vac_xin", nullable = false)
@@ -45,4 +44,6 @@ public class BangGiaVacXinEntity {
 
 	@Column(name = "ngay_tao")
 	private LocalDateTime ngayTao;
+
+	private Boolean isDeleted = Boolean.FALSE;
 }

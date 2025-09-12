@@ -11,14 +11,13 @@
 
 <div class="bg-white shadow-xl rounded-lg w-full max-w-7xl p-6">
 
-    <!-- Tiêu đề -->
     <h2 class="text-3xl font-bold text-rose-700 text-center mb-6">
         Quản lý giao dịch khách hàng
     </h2>
 
     <!-- Nút thêm -->
     <div class="flex justify-end mb-4">
-        <a th:href="@{/finance/transactions-customer/new}"
+        <a th:href="@{/finance/transactions-customer/create}"
            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
             ➕ Thêm mới
         </a>
@@ -41,36 +40,47 @@
             </thead>
             <tbody>
             <tr th:each="tc, iterStat : ${transactions}" class="bg-white hover:bg-rose-50">
+                <!-- STT -->
                 <td class="border px-4 py-2"
                     th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
+
+                <!-- Ngày -->
                 <td class="border px-4 py-2"
-                    th:text="${#temporals.format(tc.dateTime, 'dd/MM/yyyy HH:mm')}"></td>
-                <td class="border px-4 py-2" th:text="${tc.invoiceCode}"></td>
-                <td class="border px-4 py-2" th:text="${tc.vaccineCode}"></td>
-                <td class="border px-4 py-2" th:text="${tc.quantity}"></td>
-                <td class="border px-4 py-2" th:text="${tc.customerName}"></td>
-                <td class="border px-4 py-2"
-                    th:text="${#numbers.formatInteger(tc.price, 3, 'POINT')}"></td>
+                    th:text="${tc.ngayHD != null} ? ${#temporals.format(tc.ngayHD, 'dd/MM/yyyy HH:mm')} : '-'"></td>
+
+                <!-- Mã Hóa Đơn -->
+                <td class="border px-4 py-2" th:text="${tc.soHoaDon}"></td>
+
+                <!-- Mã Vắc xin -->
+                <td class="border px-4 py-2" th:text="${tc.maVacXin}"></td>
+
+                <!-- Số lượng -->
+                <td class="border px-4 py-2" th:text="${tc.soLuong}"></td>
+
+                <!-- Tên Khách Hàng -->
+                <td class="border px-4 py-2" th:text="${tc.tenKhachHang}"></td>
+
+                <!-- Giá -->
+                <td class="border px-4 py-2" th:text="${tc.gia}"></td>
 
                 <!-- Thao tác -->
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
-                        <!-- Nút sửa -->
-                      <a th:href="@{/finance/transactions-customer/edit/{id}(id=${tc.invoiceId})}"
-						   class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-						    Sửa
-						</a>
+                        <!-- Sửa -->
+                        <a th:href="@{/finance/transactions-customer/edit/{id}(id=${tc.soHoaDon})}"
+                           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+                            Sửa
+                        </a>
 
-
-                        <!-- Nút xóa -->
-                        <form th:id="'deleteForm-' + ${tc.invoiceId}"
+                        <!-- Xóa -->
+                        <form th:id="'deleteForm-' + ${tc.soHoaDon}"
                               th:action="@{/finance/transactions-customer/delete}" method="post"
                               class="inline-block">
-                            <input type="hidden" name="invoiceId" th:value="${tc.invoiceId}">
+                            <input type="hidden" name="maHoaDon" th:value="${tc.soHoaDon}">
                             <button type="button"
                                     class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                                    th:data-id="${tc.invoiceId}"
-                                    th:data-name="${tc.invoiceCode}">
+                                    th:data-id="${tc.soHoaDon}"
+                                    th:data-name="${tc.soHoaDon}">
                                 Xóa
                             </button>
                         </form>
@@ -83,25 +93,19 @@
         <!-- Phân trang -->
         <div class="flex justify-center items-center mt-6 space-x-2">
             <div th:if="${totalPages > 0}" class="inline-flex items-center gap-2">
-
-                <!-- Nút Trước -->
                 <a th:if="${currentPage > 0}"
                    th:href="@{/finance/transactions-customer(page=${currentPage - 1}, size=${pageSize})}"
                    class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">Trước</a>
                 <span th:if="${currentPage == 0}"
                       class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">Trước</span>
 
-                <!-- Số trang -->
                 <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/finance/transactions-customer(page=${i - 1}, size=${pageSize})}"
-               th:text="${i}"
-               th:classappend="${i - 1 == currentPage} ?
-                 'bg-blue-600 text-white' :
-                 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
-               class="px-3 py-1 rounded-lg mx-1 transition"></a>
-        </span>
+                    <a th:href="@{/finance/transactions-customer(page=${i - 1}, size=${pageSize})}"
+                       th:text="${i}"
+                       th:classappend="${i - 1 == currentPage} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+                       class="px-3 py-1 rounded-lg mx-1 transition"></a>
+                </span>
 
-                <!-- Nút Sau -->
                 <a th:if="${currentPage < totalPages - 1}"
                    th:href="@{/finance/transactions-customer(page=${currentPage + 1}, size=${pageSize})}"
                    class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">Sau</a>

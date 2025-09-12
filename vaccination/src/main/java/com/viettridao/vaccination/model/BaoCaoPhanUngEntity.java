@@ -1,9 +1,16 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
-
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,11 +27,9 @@ import lombok.Setter;
 public class BaoCaoPhanUngEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "ma_bc", columnDefinition = "CHAR(36)")
 	private String id;
-
-	private Boolean isDeleted = Boolean.FALSE;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_benh_nhan")
@@ -47,6 +52,8 @@ public class BaoCaoPhanUngEntity {
 	@ManyToOne
 	@JoinColumn(name = "tao_boi")
 	private TaiKhoanEntity taoBoi;
+
+	private Boolean isDeleted = Boolean.FALSE;
 
 	public enum KenhBaoCao {
 		NGUOI_DUNG, NHAN_VIEN
