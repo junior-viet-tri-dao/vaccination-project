@@ -18,5 +18,7 @@ public interface LoVacXinRepository extends JpaRepository<LoVacXinEntity, String
     List<LoVacXinEntity> findAllByIsDeletedFalse();
 
     Optional<LoVacXinEntity> findFirstByVacXinAndSoLuongGreaterThan(VacXinEntity vacXin, Integer soLuong);
+    
+    List<LoVacXinEntity> findByVacXinAndSoLuongGreaterThanOrderByHanSuDungAsc(VacXinEntity vacXin, int soLuong);
 
 }

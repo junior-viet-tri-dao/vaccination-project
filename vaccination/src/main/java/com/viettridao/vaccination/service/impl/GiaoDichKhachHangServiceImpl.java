@@ -83,44 +83,71 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
 				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vắc xin"));
 
-		// 3️⃣ Tìm lô vắc xin còn đủ số lượng
-		LoVacXinEntity loVacXin = loVacXinRepository
-				.findFirstByVacXinAndSoLuongGreaterThan(vacXin, request.getSoLuong())
-				.orElseThrow(() -> new IllegalArgumentException("Không còn lô vắc xin đủ số lượng"));
-
-		// 4️⃣ Tạo hóa đơn
+		// 3️⃣ Tạo hóa đơn (lưu trước để có tham chiếu)
 		HoaDonEntity hoaDon = new HoaDonEntity();
 		hoaDon.setBenhNhan(benhNhan);
 		hoaDon.setSoHoaDon(request.getSoHoaDon());
 		hoaDon.setNgayHD(request.getNgayHD());
-		hoaDon.setTongTien(request.getGia() * request.getSoLuong());
 		hoaDon.setIsDeleted(false);
+		hoaDon.setTongTien(0); // tạm
 		hoaDonRepository.save(hoaDon);
 
-		// 5️⃣ Tạo chi tiết hóa đơn
-		ChiTietHDEntity chiTiet = new ChiTietHDEntity();
-		chiTiet.setHoaDon(hoaDon);
-		chiTiet.setVacXin(vacXin);
-		chiTiet.setLoVacXin(loVacXin);
-		chiTiet.setSoLuong(request.getSoLuong());
-		chiTiet.setDonGia(request.getGia());
-		chiTiet.setThanhTien(request.getGia() * request.getSoLuong());
-		chiTiet.setIsDeleted(false);
-		chiTietHdRepository.save(chiTiet);
+		// 4️⃣ Chuẩn bị xuất: tổng cần xuất và biến chứa tổng tiền (Integer)
+		int soLuongCanXuat = request.getSoLuong();
+		int tongTien = 0;
 
-		// 6️⃣ Cập nhật biến động kho (trừ số lượng)
-		BienDongKhoEntity bienDong = new BienDongKhoEntity();
-		bienDong.setLoVacXin(loVacXin);
-		bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
-		bienDong.setSoLuong(request.getSoLuong());
-		bienDong.setMaHoaDon(hoaDon.getSoHoaDon());
-		bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.KHACH);
-		bienDong.setNgayThucHien(LocalDateTime.now());
-		bienDongKhoRepository.save(bienDong);
+		// Lưu ý: request.getGia() phải trả về Integer (hoặc bạn ép về int)
+		int donGia = request.getGia();
 
-		// 7️⃣ Cập nhật lại số lượng lô
-		loVacXin.setSoLuong(loVacXin.getSoLuong() - request.getSoLuong());
-		loVacXinRepository.save(loVacXin);
+		// 5️⃣ Lấy các lô theo hanSuDung tăng dần (lô sắp hết hạn trước)
+		List<LoVacXinEntity> dsLo = loVacXinRepository.findByVacXinAndSoLuongGreaterThanOrderByHanSuDungAsc(vacXin, 0);
+
+		for (LoVacXinEntity lo : dsLo) {
+			if (soLuongCanXuat <= 0)
+				break;
+
+			int soLuongTru = Math.min(lo.getSoLuong(), soLuongCanXuat);
+			int thanhTien = donGia * soLuongTru;
+
+			// ➡️ Tạo chi tiết hóa đơn cho lô này
+			ChiTietHDEntity chiTiet = new ChiTietHDEntity();
+			chiTiet.setHoaDon(hoaDon);
+			chiTiet.setVacXin(vacXin);
+			chiTiet.setLoVacXin(lo);
+			chiTiet.setSoLuong(soLuongTru);
+			chiTiet.setDonGia(donGia);
+			chiTiet.setThanhTien(thanhTien);
+			chiTiet.setIsDeleted(false);
+			chiTietHdRepository.save(chiTiet);
+
+			// ➡️ Ghi biến động kho
+			BienDongKhoEntity bienDong = new BienDongKhoEntity();
+			bienDong.setLoVacXin(lo);
+			bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
+			bienDong.setSoLuong(soLuongTru);
+			bienDong.setMaHoaDon(hoaDon.getSoHoaDon());
+			bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.KHACH);
+			bienDong.setNgayThucHien(LocalDateTime.now());
+			bienDongKhoRepository.save(bienDong);
+
+			// ➡️ Cập nhật số lượng lô
+			lo.setSoLuong(lo.getSoLuong() - soLuongTru);
+			loVacXinRepository.save(lo);
+
+			// ➡️ Cộng dồn tiền và giảm số lượng cần xuất
+			tongTien += thanhTien;
+			soLuongCanXuat -= soLuongTru;
+		}
+
+		// 6️⃣ Nếu còn thiếu số lượng thì rollback (bằng exception) — @Transactional sẽ
+		// rollback tự động
+		if (soLuongCanXuat > 0) {
+			throw new IllegalArgumentException("Không đủ số lượng trong kho");
+		}
+
+		// 7️⃣ Cập nhật tổng tiền (Integer) cho hóa đơn và lưu
+		hoaDon.setTongTien(tongTien);
+		hoaDonRepository.save(hoaDon);
 	}
 
 	@Transactional

@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -145,8 +146,8 @@ public class FinanceEmployeeController {
 	    return "redirect:/finance/transactions-customer";
 	}
 	
-	@GetMapping("/transactions-customer/update")
-	public String showEditTransaction(@RequestParam("soHoaDon") String soHoaDon, Model model) {
+	@GetMapping("/transactions-customer/update/{soHoaDon}")
+	public String showEditTransaction(@PathVariable("soHoaDon") String soHoaDon, Model model) {
 	    GiaoDichKhachHangResponse transaction = giaoDichKhachHangService.getByMaHoaDon(soHoaDon);
 
 	    GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
@@ -161,7 +162,7 @@ public class FinanceEmployeeController {
 	    model.addAttribute("vaccines", vacXinService.getAllVaccines());
 	    model.addAttribute("patients", benhNhanService.getAllPatients());
 
-	    return "financeEmployee/edit-transaction-customer"; // file edit.html
+	    return "financeEmployee/edit-transaction-customer";
 	}
 
 	// Xử lý update giao dịch

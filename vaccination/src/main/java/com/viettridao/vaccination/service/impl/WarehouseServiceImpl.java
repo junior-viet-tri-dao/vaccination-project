@@ -83,6 +83,8 @@ public class WarehouseServiceImpl implements WarehouseService {
         String maHoaDon = null;
         if (chiTietHDNCC != null && chiTietHDNCC.getHoaDonNCC() != null) {
             maHoaDon = chiTietHDNCC.getHoaDonNCC().getId();
+        } else {
+            maHoaDon = "Ăn Hối Lộ"; 
         }
 
         BienDongKhoEntity bienDong = new BienDongKhoEntity();
@@ -91,7 +93,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
         bienDong.setSoLuong(request.getQuantity());
         bienDong.setMaHoaDon(maHoaDon); // String
-        bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.NCC); // Loại hóa đơn là NCC
+        bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.HOILO); // Loại hóa đơn là NCC
         bienDong.setGhiChu("Xuất kho vắc-xin từ lô " + loVacXin.getMaLoCode());
         bienDong.setNgayThucHien(java.time.LocalDateTime.now());
 
