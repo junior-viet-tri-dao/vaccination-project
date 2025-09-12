@@ -38,7 +38,7 @@ public class BienDongKhoEntity {
 	private Integer soLuong;
 
 	@Column(name = "ma_hoa_don")
-	private UUID maHoaDon;
+	private String maHoaDon;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "loai_hoa_don")

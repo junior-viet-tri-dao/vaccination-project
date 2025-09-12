@@ -8,4 +8,3 @@ import com.viettridao.vaccination.dto.response.finance.VaccinePriceResponse;
 public interface VaccineService {
     Page<VaccinePriceResponse> getAllVaccinePrices(int page, int size);
 }
-

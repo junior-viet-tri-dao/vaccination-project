@@ -1,152 +1,123 @@
 <!DOCTYPE html>
-<html
-        xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org"
-        th:replace="~{warehouse/layout-warehouse :: areas(~{::title}, ~{::main})}"
->
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Warehouse - Quản lý kho</title>
+    <meta charset="UTF-8"/>
+    <title>Xem thông tin các loại vắc xin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<main th:with="tab='warehouse'">
-    <!-- Form tìm kiếm -->
-    <form method="get" th:action="@{/warehouse}" class="mb-6"
+<body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen p-6">
+
+<!-- Container -->
+<div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+    <!-- Title -->
+    <h1 class="text-2xl font-bold text-blue-700 mb-6 text-center">
+        Xem thông tin các loại vắc xin
+    </h1>
+
+    <!-- Search form -->
+    <form method="get" th:action="@{/normalUser/view-vaccines}" class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
           onsubmit="this.keyword.value = this.keyword.value.trim();">
-        <label class="block mb-2 font-semibold text-gray-700">
-            Nhập thông tin cần tìm
-        </label>
-        <input
-                type="text"
-                name="keyword"
-                th:value="${keyword != null ? keyword : ''}"
-                placeholder="Nhập từ khóa..."
-                class="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                onblur="this.value = this.value.trim();"
-        />
-
-        <div class="space-y-2 md:space-y-0 md:flex md:items-center md:space-x-4">
-            <label class="flex items-center">
-                <input type="radio" name="searchType" value="name"
-                       th:checked="${searchType == null or searchType == 'name'}" class="mr-2"/>
-                Tìm theo tên
-            </label>
-
-            <label class="flex items-center">
-                <input type="radio" name="searchType" value="type"
-                       th:checked="${searchType == 'type'}" class="mr-2"/>
-                Tìm theo loại
-            </label>
-            <label class="flex items-center">
-                <input type="radio" name="searchType" value="origin"
-                       th:checked="${searchType == 'origin'}" class="mr-2"/>
-                Tìm theo nơi SX
-            </label>
-            <label class="flex items-center">
-                <input type="radio" name="searchType" value="age"
-                       th:checked="${searchType == 'age'}" class="mr-2"/>
-                Tìm theo độ tuổi
-            </label>
+        <div>
+            <label class="block font-medium text-gray-700 mb-1">Tìm kiếm theo</label>
+            <select id="searchType" name="searchType" required
+                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                <option value="">-- Chọn loại tìm kiếm --</option>
+                <option value="maVacXin" th:selected="${searchType == 'maVacXin'}">Mã vắc xin</option>
+                <option value="tenVacXin" th:selected="${searchType == 'tenVacXin'}">Tên vắc xin</option>
+                <option value="phongTriBenh" th:selected="${searchType == 'phongTriBenh'}">Phòng trị bệnh</option>
+            </select>
         </div>
-
-        <button type="submit"
-                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-            Tìm kiếm
-        </button>
+        <div class="md:col-span-2">
+            <label class="block font-medium text-gray-700 mb-1">Từ khóa</label>
+            <input type="text" id="searchKeyword" name="keyword" required minlength="2" maxlength="50"
+                   th:value="${keyword}" placeholder="Nhập từ khóa..."
+                   class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"/>
+        </div>
+        <div>
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow">
+                Tìm
+            </button>
+        </div>
     </form>
 
-    <!-- Bảng -->
-    <div class="overflow-x-auto">
-        <table class="min-w-full table-auto border border-gray-300">
-            <thead class="bg-blue-600 text-white text-sm">
+    <!-- Table -->
+    <div class="overflow-x-auto mt-8">
+        <table class="min-w-full border border-gray-300 text-sm">
+            <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white">
             <tr>
-                <th class="px-4 py-2 border">Mã lô</th>
-                <th class="px-4 py-2 border">Tên</th>
-                <th class="px-4 py-2 border">Loại</th>
-                <th class="px-4 py-2 border">Ngày nhập</th>
-                <th class="px-4 py-2 border">Số giấy phép</th>
-                <th class="px-4 py-2 border">Nước SX</th>
-                <th class="px-4 py-2 border">Hàm lượng</th>
-                <th class="px-4 py-2 border">Số lượng</th>
-                <th class="px-4 py-2 border">Hạn sử dụng</th>
-                <th class="px-4 py-2 border">Bảo quản</th>
-                <th class="px-4 py-2 border">Độ tuổi</th>
-                <th class="px-4 py-2 border">Tình trạng</th>
+                <th class="px-3 py-2 border">STT</th>
+                <th class="px-3 py-2 border">Mã vắc xin</th>
+                <th class="px-3 py-2 border">Tên vắc xin</th>
+                <th class="px-3 py-2 border">Phòng trị bệnh</th>
+                <th class="px-3 py-2 border">Số lượng</th>
+                <th class="px-3 py-2 border">Độ tuổi tiêm phòng</th>
             </tr>
             </thead>
-            <tbody class="text-sm text-center bg-white">
-            <tr th:each="item : ${warehousePage.content}">
-                <td class="px-4 py-2 border" th:text="${item.maLoCode}"></td>
-                <td class="px-4 py-2 border" th:text="${item.tenVacXin}"></td>
-                <td class="px-4 py-2 border" th:text="${item.loaiVacXin}"></td>
-                <td class="px-4 py-2 border" th:text="${#temporals.format(item.ngayNhap, 'dd/MM/yyyy')}"></td>
-                <td class="px-4 py-2 border" th:text="${item.soGiayPhep}"></td>
-                <td class="px-4 py-2 border" th:text="${item.nuocSanXuat}"></td>
-                <td class="px-4 py-2 border" th:text="${item.hamLuong}"></td>
-                <td class="px-4 py-2 border" th:text="${item.soLuong}"></td>
-                <td class="px-4 py-2 border" th:text="${#temporals.format(item.hanSuDung, 'dd/MM/yyyy')}"></td>
-                <td class="px-4 py-2 border" th:text="${item.dieuKienBaoQuan}"></td>
-                <td class="px-4 py-2 border" th:text="${item.doiTuongTiem}"></td>
-                <td class="px-4 py-2 border" th:text="${item.tinhTrangVacXin}"></td>
+            <tbody class="bg-white">
+            <tr th:each="item, stat : ${vaccinePage.content}" class="odd:bg-gray-50 even:bg-white">
+                <td class="border px-3 py-2 text-center" th:text="${stat.index + 1 + vaccinePage.number * vaccinePage.size}"></td>
+                <td class="border px-3 py-2" th:text="${item.maVacXin}"></td>
+                <td class="border px-3 py-2" th:text="${item.tenVacXin}"></td>
+                <td class="border px-3 py-2" th:text="${item.phongTriBenh}"></td>
+                <td class="border px-3 py-2 text-right" th:text="${item.soLuong} + ' liều'"></td>
+                <td class="border px-3 py-2" th:text="${item.doTuoiTiemPhong}"></td>
             </tr>
             </tbody>
         </table>
     </div>
 
     <!-- Nếu không có dữ liệu -->
-    <div th:if="${warehousePage.totalElements == 0}"
+    <div th:if="${vaccinePage.totalElements == 0}"
          class="mt-4 text-center text-red-600 font-semibold">
         Không tìm thấy kết quả phù hợp với từ khóa "<span th:text="${keyword}"></span>".
     </div>
 
     <!-- Phân trang -->
     <div class="flex justify-center items-center mt-6 space-x-2">
-
-        <!-- Nếu có dữ liệu -->
-        <div th:if="${warehousePage.totalPages > 0}"
+        <div th:if="${vaccinePage.totalPages > 0}"
              class="inline-flex items-center gap-2">
-
             <!-- Nút Trước -->
-            <a th:if="${!warehousePage.first}"
-               th:href="@{/warehouse(page=${warehousePage.number - 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
+            <a th:if="${!vaccinePage.first}"
+               th:href="@{/normalUser/view-vaccines(page=${vaccinePage.number - 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
                class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
                 Trước
             </a>
-            <span th:if="${warehousePage.first}"
+            <span th:if="${vaccinePage.first}"
                   class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
             Trước
-        </span>
+            </span>
 
             <!-- Số trang -->
-            <span th:each="i : ${#numbers.sequence(1, warehousePage.totalPages)}">
-            <a th:href="@{/warehouse(page=${i - 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i - 1 == warehousePage.number} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
-               class="px-3 py-1 rounded-lg mx-1 transition"></a>
-        </span>
+            <span th:each="i : ${#numbers.sequence(1, vaccinePage.totalPages)}">
+                <a th:href="@{/normalUser/view-vaccines(page=${i - 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
+                   th:text="${i}"
+                   th:classappend="${i - 1 == vaccinePage.number} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+                   class="px-3 py-1 rounded-lg mx-1 transition"></a>
+            </span>
 
             <!-- Nút Sau -->
-            <a th:if="${!warehousePage.last}"
-               th:href="@{/warehouse(page=${warehousePage.number + 1}, size=${warehousePage.size}, searchType=${searchType}, keyword=${keyword})}"
+            <a th:if="${!vaccinePage.last}"
+               th:href="@{/normalUser/view-vaccines(page=${vaccinePage.number + 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
                class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
                 Sau
             </a>
-            <span th:if="${warehousePage.last}"
+            <span th:if="${vaccinePage.last}"
                   class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
             Sau
-        </span>
+            </span>
         </div>
-
         <!-- Nếu không có dữ liệu -->
-        <div th:if="${warehousePage.totalPages == 0}" class="inline-flex items-center gap-2">
-        <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
-            Trước
-        </span>
+        <div th:if="${vaccinePage.totalPages == 0}" class="inline-flex items-center gap-2">
+            <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+                Trước
+            </span>
             <span class="px-3 py-1 rounded-lg bg-blue-600 text-white">1</span>
             <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
-            Sau
-        </span>
+                Sau
+            </span>
         </div>
     </div>
-</main>
+</div>
 </body>
 </html>

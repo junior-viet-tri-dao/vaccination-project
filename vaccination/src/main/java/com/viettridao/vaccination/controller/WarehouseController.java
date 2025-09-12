@@ -38,7 +38,7 @@ public class WarehouseController {
 
         model.addAttribute("tab", "warehouse");
         model.addAttribute("pageTitle", "Quản lý kho vắc xin");
-        model.addAttribute("warehousePage", warehousePage);
+        model.addAttribute("vaccinePage", warehousePage);
         model.addAttribute("currentPage", warehousePage.getNumber());
         model.addAttribute("pageSize", size);
         model.addAttribute("searchType", searchType);

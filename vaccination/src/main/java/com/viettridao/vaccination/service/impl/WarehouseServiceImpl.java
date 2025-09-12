@@ -5,11 +5,8 @@ import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.mapper.WarehouseMapper;
-import com.viettridao.vaccination.model.LoVacXinEntity;
-import com.viettridao.vaccination.model.VacXinEntity;
-import com.viettridao.vaccination.repository.VacXinRepository;
-import com.viettridao.vaccination.repository.WarehouseRepository;
-import com.viettridao.vaccination.repository.LoVacXinRepository;
+import com.viettridao.vaccination.model.*;
+import com.viettridao.vaccination.repository.*;
 import com.viettridao.vaccination.service.WarehouseService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,10 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
     private final VacXinRepository vaccineRepository;
     private final LoVacXinRepository loVacXinRepository;
+    private final BienDongKhoRepository bienDongKhoRepository;
     private final WarehouseMapper warehouseMapper;
+    private final ChiTietHDNCCRepository chiTietHDNCCRepository;
+    private final TaiKhoanRepository taiKhoanRepository;
 
     @Override
     @Transactional
@@ -57,6 +57,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     public WarehouseResponse exportVaccine(ExportRequest request) {
         LoVacXinEntity loVacXin = warehouseRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLoCode())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lô vắc-xin"));
+
         if (request.getQuantity() <= 0) {
             throw new IllegalArgumentException("Số lượng xuất phải > 0");
         }
@@ -75,6 +76,37 @@ public class WarehouseServiceImpl implements WarehouseService {
         }
 
         loVacXinRepository.save(loVacXin);
+
+        // --- Cập nhật biến động kho ---
+        ChiTietHDNCCEntity chiTietHDNCC = chiTietHDNCCRepository.findFirstByLoVacXinAndIsDeletedFalse(loVacXin).orElse(null);
+
+        String maHoaDon = null;
+        if (chiTietHDNCC != null && chiTietHDNCC.getHoaDonNCC() != null) {
+            maHoaDon = chiTietHDNCC.getHoaDonNCC().getId();
+        }
+
+        BienDongKhoEntity bienDong = new BienDongKhoEntity();
+        bienDong.setIsDeleted(Boolean.FALSE);
+        bienDong.setLoVacXin(loVacXin);
+        bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
+        bienDong.setSoLuong(request.getQuantity());
+        bienDong.setMaHoaDon(maHoaDon); // String
+        bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.NCC); // Loại hóa đơn là NCC
+        bienDong.setGhiChu("Xuất kho vắc-xin từ lô " + loVacXin.getMaLoCode());
+        bienDong.setNgayThucHien(java.time.LocalDateTime.now());
+
+        // --- Lấy tài khoản thực hiện từ session ---
+        TaiKhoanEntity taiKhoan = null;
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof com.viettridao.vaccination.model.TaiKhoanEntity) {
+            taiKhoan = (TaiKhoanEntity) principal;
+        } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+            String username = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            taiKhoan = taiKhoanRepository.findByTenDangNhapAndIsDeletedFalse(username).orElse(null);
+        }
+        bienDong.setThucHienBoi(taiKhoan);
+
+        bienDongKhoRepository.save(bienDong);
 
         return warehouseMapper.toWarehouseResponse(loVacXin);
     }
