@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -57,7 +58,7 @@ public class BenhNhanEntity {
 
     @Column(name = "dia_chi")
     private String diaChi;
-    
+
     private Boolean isDeleted = Boolean.FALSE;
 
     @ManyToOne

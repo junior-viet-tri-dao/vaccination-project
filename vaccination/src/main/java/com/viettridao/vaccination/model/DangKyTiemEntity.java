@@ -53,7 +53,7 @@ public class DangKyTiemEntity {
 
 	@Column(name = "ghi_chu")
 	private String ghiChu;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 
 	public enum TrangThaiDK {

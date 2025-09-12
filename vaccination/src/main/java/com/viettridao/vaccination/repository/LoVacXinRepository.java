@@ -11,11 +11,12 @@ import com.viettridao.vaccination.model.VacXinEntity;
 
 @Repository
 public interface LoVacXinRepository extends JpaRepository<LoVacXinEntity, String> {
+    Optional<LoVacXinEntity> findByMaLoCodeIgnoreCaseAndIsDeletedFalse(String maLoCode);
 
-	Optional<LoVacXinEntity> findByVacXinMaCode(String maCode);
-	
+    Optional<LoVacXinEntity> findByVacXinMaCode(String maCode);
+
     List<LoVacXinEntity> findAllByIsDeletedFalse();
-    
+
     Optional<LoVacXinEntity> findFirstByVacXinAndSoLuongGreaterThan(VacXinEntity vacXin, Integer soLuong);
 
 }

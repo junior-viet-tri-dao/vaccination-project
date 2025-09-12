@@ -49,7 +49,7 @@ public class ChiTietHDNCCEntity {
 
     @Column(name = "don_gia")
     private Integer donGia;
-    
+
     private Boolean isDeleted = Boolean.FALSE;
 }
 

@@ -39,7 +39,7 @@ public class HoSoBenhAnEntity {
 
     @Column(name = "ghi_chu", columnDefinition = "TEXT")
     private String ghiChu;
-    
+
     private Boolean isDeleted = Boolean.FALSE;
 
     @ManyToOne

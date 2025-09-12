@@ -50,6 +50,6 @@ public class DonThuocEntity {
 
 	@Column(name = "ghi_chu")
 	private String ghiChu;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 }

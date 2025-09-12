@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +33,8 @@ public class BienDongKhoEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "ma_bd", columnDefinition = "CHAR(36)")
 	private String id;
+
+	private Boolean isDeleted = Boolean.FALSE;
 
 	@ManyToOne
 	@JoinColumn(name = "ma_lo", nullable = false)
@@ -59,8 +63,6 @@ public class BienDongKhoEntity {
 
 	@Column(name = "ngay_thuc_hien")
 	private LocalDateTime ngayThucHien;
-	
-	private Boolean isDeleted = Boolean.FALSE;
 
 	public enum LoaiBienDong {
 		NHAP, XUAT, DIEU_CHINH

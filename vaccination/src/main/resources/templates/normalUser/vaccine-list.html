@@ -14,8 +14,35 @@
         Xem thông tin các loại vắc xin
     </h1>
 
+    <!-- Search form -->
+    <form method="get" th:action="@{/normalUser/view-vaccines}" class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+          onsubmit="this.keyword.value = this.keyword.value.trim();">
+        <div>
+            <label class="block font-medium text-gray-700 mb-1">Tìm kiếm theo</label>
+            <select id="searchType" name="searchType" required
+                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                <option value="">-- Chọn loại tìm kiếm --</option>
+                <option value="maVacXin" th:selected="${searchType == 'maVacXin'}">Mã vắc xin</option>
+                <option value="tenVacXin" th:selected="${searchType == 'tenVacXin'}">Tên vắc xin</option>
+                <option value="phongTriBenh" th:selected="${searchType == 'phongTriBenh'}">Phòng trị bệnh</option>
+            </select>
+        </div>
+        <div class="md:col-span-2">
+            <label class="block font-medium text-gray-700 mb-1">Từ khóa</label>
+            <input type="text" id="searchKeyword" name="keyword" required minlength="2" maxlength="50"
+                   th:value="${keyword}" placeholder="Nhập từ khóa..."
+                   class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"/>
+        </div>
+        <div>
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow">
+                Tìm
+            </button>
+        </div>
+    </form>
+
     <!-- Table -->
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto mt-8">
         <table class="min-w-full border border-gray-300 text-sm">
             <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white">
             <tr>
@@ -25,99 +52,72 @@
                 <th class="px-3 py-2 border">Phòng trị bệnh</th>
                 <th class="px-3 py-2 border">Số lượng</th>
                 <th class="px-3 py-2 border">Độ tuổi tiêm phòng</th>
-                <th class="px-3 py-2 border">Đăng ký</th>
             </tr>
             </thead>
             <tbody class="bg-white">
-            <tr class="odd:bg-gray-50 even:bg-white">
-                <td class="border px-3 py-2 text-center">1</td>
-                <td class="border px-3 py-2">10A4</td>
-                <td class="border px-3 py-2">Viêm Gan B</td>
-                <td class="border px-3 py-2">Viêm Gan B</td>
-                <td class="border px-3 py-2 text-right">2000 liều</td>
-                <td class="border px-3 py-2">Mọi lứa tuổi</td>
-                <td class="border px-3 py-2 text-center">
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg shadow">
-                        Đăng ký
-                    </button>
-                </td>
-            </tr>
-            <tr class="odd:bg-gray-50 even:bg-white">
-                <td class="border px-3 py-2 text-center">2</td>
-                <td class="border px-3 py-2">15C4</td>
-                <td class="border px-3 py-2">Bại liệt</td>
-                <td class="border px-3 py-2">Bại liệt</td>
-                <td class="border px-3 py-2 text-right">700 liều</td>
-                <td class="border px-3 py-2">Mọi lứa tuổi</td>
-                <td class="border px-3 py-2 text-center">
-                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-lg shadow">
-                        Đăng ký
-                    </button>
-                </td>
+            <tr th:each="item, stat : ${vaccinePage.content}" class="odd:bg-gray-50 even:bg-white">
+                <td class="border px-3 py-2 text-center" th:text="${stat.index + 1 + vaccinePage.number * vaccinePage.size}"></td>
+                <td class="border px-3 py-2" th:text="${item.maVacXin}"></td>
+                <td class="border px-3 py-2" th:text="${item.tenVacXin}"></td>
+                <td class="border px-3 py-2" th:text="${item.phongTriBenh}"></td>
+                <td class="border px-3 py-2 text-right" th:text="${item.soLuong} + ' liều'"></td>
+                <td class="border px-3 py-2" th:text="${item.doTuoiTiemPhong}"></td>
             </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- Search form -->
-    <form class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <!-- Select -->
-        <div>
-            <label class="block font-medium text-gray-700 mb-1">Tìm kiếm theo</label>
-            <select id="searchType" required
-                    class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option value="">-- Chọn loại tìm kiếm --</option>
-                <option value="code">Mã vắc xin</option>
-                <option value="name">Tên vắc xin</option>
-                <option value="disease">Phòng trị bệnh</option>
-            </select>
-        </div>
+    <!-- Nếu không có dữ liệu -->
+    <div th:if="${vaccinePage.totalElements == 0}"
+         class="mt-4 text-center text-red-600 font-semibold">
+        Không tìm thấy kết quả phù hợp với từ khóa "<span th:text="${keyword}"></span>".
+    </div>
 
-        <!-- Input -->
-        <div class="md:col-span-2">
-            <label class="block font-medium text-gray-700 mb-1">Từ khóa</label>
-            <input type="text" id="searchKeyword" required minlength="2" maxlength="50"
-                   placeholder="Nhập từ khóa..."
-                   class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500"/>
-        </div>
+    <!-- Phân trang -->
+    <div class="flex justify-center items-center mt-6 space-x-2">
+        <div th:if="${vaccinePage.totalPages > 0}"
+             class="inline-flex items-center gap-2">
+            <!-- Nút Trước -->
+            <a th:if="${!vaccinePage.first}"
+               th:href="@{/normalUser/view-vaccines(page=${vaccinePage.number - 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
+               class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                Trước
+            </a>
+            <span th:if="${vaccinePage.first}"
+                  class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Trước
+            </span>
 
-        <!-- Button -->
-        <div>
-            <button type="submit"
-                    class="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow">
-                Tìm
-            </button>
-        </div>
-    </form>
+            <!-- Số trang -->
+            <span th:each="i : ${#numbers.sequence(1, vaccinePage.totalPages)}">
+                <a th:href="@{/normalUser/view-vaccines(page=${i - 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
+                   th:text="${i}"
+                   th:classappend="${i - 1 == vaccinePage.number} ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+                   class="px-3 py-1 rounded-lg mx-1 transition"></a>
+            </span>
 
-    <!-- OK button -->
-    <div class="mt-6 text-center">
-        <button type="button"
-                class="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg shadow">
-            OK
-        </button>
+            <!-- Nút Sau -->
+            <a th:if="${!vaccinePage.last}"
+               th:href="@{/normalUser/view-vaccines(page=${vaccinePage.number + 1}, size=${vaccinePage.size}, searchType=${searchType}, keyword=${keyword})}"
+               class="px-4 py-2 rounded-lg transition bg-blue-500 text-white hover:bg-blue-600">
+                Sau
+            </a>
+            <span th:if="${vaccinePage.last}"
+                  class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+            Sau
+            </span>
+        </div>
+        <!-- Nếu không có dữ liệu -->
+        <div th:if="${vaccinePage.totalPages == 0}" class="inline-flex items-center gap-2">
+            <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+                Trước
+            </span>
+            <span class="px-3 py-1 rounded-lg bg-blue-600 text-white">1</span>
+            <span class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+                Sau
+            </span>
+        </div>
     </div>
 </div>
-
-<script>
-    // Validate form
-    document.querySelector("form").addEventListener("submit", function (e) {
-      const searchType = document.getElementById("searchType");
-      const keyword = document.getElementById("searchKeyword");
-
-      if (!searchType.value) {
-        e.preventDefault();
-        alert("Vui lòng chọn loại tìm kiếm!");
-        searchType.focus();
-        return;
-      }
-      if (keyword.value.trim().length < 2) {
-        e.preventDefault();
-        alert("Từ khóa phải có ít nhất 2 ký tự!");
-        keyword.focus();
-        return;
-      }
-    });
-</script>
 </body>
 </html>

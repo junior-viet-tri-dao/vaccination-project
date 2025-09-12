@@ -52,7 +52,7 @@ public class HoaDonNCCEntity {
 
 	@Column(name = "ngay_tao")
 	private LocalDateTime ngayTao;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 
 	@OneToMany(mappedBy = "hoaDonNCC")

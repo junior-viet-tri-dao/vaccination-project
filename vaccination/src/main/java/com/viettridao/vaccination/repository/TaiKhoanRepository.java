@@ -18,4 +18,13 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
      */
     @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap")
     Optional<TaiKhoanEntity> findByUsername(String tenDangNhap);
+
+    /**
+     * Tìm tài khoản theo tên đăng nhập và chưa xóa.
+     *
+     * @param tenDangNhap tên đăng nhập
+     * @return Optional<TaiKhoanEntity>
+     */
+    @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap AND a.isDeleted = FALSE")
+    Optional<TaiKhoanEntity> findByTenDangNhapAndIsDeletedFalse(String tenDangNhap);
 }

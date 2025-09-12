@@ -48,6 +48,6 @@ public class ChiTietHDEntity {
 
 	@Column(name = "thanh_tien")
 	private Integer thanhTien;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 }

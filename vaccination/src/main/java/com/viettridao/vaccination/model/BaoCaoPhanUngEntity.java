@@ -1,7 +1,6 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,7 +52,7 @@ public class BaoCaoPhanUngEntity {
 	@ManyToOne
 	@JoinColumn(name = "tao_boi")
 	private TaiKhoanEntity taoBoi;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 
 	public enum KenhBaoCao {
