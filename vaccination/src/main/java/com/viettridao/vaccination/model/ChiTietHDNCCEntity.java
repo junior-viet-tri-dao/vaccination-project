@@ -3,6 +3,8 @@ package com.viettridao.vaccination.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,8 +51,17 @@ public class ChiTietHDNCCEntity {
 
     @Column(name = "don_gia")
     private Integer donGia;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tinh_trang_nhap_kho", length = 20, nullable = false)
+    private TinhTrangNhapKho tinhTrangNhapKho = TinhTrangNhapKho.CHUA_NHAP;
 
     private Boolean isDeleted = Boolean.FALSE;
+    
+    public enum TinhTrangNhapKho {
+        CHUA_NHAP,
+        DA_NHAP
+    }
 }
 
 

@@ -67,10 +67,11 @@
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Sửa -->
-                        <a th:href="@{/finance/transactions-customer/update/{id}(id=${tc.soHoaDon})}"
-                           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                            Sửa
-                        </a>
+                      <a th:href="@{/finance/transactions-customer/update/{soHoaDon}(soHoaDon=${tc.soHoaDon})}"
+						   class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+						   Sửa
+						</a>
+
 
                         <!-- Xóa -->
                         <form th:id="'deleteForm-' + ${tc.soHoaDon}"
