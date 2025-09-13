@@ -24,6 +24,9 @@ public class GiaoDichNhaCungCapRequest {
 	@NotBlank(message = "Mã hóa đơn không được để trống")
 	private String soHoaDon;
 
+	@NotBlank(message = "Tên vắc xin không được để trống")
+	private String tenVacXin;
+
 	@NotNull(message = "Ngày hóa đơn không được để trống")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	@PastOrPresent(message = "Ngày hóa đơn không được là tương lai")
@@ -41,7 +44,7 @@ public class GiaoDichNhaCungCapRequest {
 
 	@NotNull(message = "Đơn giá không được để trống")
 	@Min(value = 100, message = "Đơn giá phải lớn hơn 100 VND")
-	private Integer gia; // Giá (VND)
+	private Integer gia; 
 
 	@NotBlank(message = "Tên nhà cung cấp không được để trống")
 	private String tenNhaCungCap;

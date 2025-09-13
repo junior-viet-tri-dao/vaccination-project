@@ -35,6 +35,16 @@
                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
             <p th:if="${#fields.hasErrors('soHoaDon')}" th:errors="*{soHoaDon}" class="text-red-600 text-sm mt-1"></p>
         </div>
+        
+        
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tên Vắc Xin</label>
+            <input type="text" th:field="*{tenVacXin}" 
+                   placeholder="Nhập tên vắc xin"
+                   class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
+            <p th:if="${#fields.hasErrors('tenVacXin')}" th:errors="*{tenVacXin}" class="text-red-600 text-sm mt-1"></p>
+        </div>
 		
         <!-- Mã lô -->
         <div>
