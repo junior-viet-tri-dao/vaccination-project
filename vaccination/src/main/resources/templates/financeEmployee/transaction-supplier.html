@@ -32,7 +32,8 @@
                 <th class="border px-4 py-2">STT</th>
                 <th class="border px-4 py-2">Ngày</th>
                 <th class="border px-4 py-2">Mã Hóa Đơn</th>
-                <th class="border px-4 py-2">Mã Vắc xin</th>
+                <th class="border px-4 py-2">Tên Vắc Xin</th>             
+                <th class="border px-4 py-2">Mã Vắc Xin</th>
                 <th class="border px-4 py-2">Mã Lô Vắc Xin</th>
                 <th class="border px-4 py-2">Số Lượng</th>
                 <th class="border px-4 py-2">Nhà Cung Cấp</th>
@@ -51,7 +52,9 @@
 
                 <!-- Mã hóa đơn -->
                 <td class="border px-4 py-2" th:text="${ts.soHoaDon}"></td>
-
+                
+                <td class="border px-4 py-2" th:text="${ts.tenVacXin}"></td>
+                
                 <!-- Mã vắc xin -->
                 <td class="border px-4 py-2" th:text="${ts.maVacXin}"></td>
                 

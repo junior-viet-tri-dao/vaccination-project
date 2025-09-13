@@ -78,9 +78,8 @@ public class GiaoDichNccServiceImpl implements GiaoDichNccService {
 				.orElseGet(() -> hoaDonNCCRepository.save(HoaDonNCCEntity.builder().soHoaDon(request.getSoHoaDon())
 						.ngayHD(request.getNgay()).nhaCungCap(nhaCungCap).isDeleted(false).build()));
 
-		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
-				.orElseGet(() -> vacXinRepository.save(VacXinEntity.builder().maCode(request.getMaVacXin())
-						.ten(request.getMaVacXin()).isDeleted(false).build()));
+		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin()).orElseGet(() -> vacXinRepository
+				.save(VacXinEntity.builder().maCode(request.getMaVacXin()).isDeleted(false).build()));
 
 		LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLo())
 				.orElseGet(() -> loVacXinRepository.save(LoVacXinEntity.builder().maLoCode(request.getMaLo())
@@ -99,33 +98,39 @@ public class GiaoDichNccServiceImpl implements GiaoDichNccService {
 	@Transactional
 	@Override
 	public GiaoDichNhaCungCapResponse update(GiaoDichNhaCungCapRequest request) {
+		// 1. Tìm chi tiết hóa đơn theo số hóa đơn
 		ChiTietHDNCCEntity chiTiet = chiTietRepo.findByHoaDonNCCSoHoaDonAndIsDeletedFalse(request.getSoHoaDon())
 				.stream().findFirst().orElseThrow(() -> new RuntimeException("Không tìm thấy giao dịch để cập nhật"));
 
-		// Cập nhật thông tin
+		// 2. Cập nhật các trường được phép sửa
 		chiTiet.setSoLuong(request.getSoLuong());
-		chiTiet.setDonGia(request.getGia()); // gán giá từ request
+		chiTiet.setDonGia(request.getGia());
 		chiTiet.setIsDeleted(false);
 
-		// Cập nhật Lô vắc xin nếu cần
-		LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLo())
-				.orElseThrow(() -> new RuntimeException("Không tìm thấy lô vắc xin"));
-
-		chiTiet.setLoVacXin(loVacXin);
-
-		// Cập nhật Vắc xin nếu cần
-		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
-				.orElseThrow(() -> new RuntimeException("Không tìm thấy vắc xin"));
-
-		chiTiet.setVacXin(vacXin);
-
-		// Cập nhật Hóa đơn/Nhà cung cấp nếu cần
+		// 3. Cập nhật Ngày hóa đơn
 		HoaDonNCCEntity hoaDon = hoaDonNCCRepository.findBySoHoaDon(request.getSoHoaDon())
-				.orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn"));
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy hóa đơn: " + request.getSoHoaDon()));
+		hoaDon.setNgayHD(request.getNgay());
 
-		chiTiet.setHoaDonNCC(hoaDon);
+		// 4. Cập nhật Tên vắc xin (không thay đổi mã vắc xin)
+		if (request.getTenVacXin() != null && !request.getTenVacXin().isBlank()) {
+			VacXinEntity vacXin = chiTiet.getVacXin();
+			vacXin.setTen(request.getTenVacXin());
+			chiTiet.setVacXin(vacXin);
+		}
 
-		return mapper.toResponse(chiTietRepo.save(chiTiet));
+		// 5. Cập nhật Nhà cung cấp (nếu có)
+		if (request.getTenNhaCungCap() != null && !request.getTenNhaCungCap().isBlank()) {
+			NhaCungCapEntity nhaCungCap = nhaCungCapRepository.findByTen(request.getTenNhaCungCap()).orElseThrow(
+					() -> new RuntimeException("Không tìm thấy nhà cung cấp: " + request.getTenNhaCungCap()));
+			hoaDon.setNhaCungCap(nhaCungCap);
+		}
+
+		// 6. Lưu lại thay đổi
+		ChiTietHDNCCEntity saved = chiTietRepo.save(chiTiet);
+
+		// 7. Convert sang response
+		return mapper.toResponse(saved);
 	}
 
 	// Xóa mềm theo mã hóa đơn

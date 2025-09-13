@@ -255,6 +255,7 @@ public class FinanceEmployeeController {
 		request.setNgay(transaction.getNgay());
 		request.setMaLo(transaction.getMaLo());
 		request.setMaVacXin(transaction.getMaVacXin());
+		request.setTenVacXin(transaction.getTenVacXin());
 		request.setSoLuong(transaction.getSoLuong());
 		request.setGia(transaction.getGia());
 		request.setTenNhaCungCap(transaction.getNhaCungCap());
