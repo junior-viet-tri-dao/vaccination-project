@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -115,7 +114,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public WarehouseResponse exportVaccine(ExportRequest request) {
-        LoVacXinEntity loVacXin = warehouseRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLoCode())
+        LoVacXinEntity loVacXin = warehouseRepository.findByMaLoCodeDaNhapKho(request.getMaLoCode())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lô vắc-xin"));
 
         if (request.getQuantity() <= 0) {
@@ -199,30 +198,33 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private Page<WarehouseResponse> fetchPage(String searchType, String keyword, int pageNo, int pageSize) {
         PageRequest pageable = PageRequest.of(pageNo, pageSize);
+
+        // Truy vấn lô vắc xin liên kết với Chi tiết hóa đơn NCC có trạng thái ĐÃ_NHẬP
         Page<LoVacXinEntity> entities;
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            entities = warehouseRepository.findAllNotDeleted(pageable);
+            entities = warehouseRepository.findAllDaNhapKho(pageable);
         } else {
             switch (searchType) {
                 case "tenVacXin":
-                    entities = warehouseRepository.findByTenVacXinNotDeleted(keyword.trim(), pageable);
+                    entities = warehouseRepository.findByTenVacXinDaNhapKho(keyword.trim(), pageable);
                     break;
                 case "loaiVacXin":
-                    entities = warehouseRepository.findByLoaiVacXinNotDeleted(keyword.trim(), pageable);
+                    entities = warehouseRepository.findByLoaiVacXinDaNhapKho(keyword.trim(), pageable);
                     break;
                 case "nuocSanXuat":
-                    entities = warehouseRepository.findByNuocSanXuatContainingIgnoreCaseAndIsDeletedFalse(keyword.trim(), pageable);
+                    entities = warehouseRepository.findByNuocSanXuatDaNhapKho(keyword.trim(), pageable);
                     break;
                 case "doiTuongTiem":
-                    entities = warehouseRepository.findByDoiTuongTiemNotDeleted(keyword.trim(), pageable);
+                    entities = warehouseRepository.findByDoiTuongTiemDaNhapKho(keyword.trim(), pageable);
                     break;
                 default:
-                    entities = warehouseRepository.findAllNotDeleted(pageable);
+                    entities = warehouseRepository.findAllDaNhapKho(pageable);
                     break;
             }
         }
 
+        // Map entity sang response
         return entities.map(warehouseMapper::toWarehouseResponse);
     }
 }
