@@ -13,25 +13,41 @@ import java.util.Optional;
 @Repository
 public interface WarehouseRepository extends JpaRepository<LoVacXinEntity, String> {
 
-    // Phân trang tất cả lô vắc xin chưa bị xóa mềm
-    @Query("SELECT l FROM LoVacXinEntity l WHERE l.isDeleted = false")
-    Page<LoVacXinEntity> findAllNotDeleted(Pageable pageable);
+    // Phân trang tất cả lô vắc xin liên kết với chi tiết hóa đơn NCC đã nhập kho (tình trạng ĐÃ_NHẬP)
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP'")
+    Page<LoVacXinEntity> findAllDaNhapKho(Pageable pageable);
 
-    // Tìm kiếm theo tên vắc xin (ignore case, phân trang, chưa bị xóa mềm)
-    @Query("SELECT l FROM LoVacXinEntity l WHERE l.isDeleted = false AND LOWER(l.vacXin.ten) LIKE LOWER(CONCAT('%', :tenVacXin, '%'))")
-    Page<LoVacXinEntity> findByTenVacXinNotDeleted(@Param("tenVacXin") String tenVacXin, Pageable pageable);
+    // Tìm kiếm theo tên vắc xin (ignore case, đã nhập kho, phân trang, chưa bị xóa mềm)
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP' " +
+            "AND LOWER(l.vacXin.ten) LIKE LOWER(CONCAT('%', :tenVacXin, '%'))")
+    Page<LoVacXinEntity> findByTenVacXinDaNhapKho(@Param("tenVacXin") String tenVacXin, Pageable pageable);
 
-    // Tìm kiếm theo loại vắc xin (ignore case, phân trang, chưa bị xóa mềm)
-    @Query("SELECT l FROM LoVacXinEntity l WHERE l.isDeleted = false AND LOWER(l.vacXin.loai) LIKE LOWER(CONCAT('%', :loaiVacXin, '%'))")
-    Page<LoVacXinEntity> findByLoaiVacXinNotDeleted(@Param("loaiVacXin") String loaiVacXin, Pageable pageable);
+    // Tìm kiếm theo loại vắc xin (ignore case, đã nhập kho, phân trang, chưa bị xóa mềm)
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP' " +
+            "AND LOWER(l.vacXin.loai) LIKE LOWER(CONCAT('%', :loaiVacXin, '%'))")
+    Page<LoVacXinEntity> findByLoaiVacXinDaNhapKho(@Param("loaiVacXin") String loaiVacXin, Pageable pageable);
 
-    // Tìm kiếm theo nước sản xuất (ignore case, phân trang, chưa bị xóa mềm)
-    Page<LoVacXinEntity> findByNuocSanXuatContainingIgnoreCaseAndIsDeletedFalse(String nuocSanXuat, Pageable pageable);
+    // Tìm kiếm theo nước sản xuất (ignore case, đã nhập kho, phân trang, chưa bị xóa mềm)
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP' " +
+            "AND LOWER(l.nuocSanXuat) LIKE LOWER(CONCAT('%', :nuocSanXuat, '%'))")
+    Page<LoVacXinEntity> findByNuocSanXuatDaNhapKho(@Param("nuocSanXuat") String nuocSanXuat, Pageable pageable);
 
-    // Tìm kiếm theo độ tuổi tiêm chủng (ignore case, phân trang, chưa bị xóa mềm)
-    @Query("SELECT l FROM LoVacXinEntity l WHERE l.isDeleted = false AND LOWER(l.vacXin.doiTuongTiem) LIKE LOWER(CONCAT('%', :doiTuongTiem, '%'))")
-    Page<LoVacXinEntity> findByDoiTuongTiemNotDeleted(@Param("doiTuongTiem") String doiTuongTiem, Pageable pageable);
+    // Tìm kiếm theo đối tượng tiêm chủng (ignore case, đã nhập kho, phân trang, chưa bị xóa mềm)
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP' " +
+            "AND LOWER(l.vacXin.doiTuongTiem) LIKE LOWER(CONCAT('%', :doiTuongTiem, '%'))")
+    Page<LoVacXinEntity> findByDoiTuongTiemDaNhapKho(@Param("doiTuongTiem") String doiTuongTiem, Pageable pageable);
 
-    // Tìm theo mã lô chưa bị xóa mềm
+    // Tìm theo mã lô đã nhập kho, chưa bị xóa mềm
+    @Query("SELECT l FROM LoVacXinEntity l JOIN ChiTietHDNCCEntity c ON c.loVacXin = l " +
+            "WHERE l.isDeleted = false AND c.tinhTrangNhapKho = 'DA_NHAP' AND LOWER(l.maLoCode) = LOWER(:maLoCode)")
+    Optional<LoVacXinEntity> findByMaLoCodeDaNhapKho(@Param("maLoCode") String maLoCode);
+
     Optional<LoVacXinEntity> findByMaLoCodeIgnoreCaseAndIsDeletedFalse(String maLoCode);
+
+
 }
