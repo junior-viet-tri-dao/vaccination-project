@@ -18,6 +18,8 @@ public interface ChiTietHdNccRepository extends JpaRepository<ChiTietHDNCCEntity
 
 	void deleteByLoVacXin(LoVacXinEntity loVacXin);
 
+    List<ChiTietHDNCCEntity> findByHoaDonNCCSoHoaDon(String soHoaDon);
+
 	Optional<ChiTietHDNCCEntity> findByIdAndTinhTrangNhapKhoAndIsDeletedFalse(String id, ChiTietHDNCCEntity.TinhTrangNhapKho tinhTrangNhapKho);
 
 	Optional<ChiTietHDNCCEntity> findBySoLoAndHoaDonNCC_SoHoaDonAndVacXin_TenAndIsDeletedFalse(
@@ -30,5 +32,8 @@ public interface ChiTietHdNccRepository extends JpaRepository<ChiTietHDNCCEntity
 	// Trả về các chi tiết hóa đơn NCC chưa nhập kho
 	@Query("SELECT c FROM ChiTietHDNCCEntity c WHERE c.tinhTrangNhapKho = 'CHUA_NHAP' AND c.isDeleted = false")
 	List<ChiTietHDNCCEntity> findChuaNhap();
+
+    // Nếu muốn chỉ lấy chưa xóa
+    List<ChiTietHDNCCEntity> findByHoaDonNCCSoHoaDonAndIsDeletedFalse(String soHoaDon);
 
 }

@@ -1,6 +1,14 @@
 package com.viettridao.vaccination.repository;
 
+import java.util.Optional;
+
 import com.viettridao.vaccination.model.HoaDonNCCEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface HoaDonNccRepository extends JpaRepository<HoaDonNCCEntity, String> { }
+import com.viettridao.vaccination.model.HoaDonNCCEntity;
+
+@Repository
+public interface HoaDonNccRepository extends JpaRepository<HoaDonNCCEntity, String> {
+    Optional<HoaDonNCCEntity> findBySoHoaDon(String soHoaDon);
+}

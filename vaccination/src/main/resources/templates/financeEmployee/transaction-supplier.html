@@ -18,7 +18,7 @@
 
     <!-- Nút thêm -->
     <div class="flex justify-end mb-4">
-        <a th:href="@{/finance/transactions-supplier/new}"
+        <a th:href="@{/finance/transactions-supplier/create}"
            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
             ➕ Thêm mới
         </a>
@@ -33,6 +33,7 @@
                 <th class="border px-4 py-2">Ngày</th>
                 <th class="border px-4 py-2">Mã Hóa Đơn</th>
                 <th class="border px-4 py-2">Mã Vắc xin</th>
+                <th class="border px-4 py-2">Mã Lô Vắc Xin</th>
                 <th class="border px-4 py-2">Số Lượng</th>
                 <th class="border px-4 py-2">Nhà Cung Cấp</th>
                 <th class="border px-4 py-2">Giá (VND)</th>
@@ -41,35 +42,47 @@
             </thead>
             <tbody>
             <tr th:each="ts, iterStat : ${transactions}" class="bg-white hover:bg-rose-50">
+                <!-- STT -->
+                <td class="border px-4 py-2" th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
+
+                <!-- Ngày -->
                 <td class="border px-4 py-2"
-                    th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
-                <td class="border px-4 py-2"
-                    th:text="${#temporals.format(ts.dateTimeSupplier, 'dd/MM/yyyy HH:mm')}"></td>
-                <td class="border px-4 py-2" th:text="${ts.invoiceCode}"></td>
-                <td class="border px-4 py-2" th:text="${ts.vaccineCode}"></td>
-                <td class="border px-4 py-2" th:text="${ts.quantity}"></td>
-                <td class="border px-4 py-2" th:text="${ts.supplierName}"></td>
-                <td class="border px-4 py-2"
-                    th:text="${#numbers.formatInteger(ts.price, 3, 'POINT')}"></td>
+                    th:text="${ts.ngay != null ? #temporals.format(ts.ngay, 'dd/MM/yyyy') : ''}"></td>
+
+                <!-- Mã hóa đơn -->
+                <td class="border px-4 py-2" th:text="${ts.soHoaDon}"></td>
+
+                <!-- Mã vắc xin -->
+                <td class="border px-4 py-2" th:text="${ts.maVacXin}"></td>
+                
+                <td class="border px-4 py-2" th:text="${ts.maLo}"></td>
+
+                <!-- Số lượng -->
+                <td class="border px-4 py-2" th:text="${ts.soLuong}"></td>
+
+                <!-- Nhà cung cấp -->
+                <td class="border px-4 py-2" th:text="${ts.nhaCungCap}"></td>
+
+                <!-- Giá -->
+                <td class="border px-4 py-2" th:text="${#numbers.formatInteger(ts.gia, 3, 'POINT')}"></td>
 
                 <!-- Thao tác -->
                 <td class="border px-4 py-2">
                     <div class="flex items-center justify-center gap-2">
                         <!-- Nút sửa -->
-                        <a th:href="@{/finance/transactions-supplier/edit/{id}(id=${ts.invoiceId})}"
+                        <a th:href="@{/finance/transactions-supplier/edit/{soHoaDon}(soHoaDon=${ts.soHoaDon})}"
                            class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
                             Sửa
                         </a>
 
                         <!-- Nút xóa -->
-                        <form th:id="'deleteForm-' + ${ts.invoiceId}"
-                              th:action="@{/finance/transactions-supplier/delete}" method="post"
-                              class="inline-block">
-                            <input type="hidden" name="invoiceId" th:value="${ts.invoiceId}">
+                        <form th:id="'deleteForm-' + ${ts.soHoaDon}" 
+                              th:action="@{/finance/transactions-supplier/delete}" method="post" class="inline-block">
+                            <input type="hidden" name="soHoaDon" th:value="${ts.soHoaDon}">
                             <button type="button"
                                     class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                                    th:data-id="${ts.invoiceId}"
-                                    th:data-name="${ts.invoiceCode}">
+                                    th:data-id="${ts.soHoaDon}" 
+                                    th:data-name="${ts.soHoaDon}">
                                 Xóa
                             </button>
                         </form>

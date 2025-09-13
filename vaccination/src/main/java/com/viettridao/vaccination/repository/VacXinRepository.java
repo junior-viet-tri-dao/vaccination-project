@@ -1,13 +1,13 @@
 package com.viettridao.vaccination.repository;
 
-import com.viettridao.vaccination.model.VacXinEntity;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
 import com.viettridao.vaccination.model.VacXinEntity;
 
 @Repository
@@ -22,4 +22,5 @@ public interface VacXinRepository extends JpaRepository<VacXinEntity, String> {
 	Optional<VacXinEntity> findByMaCode(String maCode);
 
     List<VacXinEntity> findAllByIsDeletedFalse();
+
 }
