@@ -22,5 +22,5 @@ public interface VacXinRepository extends JpaRepository<VacXinEntity, String> {
 	Optional<VacXinEntity> findByMaCode(String maCode);
 
     List<VacXinEntity> findAllByIsDeletedFalse();
-    
+
 }

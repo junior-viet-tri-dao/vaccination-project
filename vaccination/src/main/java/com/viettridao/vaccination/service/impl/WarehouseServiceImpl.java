@@ -2,6 +2,7 @@ package com.viettridao.vaccination.service.impl;
 
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
+import com.viettridao.vaccination.dto.response.warehouse.HoaDonChuaNhapResponse;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.mapper.WarehouseMapper;
@@ -13,14 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
-    private final VacXinRepository vaccineRepository;
+    private final VacXinRepository vacXinRepository;
     private final LoVacXinRepository loVacXinRepository;
     private final BienDongKhoRepository bienDongKhoRepository;
     private final WarehouseMapper warehouseMapper;
@@ -30,26 +34,82 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public ImportResponse importVaccine(ImportRequest request) {
-        // Kiểm tra trùng mã lô
-        warehouseRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLoCode())
-                .ifPresent(existing -> {
-                    throw new IllegalArgumentException("Mã lô '" + request.getMaLoCode() + "' đã tồn tại!");
-                });
+        // Lấy chi tiết hóa đơn NCC theo mã chi tiết và trạng thái CHUA_NHAP
+        ChiTietHDNCCEntity chiTietHDNCC = chiTietHDNCCRepository
+                .findBySoLoAndHoaDonNCC_SoHoaDonAndVacXin_TenAndIsDeletedFalse(
+                        request.getMaLoCode(),
+                        request.getSoHoaDon(),
+                        request.getTenVacXin()
+                )
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chi tiết hóa đơn NCC!"));
 
-        // Lấy hoặc tạo VacXinEntity
-        VacXinEntity vacXin = vaccineRepository.findByTenAndIsDeletedFalse(request.getTenVacXin())
-                .orElseGet(() -> {
-                    VacXinEntity newVacXin = warehouseMapper.toVacXinEntity(request);
-                    newVacXin.setIsDeleted(Boolean.FALSE);
-                    return vaccineRepository.save(newVacXin);
-                });
+        // Lấy mã hóa đơn NCC
+        HoaDonNCCEntity hoaDonNCC = chiTietHDNCC.getHoaDonNCC();
 
-        // Tạo LoVacXinEntity
-        LoVacXinEntity loVacXin = warehouseMapper.toLoVacXinEntity(request, vacXin);
-        loVacXin.setIsDeleted(Boolean.FALSE);
-        LoVacXinEntity saved = loVacXinRepository.save(loVacXin);
+        // Lấy lô vắc xin theo mã lô từ chi tiết hóa đơn NCC
+        LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(chiTietHDNCC.getSoLo())
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lô vắc xin!"));
 
-        return warehouseMapper.toImportResponse(saved);
+        // Cập nhật các trường bổ sung từ request vào lô vắc xin
+        loVacXin.setNgaySanXuat(request.getNgaySanXuat());
+        loVacXin.setDonVi(request.getDonVi());
+        loVacXin.setHanSuDung(request.getHanSuDung());
+        loVacXin.setSoGiayPhep(request.getSoGiayPhep());
+        loVacXin.setDieuKienBaoQuan(request.getDieuKienBaoQuan());
+        loVacXin.setNuocSanXuat(request.getNuocSanXuat());
+        loVacXinRepository.save(loVacXin);
+
+        // Cập nhật các trường bổ sung từ request vào vắc xin
+        VacXinEntity vacXin = loVacXin.getVacXin(); // hoặc lấy từ repository nếu chưa có
+        vacXin.setDoiTuongTiem(request.getDoiTuongTiem());
+        vacXinRepository.save(vacXin); // Lưu lại nếu thay đổi
+
+        // Cập nhật trạng thái chi tiết hóa đơn NCC thành ĐÃ_NHẬP và liên kết lô vắc xin
+        chiTietHDNCC.setTinhTrangNhapKho(ChiTietHDNCCEntity.TinhTrangNhapKho.DA_NHAP);
+        chiTietHDNCC.setLoVacXin(loVacXin);
+        chiTietHDNCCRepository.save(chiTietHDNCC);
+
+        // Tạo mới biến động kho với loại "Nhập"
+        BienDongKhoEntity bienDongKho = BienDongKhoEntity.builder()
+                .loVacXin(loVacXin)
+                .loaiBD(BienDongKhoEntity.LoaiBienDong.NHAP)
+                .loaiHoaDon(BienDongKhoEntity.LoaiHoaDon.NCC)
+                .maHoaDon(hoaDonNCC.getSoHoaDon())
+                .soLuong(chiTietHDNCC.getSoLuong())
+                .ngayThucHien(LocalDateTime.now())
+                .ghiChu("Nhập kho từ hóa đơn NCC")
+                .isDeleted(Boolean.FALSE)
+                .build();
+        bienDongKhoRepository.save(bienDongKho);
+
+        // Trả về ImportResponse
+        ImportResponse response = warehouseMapper.toImportResponse(loVacXin);
+        response.setSoHoaDon(hoaDonNCC.getSoHoaDon());
+        response.setTenVacXin(loVacXin.getVacXin().getTen());
+        response.setMaLoCode(loVacXin.getMaLoCode());
+        response.setSoLuong(loVacXin.getSoLuong());
+        response.setDonGia(loVacXin.getDonGia());
+        response.setNgayNhap(loVacXin.getNgayNhap());
+
+        return response;
+    }
+
+    @Override
+    public List<HoaDonChuaNhapResponse> getHoaDonChuaNhap() {
+        // Truy vấn từ repo, map sang DTO
+        // Ví dụ:
+        List<ChiTietHDNCCEntity> chiTietList = chiTietHDNCCRepository.findChuaNhap();
+        return chiTietList.stream().map(ct -> {
+            HoaDonChuaNhapResponse dto = new HoaDonChuaNhapResponse();
+            dto.setSoHoaDon(ct.getHoaDonNCC().getSoHoaDon());
+            dto.setMaLoCode(ct.getSoLo());
+            dto.setTenVacXin(ct.getVacXin().getTen());
+            dto.setLoaiVacXin(ct.getVacXin().getLoai());
+            dto.setNgayNhap(ct.getHoaDonNCC().getNgayHD().toString()); // format nếu LocalDate
+            dto.setSoLuong(ct.getSoLuong());
+            dto.setDonGia(ct.getDonGia());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -93,7 +153,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
         bienDong.setSoLuong(request.getQuantity());
         bienDong.setMaHoaDon(maHoaDon); // String
-        bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.HOILO); // Loại hóa đơn là NCC
+        bienDong.setLoaiHoaDon(BienDongKhoEntity.LoaiHoaDon.KHAC); // Loại hóa đơn là NCC
         bienDong.setGhiChu("Xuất kho vắc-xin từ lô " + loVacXin.getMaLoCode());
         bienDong.setNgayThucHien(java.time.LocalDateTime.now());
 
@@ -145,16 +205,16 @@ public class WarehouseServiceImpl implements WarehouseService {
             entities = warehouseRepository.findAllNotDeleted(pageable);
         } else {
             switch (searchType) {
-                case "name":
+                case "tenVacXin":
                     entities = warehouseRepository.findByTenVacXinNotDeleted(keyword.trim(), pageable);
                     break;
-                case "type":
+                case "loaiVacXin":
                     entities = warehouseRepository.findByLoaiVacXinNotDeleted(keyword.trim(), pageable);
                     break;
-                case "origin":
+                case "nuocSanXuat":
                     entities = warehouseRepository.findByNuocSanXuatContainingIgnoreCaseAndIsDeletedFalse(keyword.trim(), pageable);
                     break;
-                case "age":
+                case "doiTuongTiem":
                     entities = warehouseRepository.findByDoiTuongTiemNotDeleted(keyword.trim(), pageable);
                     break;
                 default:
