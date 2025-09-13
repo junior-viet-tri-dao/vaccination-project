@@ -1,11 +1,13 @@
 package com.viettridao.vaccination.service;
 
+import com.viettridao.vaccination.dto.response.warehouse.HoaDonChuaNhapResponse;
 import org.springframework.data.domain.Page;
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 
+import java.util.List;
 
 
 public interface WarehouseService {
@@ -30,4 +32,7 @@ public interface WarehouseService {
      * Xuất kho
      */
     WarehouseResponse exportVaccine(ExportRequest request);
+
+    List<HoaDonChuaNhapResponse> getHoaDonChuaNhap();
+
 }

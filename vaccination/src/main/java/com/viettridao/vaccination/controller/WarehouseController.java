@@ -1,7 +1,10 @@
 package com.viettridao.vaccination.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viettridao.vaccination.dto.request.warehouse.ExportRequest;
 import com.viettridao.vaccination.dto.request.warehouse.ImportRequest;
+import com.viettridao.vaccination.dto.response.warehouse.HoaDonChuaNhapResponse;
 import com.viettridao.vaccination.dto.response.warehouse.ImportResponse;
 import com.viettridao.vaccination.dto.response.warehouse.WarehouseResponse;
 import com.viettridao.vaccination.service.WarehouseService;
@@ -13,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,7 +43,7 @@ public class WarehouseController {
 
         model.addAttribute("tab", "warehouse");
         model.addAttribute("pageTitle", "Quản lý kho vắc xin");
-        model.addAttribute("vaccinePage", warehousePage);
+        model.addAttribute("warehousePage", warehousePage);
         model.addAttribute("currentPage", warehousePage.getNumber());
         model.addAttribute("pageSize", size);
         model.addAttribute("searchType", searchType);
@@ -54,12 +59,22 @@ public class WarehouseController {
     public String showImportVaccineForm(Model model) {
         model.addAttribute("tab", "import");
         model.addAttribute("importRequest", new ImportRequest());
+
+        // Lấy danh sách số hóa đơn chưa nhập kho để đổ vào dropdown
+        List<HoaDonChuaNhapResponse> hoaDonChuaNhapList = warehouseService.getHoaDonChuaNhap();
+        model.addAttribute("hoaDonChuaNhapList", hoaDonChuaNhapList);
+
+        String hoaDonChuaNhapListJson;
+        try {
+            hoaDonChuaNhapListJson = new ObjectMapper().writeValueAsString(hoaDonChuaNhapList);
+        } catch (JsonProcessingException e) {
+            hoaDonChuaNhapListJson = "[]";
+        }
+        model.addAttribute("hoaDonChuaNhapListJson", hoaDonChuaNhapListJson);
+
         return "warehouse/importvaccine";
     }
 
-    /**
-     * Xử lý submit form import
-     */
     @PostMapping("/importvaccine")
     public String importVaccine(
             @Valid @ModelAttribute("importRequest") ImportRequest importRequest,
@@ -69,22 +84,24 @@ public class WarehouseController {
     ) {
         model.addAttribute("tab", "import");
 
+        List<HoaDonChuaNhapResponse> hoaDonChuaNhapList = warehouseService.getHoaDonChuaNhap();
+        model.addAttribute("hoaDonChuaNhapList", hoaDonChuaNhapList);
+
+        String hoaDonChuaNhapListJson;
+        try {
+            hoaDonChuaNhapListJson = new ObjectMapper().writeValueAsString(hoaDonChuaNhapList);
+        } catch (JsonProcessingException e) {
+            hoaDonChuaNhapListJson = "[]";
+        }
+        model.addAttribute("hoaDonChuaNhapListJson", hoaDonChuaNhapListJson);
+
         if (bindingResult.hasErrors()) {
             return "warehouse/importvaccine";
         }
 
-        try {
-            ImportResponse response = warehouseService.importVaccine(importRequest);
-            redirectAttributes.addFlashAttribute("success", "Nhập kho vắc-xin thành công!");
-            return "redirect:/warehouse";
-        } catch (IllegalArgumentException ex) {
-            if (ex.getMessage().contains("Mã lô")) {
-                bindingResult.rejectValue("maLoCode", "error.maLoCode", ex.getMessage());
-            } else {
-                bindingResult.reject("error.global", ex.getMessage());
-            }
-            return "warehouse/importvaccine";
-        }
+        ImportResponse response = warehouseService.importVaccine(importRequest);
+        redirectAttributes.addFlashAttribute("success", "Nhập kho vắc-xin thành công!");
+        return "redirect:/warehouse";
     }
 
     /**

@@ -49,7 +49,7 @@ public class BienDongKhoEntity {
 	private String maHoaDon;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "loai_hoa_don")
+	@Column(name = "loai_hoa_don", length = 10)
 	private LoaiHoaDon loaiHoaDon;
 
 	@Column(name = "ghi_chu")
@@ -67,6 +67,6 @@ public class BienDongKhoEntity {
 	}
 
 	public enum LoaiHoaDon {
-		NCC, KHACH,HOILO
+		NCC, KHACH, KHAC
 	}
 }
