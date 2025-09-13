@@ -25,6 +25,7 @@ public interface GiaoDichNccMapper {
 	@Mapping(source = "ngay", target = "hoaDonNCC.ngayHD")
 	@Mapping(source = "maLo", target = "soLo")
 	@Mapping(source = "maVacXin", target = "vacXin.maCode")
+    @Mapping(source = "tenVacXin", target = "vacXin.ten") 
 	@Mapping(source = "soLuong", target = "soLuong")
 	@Mapping(source = "gia", target = "donGia")
 	@Mapping(target = "tinhTrangNhapKho", expression = "java(ChiTietHDNCCEntity.TinhTrangNhapKho.CHUA_NHAP)")
