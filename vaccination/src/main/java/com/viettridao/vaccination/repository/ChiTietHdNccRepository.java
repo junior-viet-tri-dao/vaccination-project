@@ -16,5 +16,10 @@ public interface ChiTietHdNccRepository extends JpaRepository<ChiTietHDNCCEntity
 	List<ChiTietHDNCCEntity> findAllByLoVacXinAndIsDeletedFalse(LoVacXinEntity loVacXin);
 
 	void deleteByLoVacXin(LoVacXinEntity loVacXin);
+	    
+    List<ChiTietHDNCCEntity> findByHoaDonNCCSoHoaDon(String soHoaDon);
 
+    // Nếu muốn chỉ lấy chưa xóa
+    List<ChiTietHDNCCEntity> findByHoaDonNCCSoHoaDonAndIsDeletedFalse(String soHoaDon);
+    
 }

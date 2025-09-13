@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.viettridao.vaccination.dto.request.finance.GiaoDichKhachHangRequest;
+import com.viettridao.vaccination.dto.request.finance.GiaoDichNhaCungCapRequest;
 import com.viettridao.vaccination.dto.request.finance.QuanLyGiaVacXinUpdateRequest;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
+import com.viettridao.vaccination.dto.response.finance.GiaoDichNhaCungCapResponse;
 import com.viettridao.vaccination.dto.response.finance.QuanLyGiaVacXinResponse;
 import com.viettridao.vaccination.service.BenhNhanService;
 import com.viettridao.vaccination.service.GiaoDichKhachHangService;
+import com.viettridao.vaccination.service.GiaoDichNccService;
 import com.viettridao.vaccination.service.QuanLyGiaVacXinService;
 import com.viettridao.vaccination.service.VacXinService;
 
@@ -36,6 +40,7 @@ public class FinanceEmployeeController {
 	private final BenhNhanService benhNhanService;
 	private final QuanLyGiaVacXinService quanLyGiaVacXinService;
 	private final GiaoDichKhachHangService giaoDichKhachHangService;
+	private final GiaoDichNccService giaoDichNccService;
 
 	// --- Vaccine Price ---
 	@GetMapping("/vaccine-price")
@@ -110,88 +115,85 @@ public class FinanceEmployeeController {
 
 	@GetMapping("/transactions-customer/create")
 	public String showCreateForm(Model model) {
-	    if (!model.containsAttribute("transactionRequest")) {
-	        GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
-	        dto.setNgayHD(LocalDateTime.now());
-	        model.addAttribute("transactionRequest", dto);
-	    }
+		if (!model.containsAttribute("transactionRequest")) {
+			GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
+			dto.setNgayHD(LocalDateTime.now());
+			model.addAttribute("transactionRequest", dto);
+		}
 
-	    model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	    model.addAttribute("patients", benhNhanService.getAllPatients());
+		model.addAttribute("vaccines", vacXinService.getAllVaccines());
+		model.addAttribute("patients", benhNhanService.getAllPatients());
 
-	    return "financeEmployee/create-transaction-customer";
+		return "financeEmployee/create-transaction-customer";
 	}
 
 	@PostMapping("/transactions-customer/create")
 	public String createTransaction(@Valid @ModelAttribute("transactionRequest") GiaoDichKhachHangRequest request,
-	        BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
+			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
-	    if (bindingResult.hasErrors()) {
-	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	        model.addAttribute("patients", benhNhanService.getAllPatients());
-	        return "financeEmployee/create-transaction-customer";
-	    }
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("vaccines", vacXinService.getAllVaccines());
+			model.addAttribute("patients", benhNhanService.getAllPatients());
+			return "financeEmployee/create-transaction-customer";
+		}
 
-	    try {
-	        giaoDichKhachHangService.create(request);
-	        redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
-	    } catch (Exception e) {
-	        model.addAttribute("transactionRequest", request);
-	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	        model.addAttribute("patients", benhNhanService.getAllPatients());
-	        model.addAttribute("error", "Tạo giao dịch thất bại: " + e.getMessage());
-	        return "financeEmployee/create-transaction-customer";
-	    }
+		try {
+			giaoDichKhachHangService.create(request);
+			redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
+		} catch (Exception e) {
+			model.addAttribute("transactionRequest", request);
+			model.addAttribute("vaccines", vacXinService.getAllVaccines());
+			model.addAttribute("patients", benhNhanService.getAllPatients());
+			model.addAttribute("error", "Tạo giao dịch thất bại: " + e.getMessage());
+			return "financeEmployee/create-transaction-customer";
+		}
 
-	    return "redirect:/finance/transactions-customer";
+		return "redirect:/finance/transactions-customer";
 	}
-	
+
 	@GetMapping("/transactions-customer/update/{soHoaDon}")
 	public String showEditTransaction(@PathVariable("soHoaDon") String soHoaDon, Model model) {
-	    GiaoDichKhachHangResponse transaction = giaoDichKhachHangService.getByMaHoaDon(soHoaDon);
+		GiaoDichKhachHangResponse transaction = giaoDichKhachHangService.getByMaHoaDon(soHoaDon);
 
-	    GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
-	    request.setNgayHD(transaction.getNgayHD());
-	    request.setSoHoaDon(transaction.getSoHoaDon());
-	    request.setMaVacXin(transaction.getMaVacXin());
-	    request.setSoLuong(transaction.getSoLuong());
-	    request.setTenKhachHang(transaction.getTenKhachHang());
-	    request.setGia(transaction.getGia());
+		GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
+		request.setNgayHD(transaction.getNgayHD());
+		request.setSoHoaDon(transaction.getSoHoaDon());
+		request.setMaVacXin(transaction.getMaVacXin());
+		request.setSoLuong(transaction.getSoLuong());
+		request.setTenKhachHang(transaction.getTenKhachHang());
+		request.setGia(transaction.getGia());
 
-	    model.addAttribute("transactionRequest", request);
-	    model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	    model.addAttribute("patients", benhNhanService.getAllPatients());
+		model.addAttribute("transactionRequest", request);
+		model.addAttribute("vaccines", vacXinService.getAllVaccines());
+		model.addAttribute("patients", benhNhanService.getAllPatients());
 
-	    return "financeEmployee/edit-transaction-customer";
+		return "financeEmployee/edit-transaction-customer";
 	}
 
 	// Xử lý update giao dịch
 	@PostMapping("/transactions-customer/update")
 	public String updateTransaction(@Valid @ModelAttribute("transactionRequest") GiaoDichKhachHangRequest request,
-	                                BindingResult bindingResult,
-	                                Model model,
-	                                RedirectAttributes redirectAttrs) {
+			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
-	    if (bindingResult.hasErrors()) {
-	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	        model.addAttribute("patients", benhNhanService.getAllPatients());
-	        return "financeEmployee/edit-transaction-customer";
-	    }
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("vaccines", vacXinService.getAllVaccines());
+			model.addAttribute("patients", benhNhanService.getAllPatients());
+			return "financeEmployee/edit-transaction-customer";
+		}
 
-	    try {
-	        giaoDichKhachHangService.update(request);
-	        redirectAttrs.addFlashAttribute("success", "Cập nhật giao dịch thành công!");
-	    } catch (Exception e) {
-	        model.addAttribute("transactionRequest", request);
-	        model.addAttribute("vaccines", vacXinService.getAllVaccines());
-	        model.addAttribute("patients", benhNhanService.getAllPatients());
-	        model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
-	        return "financeEmployee/edit-transaction-customer";
-	    }
+		try {
+			giaoDichKhachHangService.update(request);
+			redirectAttrs.addFlashAttribute("success", "Cập nhật giao dịch thành công!");
+		} catch (Exception e) {
+			model.addAttribute("transactionRequest", request);
+			model.addAttribute("vaccines", vacXinService.getAllVaccines());
+			model.addAttribute("patients", benhNhanService.getAllPatients());
+			model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+			return "financeEmployee/edit-transaction-customer";
+		}
 
-	    return "redirect:/finance/transactions-customer";
+		return "redirect:/finance/transactions-customer";
 	}
-
 
 	@PostMapping("/transactions-customer/delete")
 	public String deleteTransaction(@RequestParam String maHoaDon, RedirectAttributes redirectAttrs) {
@@ -203,4 +205,92 @@ public class FinanceEmployeeController {
 		}
 		return "redirect:/finance/transactions-customer";
 	}
+
+	@GetMapping("/transactions-supplier")
+	public String transactionsSupplier(Model model, @RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size) {
+
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GiaoDichNhaCungCapResponse> pageResult = giaoDichNccService.getAll(pageable);
+
+		model.addAttribute("transactions", pageResult.getContent());
+		model.addAttribute("currentPage", pageResult.getNumber());
+		model.addAttribute("pageSize", pageResult.getSize());
+		model.addAttribute("totalPages", pageResult.getTotalPages());
+
+		return "financeEmployee/transaction-supplier";
+	}
+
+	@GetMapping("/transactions-supplier/create")
+	public String showCreateTransactionForm(Model model) {
+		model.addAttribute("giaoDichRequest", new GiaoDichNhaCungCapRequest());
+		return "financeEmployee/create-transaction-supplier";
+	}
+
+	@PostMapping("/transactions-supplier/create")
+	public String createTransaction(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
+			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
+
+		if (bindingResult.hasErrors()) {
+			return "financeEmployee/create-transaction-supplier";
+		}
+
+		try {
+			giaoDichNccService.create(request); // Service sẽ xử lý map và lưu entity
+			redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
+		} catch (Exception e) {
+			model.addAttribute("error", "Tạo giao dịch thất bại: " + e.getMessage());
+			return "financeEmployee/create-transaction-supplier";
+		}
+
+		return "redirect:/finance/transactions-supplier";
+	}
+
+	@GetMapping("/transactions-supplier/edit/{soHoaDon}")
+	public String showEditTransactionForm(@PathVariable String soHoaDon, Model model) {
+		GiaoDichNhaCungCapResponse transaction = giaoDichNccService.getBySoHoaDon(soHoaDon);
+
+		GiaoDichNhaCungCapRequest request = new GiaoDichNhaCungCapRequest();
+		request.setSoHoaDon(transaction.getSoHoaDon());
+		request.setNgay(transaction.getNgay());
+		request.setMaLo(transaction.getMaLo());
+		request.setMaVacXin(transaction.getMaVacXin());
+		request.setSoLuong(transaction.getSoLuong());
+		request.setGia(transaction.getGia());
+		request.setTenNhaCungCap(transaction.getNhaCungCap());
+
+		model.addAttribute("giaoDichRequest", request);
+		return "financeEmployee/edit-transaction-supplier";
+	}
+
+	@PostMapping("/transactions-supplier/update")
+	public String updateTransaction(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
+			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
+
+		if (bindingResult.hasErrors()) {
+			return "financeEmployee/edit-transaction-supplier";
+		}
+
+		try {
+			giaoDichNccService.update(request);
+			redirectAttrs.addFlashAttribute("success", "Cập nhật giao dịch thành công!");
+		} catch (Exception e) {
+			model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+			return "financeEmployee/edit-transaction-supplier";
+		}
+
+		return "redirect:/finance/transactions-supplier";
+	}
+
+	@PostMapping("/transactions-supplier/delete")
+	public String deleteSupplierTransaction(@RequestParam String soHoaDon, RedirectAttributes redirectAttrs) {
+		try {
+			giaoDichNccService.softDeleteBySoHoaDon(soHoaDon);
+			redirectAttrs.addFlashAttribute("success", "Xóa giao dịch thành công!");
+		} catch (Exception e) {
+			redirectAttrs.addFlashAttribute("error", "Xóa giao dịch thất bại: " + e.getMessage());
+		}
+		return "redirect:/finance/transactions-supplier";
+	}
+
 }

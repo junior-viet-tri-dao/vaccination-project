@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm giao dịch nhà cung cấp</title>
+    <title>Sửa giao dịch nhà cung cấp</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -11,10 +11,10 @@
 <div class="bg-white shadow-xl rounded-2xl w-full max-w-2xl p-8">
 
     <h2 class="text-2xl font-bold text-rose-700 text-center mb-6">
-        Thêm giao dịch nhà cung cấp
+        Sửa giao dịch nhà cung cấp
     </h2>
 
-    <form th:action="@{/finance/transactions-supplier/create}" 
+    <form th:action="@{/finance/transactions-supplier/update}" 
           th:object="${giaoDichRequest}" 
           method="post" 
           class="space-y-4">
@@ -27,13 +27,12 @@
             <p th:if="${#fields.hasErrors('ngay')}" th:errors="*{ngay}" class="text-red-600 text-sm mt-1"></p>
         </div>
 
-
-		<div>
+        <!-- Mã Hóa Đơn -->
+        <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Mã Hóa Đơn</label>
             <input type="text" th:field="*{soHoaDon}" 
-                   placeholder="Nhập mã lô vắc xin"
-                   class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2"/>
-            <p th:if="${#fields.hasErrors('soHoaDon')}" th:errors="*{soHoaDon}" class="text-red-600 text-sm mt-1"></p>
+                   readonly
+                   class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2 bg-gray-100"/>
         </div>
 		
         <!-- Mã lô -->
@@ -86,7 +85,7 @@
             <a th:href="@{/finance/transactions-supplier}" 
                class="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400">Hủy</a>
             <button type="submit" 
-                    class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Lưu</button>
+                    class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Cập nhật</button>
         </div>
 
     </form>
