@@ -79,7 +79,8 @@ public class GiaoDichNccServiceImpl implements GiaoDichNccService {
 						.ngayHD(request.getNgay()).nhaCungCap(nhaCungCap).isDeleted(false).build()));
 
 		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin()).orElseGet(() -> vacXinRepository
-				.save(VacXinEntity.builder().maCode(request.getMaVacXin()).isDeleted(false).build()));
+				.save(VacXinEntity.builder().maCode(request.getMaVacXin()).ten(request.getTenVacXin()).isDeleted(false).build()));
+
 
 		LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLo())
 				.orElseGet(() -> loVacXinRepository.save(LoVacXinEntity.builder().maLoCode(request.getMaLo())
