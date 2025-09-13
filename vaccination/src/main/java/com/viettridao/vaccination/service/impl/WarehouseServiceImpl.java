@@ -33,7 +33,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public ImportResponse importVaccine(ImportRequest request) {
-        // Lấy chi tiết hóa đơn NCC theo mã chi tiết và trạng thái CHUA_NHAP
+        // 1. Lấy chi tiết hóa đơn NCC theo mã lô, số hóa đơn, tên vắc xin
         ChiTietHDNCCEntity chiTietHDNCC = chiTietHDNCCRepository
                 .findBySoLoAndHoaDonNCC_SoHoaDonAndVacXin_TenAndIsDeletedFalse(
                         request.getMaLoCode(),
@@ -42,33 +42,42 @@ public class WarehouseServiceImpl implements WarehouseService {
                 )
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy chi tiết hóa đơn NCC!"));
 
-        // Lấy mã hóa đơn NCC
+        // 2. Lấy mã hóa đơn NCC
         HoaDonNCCEntity hoaDonNCC = chiTietHDNCC.getHoaDonNCC();
 
-        // Lấy lô vắc xin theo mã lô từ chi tiết hóa đơn NCC
+        // 3. Lấy lô vắc xin theo mã lô
         LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(chiTietHDNCC.getSoLo())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lô vắc xin!"));
 
-        // Cập nhật các trường bổ sung từ request vào lô vắc xin
+        // 4. Cập nhật các trường bổ sung từ request vào lô vắc xin
         loVacXin.setNgaySanXuat(request.getNgaySanXuat());
         loVacXin.setDonVi(request.getDonVi());
         loVacXin.setHanSuDung(request.getHanSuDung());
         loVacXin.setSoGiayPhep(request.getSoGiayPhep());
         loVacXin.setDieuKienBaoQuan(request.getDieuKienBaoQuan());
         loVacXin.setNuocSanXuat(request.getNuocSanXuat());
+        loVacXin.setHamLuong(request.getHamLuong());
+        loVacXin.setDonGia(request.getDonGia());
+        loVacXin.setNgayNhap(request.getNgayNhap());
+
+
+        NhaCungCapEntity nhaCungCap = hoaDonNCC.getNhaCungCap();
+        loVacXin.setNhaCungCap(nhaCungCap);
+
         loVacXinRepository.save(loVacXin);
 
-        // Cập nhật các trường bổ sung từ request vào vắc xin
+        // 5. Cập nhật các trường bổ sung từ request vào vắc xin
         VacXinEntity vacXin = loVacXin.getVacXin(); // hoặc lấy từ repository nếu chưa có
         vacXin.setDoiTuongTiem(request.getDoiTuongTiem());
+        vacXin.setLoai(request.getLoaiVacXin());                 // Thêm nếu có trường này
         vacXinRepository.save(vacXin); // Lưu lại nếu thay đổi
 
-        // Cập nhật trạng thái chi tiết hóa đơn NCC thành ĐÃ_NHẬP và liên kết lô vắc xin
+        // 6. Cập nhật trạng thái chi tiết hóa đơn NCC thành ĐÃ_NHẬP và liên kết lô vắc xin
         chiTietHDNCC.setTinhTrangNhapKho(ChiTietHDNCCEntity.TinhTrangNhapKho.DA_NHAP);
         chiTietHDNCC.setLoVacXin(loVacXin);
         chiTietHDNCCRepository.save(chiTietHDNCC);
 
-        // Tạo mới biến động kho với loại "Nhập"
+        // 7. Tạo mới biến động kho với loại "Nhập"
         BienDongKhoEntity bienDongKho = BienDongKhoEntity.builder()
                 .loVacXin(loVacXin)
                 .loaiBD(BienDongKhoEntity.LoaiBienDong.NHAP)
@@ -81,7 +90,7 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .build();
         bienDongKhoRepository.save(bienDongKho);
 
-        // Trả về ImportResponse
+        // 8. Trả về ImportResponse
         ImportResponse response = warehouseMapper.toImportResponse(loVacXin);
         response.setSoHoaDon(hoaDonNCC.getSoHoaDon());
         response.setTenVacXin(loVacXin.getVacXin().getTen());
