@@ -15,4 +15,7 @@ public interface BangGiaVacXinRepository extends JpaRepository<BangGiaVacXinEnti
     List<BangGiaVacXinEntity> findByVacXinIdOrderByHieuLucTuDesc(String maCode);
     
     void deleteByVacXin(VacXinEntity vacXin);
+    
+    List<BangGiaVacXinEntity> findByVacXinMaCodeOrderByHieuLucTuDesc(String maCode);
+
 }

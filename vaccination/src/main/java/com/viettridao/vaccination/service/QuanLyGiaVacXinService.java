@@ -13,7 +13,9 @@ public interface QuanLyGiaVacXinService {
 	QuanLyGiaVacXinResponse getByMaCode(String maCode);
 
 	void deleteByMaCode(String maCode);
-	
-    void updateGiaVacXin(QuanLyGiaVacXinUpdateRequest request);
+
+	void updateGiaVacXin(QuanLyGiaVacXinUpdateRequest request);
+
+	void createGiaVacXin(QuanLyGiaVacXinUpdateRequest request);
 
 }

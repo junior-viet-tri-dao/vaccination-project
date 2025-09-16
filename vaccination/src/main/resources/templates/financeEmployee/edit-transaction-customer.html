@@ -34,9 +34,10 @@
     <!-- Mã Vắc xin -->
     <div>
         <label>Mã Vắc xin</label>
-        <select th:field="*{maVacXin}" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
+        <select id="vaccineSelect" th:field="*{maVacXin}" required
+                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
             <option value="" disabled>-- Chọn Mã Vắc xin --</option>
-            <option th:each="v : ${vaccines}" th:value="${v.maCode}" th:text="${v.maCode}" 
+            <option th:each="v : ${vaccines}" th:value="${v.maCode}" th:text="${v.maCode}"
                     th:selected="${v.maCode == transactionRequest.maVacXin}"></option>
         </select>
         <p th:if="${#fields.hasErrors('maVacXin')}" th:errors="*{maVacXin}" class="text-red-500 text-sm mt-1"></p>
@@ -45,7 +46,7 @@
     <!-- Số lượng -->
     <div>
         <label>Số lượng</label>
-        <input type="number" th:field="*{soLuong}" min="1" required
+        <input type="number" id="soLuongInput" th:field="*{soLuong}" min="1" required
                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
         <p th:if="${#fields.hasErrors('soLuong')}" th:errors="*{soLuong}" class="text-red-500 text-sm mt-1"></p>
     </div>
@@ -53,19 +54,23 @@
     <!-- Tên Khách Hàng -->
     <div>
         <label>Tên Khách Hàng</label>
-        <select th:field="*{tenKhachHang}" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
+        <select th:field="*{tenKhachHang}" required
+                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
             <option value="" disabled>-- Chọn khách hàng --</option>
-            <option th:each="p : ${patients}" th:value="${p.hoTen}" th:text="${p.hoTen}" 
+            <option th:each="p : ${patients}" th:value="${p.hoTen}" th:text="${p.hoTen}"
                     th:selected="${p.hoTen == transactionRequest.tenKhachHang}"></option>
         </select>
         <p th:if="${#fields.hasErrors('tenKhachHang')}" th:errors="*{tenKhachHang}" class="text-red-500 text-sm mt-1"></p>
     </div>
 
-    <!-- Giá -->
+    <!-- Giá hiển thị / hidden -->
     <div>
         <label>Giá (VND)</label>
-        <input type="number" th:field="*{gia}" min="1000" step="1000" required
-               class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
+        <!-- Input hiển thị -->
+        <input id="giaDisplay" type="number" th:value="${transactionRequest.gia}" readonly
+               class="w-full border rounded-lg px-3 py-2 bg-gray-300 text-black"/>
+        <!-- Input hidden gửi về server -->
+        <input type="hidden" th:field="*{gia}" id="giaInput"/>
         <p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}" class="text-red-500 text-sm mt-1"></p>
     </div>
 
@@ -76,6 +81,36 @@
     </div>
 
   </form>
+
+  <!-- Script JS -->
+  <script th:inline="javascript">
+  /*<![CDATA[*/
+    const vaccinePriceMap = /*[[${vaccinePriceMap}]]*/ {};
+    const vaccineSelect = document.getElementById("vaccineSelect");
+    const giaDisplay = document.getElementById("giaDisplay");
+    const giaInput = document.getElementById("giaInput");
+    const soLuongInput = document.getElementById("soLuongInput");
+
+    // Giá gốc từ server (nếu mã vắc xin chưa thay đổi)
+    const giaGoc = parseInt(giaDisplay.value) || 0;
+
+    function updateGia() {
+        const maCode = vaccineSelect.value;
+        const donGia = vaccinePriceMap[maCode] || giaGoc;
+        const soLuong = parseInt(soLuongInput.value) || 1;
+        const tongTien = donGia * soLuong;
+
+        giaDisplay.value = tongTien;
+        giaInput.value = tongTien;
+    }
+
+    if(vaccineSelect && giaDisplay && giaInput && soLuongInput){
+        vaccineSelect.addEventListener("change", updateGia);
+        soLuongInput.addEventListener("input", updateGia);
+        updateGia(); // Cập nhật lúc load form
+    }
+  /*]]>*/
+  </script>
 
 </div>
 

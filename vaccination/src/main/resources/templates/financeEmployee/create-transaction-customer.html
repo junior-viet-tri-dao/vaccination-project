@@ -14,13 +14,13 @@
     Thêm giao dịch khách hàng
   </h2>
 
- <form th:action="@{/finance/transactions-customer/create}" th:object="${transactionRequest}" method="post" class="space-y-4">
+  <form th:action="@{/finance/transactions-customer/create}" th:object="${transactionRequest}" method="post" class="space-y-4">
 
     <!-- Ngày giao dịch -->
     <div>
         <label>Ngày giao dịch</label>
-       <input type="datetime-local" th:field="*{ngayHD}" required
-       class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
+        <input type="datetime-local" th:field="*{ngayHD}" required
+               class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
         <p th:if="${#fields.hasErrors('ngayHD')}" th:errors="*{ngayHD}" class="text-red-500 text-sm mt-1"></p>
     </div>
 
@@ -35,7 +35,8 @@
     <!-- Mã Vắc xin -->
     <div>
         <label>Mã Vắc xin</label>
-        <select id="vaccineSelect" th:field="*{maVacXin}" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
+        <select id="vaccineSelect" th:field="*{maVacXin}" required
+                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
             <option value="" disabled selected>-- Chọn Mã Vắc xin --</option>
             <option th:each="v : ${vaccines}" th:value="${v.maCode}" th:text="${v.maCode}"></option>
         </select>
@@ -45,7 +46,7 @@
     <!-- Số lượng -->
     <div>
         <label>Số lượng</label>
-        <input type="number" th:field="*{soLuong}" min="1" required
+        <input id="soLuongInput" type="number" th:field="*{soLuong}" min="1" required
                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
         <p th:if="${#fields.hasErrors('soLuong')}" th:errors="*{soLuong}" class="text-red-500 text-sm mt-1"></p>
     </div>
@@ -53,44 +54,72 @@
     <!-- Tên Khách Hàng -->
     <div>
         <label>Tên Khách Hàng</label>
-        <select id="patientCodeSelect" th:field="*{tenKhachHang}" required class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
+        <select id="patientCodeSelect" th:field="*{tenKhachHang}" required
+                class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400">
             <option value="" disabled selected>-- Chọn khách hàng --</option>
             <option th:each="p : ${patients}" th:value="${p.hoTen}" th:text="${p.hoTen}"></option>
         </select>
         <p th:if="${#fields.hasErrors('tenKhachHang')}" th:errors="*{tenKhachHang}" class="text-red-500 text-sm mt-1"></p>
     </div>
 
-    <!-- Giá -->
+    <!-- Giá (giá đơn / tổng tiền) -->
     <div>
-        <label>Giá (VND)</label>
-        <input type="number" th:field="*{gia}" min="1000" step="1000" required
-               class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400"/>
-        <p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}" class="text-red-500 text-sm mt-1"></p>
-    </div>
+	    <label>Giá (VND)</label>
+	    <input id="giaInput" type="number" th:field="*{gia}" min="1000" step="1000" required
+	           class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-400 bg-gray-300 text-black " readonly/>
+	    <p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}" class="text-red-500 text-sm mt-1"></p>
+	</div>
+
 
     <!-- Nút -->
     <div class="flex justify-end space-x-3 mt-6">
         <a th:href="@{/finance/transactions-customer}" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Hủy</a>
         <button type="submit" class="px-4 py-2 bg-rose-600 text-white rounded hover:bg-rose-700">Lưu</button>
     </div>
-</form>
+  </form>
 
-<!-- Script điền tự động tên khách hàng -->
-<script th:inline="javascript">
-/*<![CDATA[*/
+  <!-- Script JS -->
+  <script th:inline="javascript">
+  /*<![CDATA[*/
+    // --- Tự động điền tên khách hàng ---
     const patientNameMap = /*[[${patientNameMap}]]*/ {};
     const patientSelect = document.getElementById('patientCodeSelect');
-    const nameInput = document.getElementById('customerNameInput'); // nếu có input tên khách hàng
+    const nameInput = document.getElementById('customerNameInput');
 
     if(patientSelect && nameInput){
         patientSelect.addEventListener('change', function() {
             const code = this.value;
-            nameInput.value = patientNameMap[code] || '';
+            nameInput.value = patientNameMap[code] || code;
         });
     }
-/*]]>*/
-</script>
+
+    // --- Cập nhật giá đơn / tổng tiền ---
+    const vaccinePriceMap = /*[[${vaccinePriceMap}]]*/ {};
+    const vaccineSelect = document.getElementById("vaccineSelect");
+    const giaInput = document.getElementById("giaInput");
+    const soLuongInput = document.getElementById("soLuongInput");
+
+    function updateGia() {
+        const maCode = vaccineSelect.value;
+        const donGia = vaccinePriceMap[maCode] || 0;
+        const soLuong = parseInt(soLuongInput.value) || 0;
+
+        if (soLuong <= 0) {
+            giaInput.value = donGia; // Giá đơn
+        } else {
+            giaInput.value = donGia * soLuong; // Tổng tiền
+        }
+    }
+
+    if(vaccineSelect && giaInput && soLuongInput){
+        vaccineSelect.addEventListener("change", updateGia);
+        soLuongInput.addEventListener("input", updateGia);
+    }
+  /*]]>*/
+  </script>
+
 </div>
+
 <script th:src="@{/js/global.js}"></script>
 <div th:replace="~{alert :: alerts}"></div>
 </body>
