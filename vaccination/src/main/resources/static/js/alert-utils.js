@@ -15,7 +15,6 @@ function showError(message = "Đã xảy ra lỗi!") {
         icon: 'error',
         title: 'Lỗi!',
         text: message,
-//        timer: 5000
     });
 }
 

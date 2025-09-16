@@ -19,4 +19,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDonEntity, String> {
     
     @Query("SELECT hd FROM HoaDonEntity hd LEFT JOIN FETCH hd.chiTietHDs WHERE hd.isDeleted = false")
     List<HoaDonEntity> findAllWithChiTietHDs();
+    
+    
 }

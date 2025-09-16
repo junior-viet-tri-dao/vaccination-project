@@ -70,28 +70,55 @@ public class GiaoDichNccServiceImpl implements GiaoDichNccService {
 	@Transactional
 	@Override
 	public GiaoDichNhaCungCapResponse create(GiaoDichNhaCungCapRequest request) {
-		NhaCungCapEntity nhaCungCap = nhaCungCapRepository.findByTen(request.getTenNhaCungCap())
-				.orElseGet(() -> nhaCungCapRepository
-						.save(NhaCungCapEntity.builder().ten(request.getTenNhaCungCap()).isDeleted(false).build()));
+		// 1. Lấy hoặc tạo NhaCungCap
+		NhaCungCapEntity nhaCungCap = nhaCungCapRepository.findByTen(request.getTenNhaCungCap()).orElseGet(() -> {
+			NhaCungCapEntity newNcc = NhaCungCapEntity.builder().ten(request.getTenNhaCungCap()).isDeleted(false)
+					.build();
+			return nhaCungCapRepository.save(newNcc);
+		});
 
-		HoaDonNCCEntity hoaDon = hoaDonNCCRepository.findBySoHoaDon(request.getSoHoaDon())
-				.orElseGet(() -> hoaDonNCCRepository.save(HoaDonNCCEntity.builder().soHoaDon(request.getSoHoaDon())
-						.ngayHD(request.getNgay()).nhaCungCap(nhaCungCap).isDeleted(false).build()));
+		// 2. Lấy hoặc tạo HoaDon
+		HoaDonNCCEntity hoaDon = hoaDonNCCRepository.findBySoHoaDon(request.getSoHoaDon()).orElseGet(() -> {
+			HoaDonNCCEntity newHoaDon = HoaDonNCCEntity.builder().soHoaDon(request.getSoHoaDon())
+					.ngayHD(request.getNgay()).nhaCungCap(nhaCungCap).isDeleted(false).build();
+			return hoaDonNCCRepository.save(newHoaDon);
+		});
 
-		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin()).orElseGet(() -> vacXinRepository
-				.save(VacXinEntity.builder().maCode(request.getMaVacXin()).ten(request.getTenVacXin()).isDeleted(false).build()));
+		// 3. Lấy hoặc tạo VacXin
+		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin()).orElseGet(() -> {
+			VacXinEntity newVacXin = VacXinEntity.builder().maCode(request.getMaVacXin()).ten(request.getTenVacXin())
+					.isDeleted(false).build();
+			return vacXinRepository.save(newVacXin);
+		});
 
-
+		// 4. Lấy hoặc tạo LoVacXin
 		LoVacXinEntity loVacXin = loVacXinRepository.findByMaLoCodeIgnoreCaseAndIsDeletedFalse(request.getMaLo())
-				.orElseGet(() -> loVacXinRepository.save(LoVacXinEntity.builder().maLoCode(request.getMaLo())
-						.vacXin(vacXin).soLuong(request.getSoLuong()).isDeleted(false).build()));
+				.orElseGet(() -> {
+					LoVacXinEntity newLo = LoVacXinEntity.builder().maLoCode(request.getMaLo()).vacXin(vacXin)
+							.soLuong(request.getSoLuong()).isDeleted(false).build();
+					return loVacXinRepository.save(newLo);
+				});
 
+		// 5. Kiểm tra riêng trùng maLo
+		boolean maLoExists = chiTietRepo.existsByLoVacXin_MaLoCode(request.getMaLo());
+		if (maLoExists) {
+			throw new IllegalArgumentException("LoVacXin này đã tồn tại trong chi tiết!");
+		}
+
+		// 6. Kiểm tra riêng trùng soHoaDon
+		boolean soHoaDonExists = chiTietRepo.existsByHoaDonNCC_SoHoaDon(request.getSoHoaDon());
+		if (soHoaDonExists) {
+			throw new IllegalArgumentException("HoaDon này đã tồn tại trong chi tiết!");
+		}
+
+		// 7. Tạo ChiTietHDNCC mới
 		ChiTietHDNCCEntity chiTiet = mapper.toEntity(request);
 		chiTiet.setHoaDonNCC(hoaDon);
 		chiTiet.setVacXin(vacXin);
 		chiTiet.setLoVacXin(loVacXin);
 		chiTiet.setIsDeleted(false);
 
+		// 8. Lưu và trả về response
 		return mapper.toResponse(chiTietRepo.save(chiTiet));
 	}
 

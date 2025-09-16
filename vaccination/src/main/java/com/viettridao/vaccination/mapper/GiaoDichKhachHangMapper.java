@@ -22,7 +22,7 @@ public interface GiaoDichKhachHangMapper {
 	@Mapping(source = "chiTiet.vacXin.maCode", target = "maVacXin")
 	@Mapping(source = "chiTiet.soLuong", target = "soLuong")
 	@Mapping(source = "hoaDon.benhNhan.hoTen", target = "tenKhachHang")
-	@Mapping(source = "chiTiet.thanhTien", target = "gia")
+    @Mapping(source = "chiTiet.thanhTien", target = "gia") 
 	GiaoDichKhachHangResponse toResponse(HoaDonEntity hoaDon, ChiTietHDEntity chiTiet);
 
 	List<GiaoDichKhachHangResponse> toResponseList(List<ChiTietHDEntity> chiTietList);
@@ -35,6 +35,6 @@ public interface GiaoDichKhachHangMapper {
 
 	@Mapping(source = "maVacXin", target = "vacXin.maCode")
 	@Mapping(source = "soLuong", target = "soLuong")
-	@Mapping(source = "gia", target = "thanhTien")
+	@Mapping(source = "gia", target = "donGia")
 	ChiTietHDEntity toChiTietEntity(GiaoDichKhachHangRequest request);
 }

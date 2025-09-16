@@ -27,4 +27,14 @@ public interface QuanLyGiaVacXinMapper {
 	// Map từ update request → BangGiaVacXinEntity
 	@Mapping(source = "gia", target = "gia")
 	void updateBangGiaFromRequest(QuanLyGiaVacXinUpdateRequest request, @MappingTarget BangGiaVacXinEntity bangGia);
+
+	// Map từ create request → LoVacXinEntity (tạo mới)
+	@Mapping(source = "maCode", target = "maLoCode") // nếu muốn tạo mã lô mới từ mã vaccine
+	@Mapping(source = "donVi", target = "donVi")
+	@Mapping(source = "namSX", target = "ngaySanXuat")
+	LoVacXinEntity toNewLoVacXin(QuanLyGiaVacXinUpdateRequest request);
+
+	// Map từ create request → BangGiaVacXinEntity (tạo mới)
+	@Mapping(source = "gia", target = "gia")
+	BangGiaVacXinEntity toNewBangGia(QuanLyGiaVacXinUpdateRequest request);
 }

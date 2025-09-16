@@ -22,6 +22,7 @@ public interface GiaoDichKhachHangService {
     void softDeleteByMaHoaDon(String maHoaDon);
     
     void update(GiaoDichKhachHangRequest request);
+    
+    int getGiaTheoMaVacXin(String maVacXin);
 
-       
 }
