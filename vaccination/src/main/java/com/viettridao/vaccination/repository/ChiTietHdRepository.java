@@ -18,5 +18,4 @@ public interface ChiTietHdRepository extends JpaRepository<ChiTietHDEntity, Stri
 	
     List<ChiTietHDEntity> findAllByIsDeletedFalseAndHoaDonIsDeletedFalse();
 
-
 }
