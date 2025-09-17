@@ -12,15 +12,18 @@ import com.viettridao.vaccination.model.VacXinEntity;
 
 @Repository
 public interface VacXinRepository extends JpaRepository<VacXinEntity, String> {
-    Optional<VacXinEntity> findByMaCodeAndIsDeletedFalse(String maCode);
-    Optional<VacXinEntity> findByTenAndIsDeletedFalse(String ten);
+	Optional<VacXinEntity> findByMaCodeAndIsDeletedFalse(String maCode);
 
-    Page<VacXinEntity> findByMaCodeContainingIgnoreCaseAndIsDeletedFalse(String maCode, Pageable pageable);
-    Page<VacXinEntity> findByTenContainingIgnoreCaseAndIsDeletedFalse(String ten, Pageable pageable);
-    Page<VacXinEntity> findByMoTaContainingIgnoreCaseAndIsDeletedFalse(String moTa, Pageable pageable);
+	Optional<VacXinEntity> findByTenAndIsDeletedFalse(String ten);
+
+	Page<VacXinEntity> findByMaCodeContainingIgnoreCaseAndIsDeletedFalse(String maCode, Pageable pageable);
+
+	Page<VacXinEntity> findByTenContainingIgnoreCaseAndIsDeletedFalse(String ten, Pageable pageable);
+
+	Page<VacXinEntity> findByMoTaContainingIgnoreCaseAndIsDeletedFalse(String moTa, Pageable pageable);
 
 	Optional<VacXinEntity> findByMaCode(String maCode);
 
-    List<VacXinEntity> findAllByIsDeletedFalse();
+	List<VacXinEntity> findAllByIsDeletedFalse();
 
 }

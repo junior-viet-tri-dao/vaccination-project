@@ -1,142 +1,75 @@
 <!DOCTYPE html>
-<html
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{employee/layout-employee :: areas(~{::title}, ~{::main})}"
->
-    <head>
-        <title>Cập nhật hồ sơ</title>
-    </head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{employee/layout-employee :: areas(~{::title}, ~{::main})}">
+<head>
+    <title>Cập nhật hồ sơ</title>
+</head>
+<body>
+<main th:with="tab='update'">
 
-    <body>
-        <main th:with="tab='update'">
-            <form
-                method="post"
-                th:action="@{/employee/update}"
-                class="space-y-6 max-w-3xl"
-            >
-                <!-- Nhập ID -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Nhập ID bệnh nhân</label
-                    >
-                    <input
-                        type="text"
-                        name="patientId"
-                        value="201485371"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
+    <!-- Form chọn bệnh nhân (GET) -->
+  <form method="get" th:action="@{/employee/update}" class="space-y-4 max-w-3xl">
+    <label>ID bệnh nhân</label>
+    <select name="maBenhNhan" class="w-full px-4 py-2 border rounded-lg" onchange="this.form.submit()">
+        <option value="">-- Chọn ID bệnh nhân --</option>
+        <option th:each="p : ${allPatients}" 
+                th:value="${p.maBenhNhan}" 
+                th:text="${p.maBenhNhan}" 
+                th:selected="${p.maBenhNhan} == ${benhNhan.maBenhNhan}">
+        </option>
+    </select>
+</form>
 
-                <!-- Họ tên -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Họ và tên</label
-                    >
-                    <input
-                        type="text"
-                        name="fullName"
-                        value="Nguyễn Văn A"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
 
-                <!-- Giới tính -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Giới tính</label
-                    >
-                    <div class="flex space-x-4 mt-1">
-                        <label class="flex items-center">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="Nam"
-                                checked
-                                class="mr-2"
-                            />
-                            Nam
-                        </label>
-                        <label class="flex items-center">
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="Nữ"
-                                class="mr-2"
-                            />
-                            Nữ
-                        </label>
-                    </div>
-                </div>
+    <!-- Form cập nhật thông tin bệnh nhân (POST) -->
+    <form method="post" th:action="@{/employee/update}" th:object="${benhNhan}" class="space-y-6 max-w-3xl mt-4">
+        <input type="hidden" th:field="*{maBenhNhan}"/>
 
-                <!-- Tuổi -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Tuổi</label
-                    >
-                    <input
-                        type="number"
-                        name="age"
-                        value="1"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
+        <div>
+            <label>Họ và tên</label>
+            <input type="text" th:field="*{hoTen}" class="w-full px-4 py-2 border rounded-lg"/>
+        </div>
 
-                <!-- Người giám hộ -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Người giám hộ</label
-                    >
-                    <input
-                        type="text"
-                        name="guardian"
-                        value="Nguyễn Văn B (cha)"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
+        <div>
+            <label>Giới tính</label>
+            <div class="flex space-x-4 mt-1">
+               <label><input type="radio" th:field="*{gioiTinh}" value="NAM"/> Nam</label>
+<label><input type="radio" th:field="*{gioiTinh}" value="NU"/> Nữ</label>
 
-                <!-- Địa chỉ -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Địa chỉ</label
-                    >
-                    <input
-                        type="text"
-                        name="address"
-                        value="Hải Châu - Đà Nẵng"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
+            </div>
+        </div>
 
-                <!-- Điện thoại -->
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-1"
-                        >Điện thoại</label
-                    >
-                    <input
-                        type="text"
-                        name="phone"
-                        value="0903999999"
-                        class="w-full px-4 py-2 border rounded-lg"
-                    />
-                </div>
+        <div>
+            <label>Tuổi</label>
+            <input type="number" th:field="*{tuoi}" class="w-full px-4 py-2 border rounded-lg"/>
+        </div>
 
-                <!-- Nút hành động -->
-                <div class="flex space-x-4">
-                    <button
-                        type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition"
-                    >
-                        Cập nhật
-                    </button>
-                    <button
-                        type="reset"
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg font-semibold transition"
-                    >
-                        Hủy
-                    </button>
-                </div>
-            </form>
-        </main>
-    </body>
+        <div>
+            <label>Người giám hộ</label>
+            <input type="text" th:field="*{tenNguoiGiamHo}" class="w-full px-4 py-2 border rounded-lg"/>
+        </div>
+
+        <div>
+            <label>Địa chỉ</label>
+            <input type="text" th:field="*{diaChi}" class="w-full px-4 py-2 border rounded-lg"/>
+        </div>
+
+        <div>
+            <label>Điện thoại</label>
+            <input type="text" th:field="*{soDienThoai}" class="w-full px-4 py-2 border rounded-lg"/>
+        </div>
+
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Cập nhật</button>
+            <button type="reset" class="bg-gray-300 px-6 py-2 rounded-lg">Hủy</button>
+        </div>
+
+        <!-- Thông báo -->
+        <div th:if="${successMessage}" class="text-green-600 mt-2" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="text-red-600 mt-2" th:text="${errorMessage}"></div>
+    </form>
+
+</main>
+</body>
 </html>

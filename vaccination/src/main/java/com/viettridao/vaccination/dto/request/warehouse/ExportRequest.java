@@ -2,7 +2,6 @@ package com.viettridao.vaccination.dto.request.warehouse;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data

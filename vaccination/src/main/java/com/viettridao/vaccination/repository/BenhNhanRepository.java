@@ -9,6 +9,5 @@ import com.viettridao.vaccination.model.BenhNhanEntity;
 
 @Repository
 public interface BenhNhanRepository extends JpaRepository<BenhNhanEntity, String> {
-
 	Optional<BenhNhanEntity> findByHoTen(String hoTen);
 }

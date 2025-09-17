@@ -12,10 +12,15 @@ import com.viettridao.vaccination.model.VacXinEntity;
 public interface BangGiaVacXinRepository extends JpaRepository<BangGiaVacXinEntity, String> {
 
 	// Lấy giá hiện tại của 1 vắc xin
-    List<BangGiaVacXinEntity> findByVacXinIdOrderByHieuLucTuDesc(String maCode);
-    
-    void deleteByVacXin(VacXinEntity vacXin);
-    
-    List<BangGiaVacXinEntity> findByVacXinMaCodeOrderByHieuLucTuDesc(String maCode);
+	List<BangGiaVacXinEntity> findByVacXinIdOrderByHieuLucTuDesc(String maCode);
+
+	void deleteByVacXin(VacXinEntity vacXin);
+
+	List<BangGiaVacXinEntity> findByVacXinMaCodeOrderByHieuLucTuDesc(String maCode);
+
+	BangGiaVacXinEntity findTopByVacXin_IdOrderByHieuLucTuDesc(String maVacXin);
+	
+    BangGiaVacXinEntity findTopByVacXinOrderByHieuLucTuDesc(VacXinEntity vacXin);
+
 
 }
