@@ -101,4 +101,7 @@ public class TaiKhoanEntity {
 	@OneToMany(mappedBy = "taoBoi")
 	private Set<BangGiaVacXinEntity> bangGiaVacXins;
 
+	@OneToMany(mappedBy = "taiKhoan")
+	private Set<DichBenhEntity> dichBenhs;
+
 }

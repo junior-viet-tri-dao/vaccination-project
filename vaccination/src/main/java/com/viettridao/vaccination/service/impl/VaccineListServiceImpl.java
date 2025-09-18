@@ -2,7 +2,9 @@ package com.viettridao.vaccination.service.impl;
 
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.mapper.VaccineListMapper;
+import com.viettridao.vaccination.model.BangGiaVacXinEntity;
 import com.viettridao.vaccination.model.VacXinEntity;
+import com.viettridao.vaccination.repository.BangGiaVacXinRepository;
 import com.viettridao.vaccination.repository.VacXinRepository;
 import com.viettridao.vaccination.service.VaccineListService;
 import org.springframework.data.domain.*;
@@ -14,11 +16,11 @@ import java.util.stream.Collectors;
 @Service
 public class VaccineListServiceImpl implements VaccineListService {
 
-    private final VacXinRepository vacXinRepository;
+    private final BangGiaVacXinRepository bangGiaVacXinRepository;
     private final VaccineListMapper vaccineListMapper;
 
-    public VaccineListServiceImpl(VacXinRepository vacXinRepository, VaccineListMapper vaccineListMapper) {
-        this.vacXinRepository = vacXinRepository;
+    public VaccineListServiceImpl(BangGiaVacXinRepository bangGiaVacXinRepository, VaccineListMapper vaccineListMapper) {
+        this.bangGiaVacXinRepository = bangGiaVacXinRepository;
         this.vaccineListMapper = vaccineListMapper;
     }
 
@@ -37,24 +39,25 @@ public class VaccineListServiceImpl implements VaccineListService {
     }
 
     private Page<VaccineListResponse> fetchPage(String searchType, String keyword, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("ten").ascending());
-        Page<VacXinEntity> entityPage;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        Page<BangGiaVacXinEntity> entityPage;
+        // Tìm kiếm theo các trường liên quan đến bảng giá vắc xin hoặc vắc xin
         if (keyword == null || keyword.trim().isEmpty()) {
-            entityPage = vacXinRepository.findAll(pageable);
+            entityPage = bangGiaVacXinRepository.findAllByIsDeletedFalse(pageable);
         } else {
             switch (searchType) {
                 case "maVacXin":
-                    entityPage = vacXinRepository.findByMaCodeContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
+                    entityPage = bangGiaVacXinRepository.findByVacXin_MaCodeContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
                     break;
                 case "tenVacXin":
-                    entityPage = vacXinRepository.findByTenContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
+                    entityPage = bangGiaVacXinRepository.findByVacXin_TenContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
                     break;
                 case "phongTriBenh":
-                    entityPage = vacXinRepository.findByMoTaContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
+                    entityPage = bangGiaVacXinRepository.findByVacXin_MoTaContainingIgnoreCaseAndIsDeletedFalse(keyword, pageable);
                     break;
                 default:
-                    entityPage = vacXinRepository.findAll(pageable);
+                    entityPage = bangGiaVacXinRepository.findAllByIsDeletedFalse(pageable);
             }
         }
 
