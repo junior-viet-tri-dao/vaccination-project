@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -62,4 +63,10 @@ public class LichTiemEntity {
 
     @OneToMany(mappedBy = "lichTiem")
     private Set<DangKyTiemEntity> dangKyTiems;
+    
+    @OneToMany(mappedBy = "lichTiem")
+    private List<KetQuaTiemEntity> ketQuaTiems;
+
+    
+
 }

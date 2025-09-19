@@ -2,8 +2,8 @@ package com.viettridao.vaccination.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
-
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -85,6 +85,10 @@ public class BenhNhanEntity {
 
     @OneToMany(mappedBy = "benhNhan")
     private Set<PhanHoiEntity> phanHois;
+    
+    @OneToMany(mappedBy = "benhNhan")
+    private List<KetQuaTiemEntity> ketQuaTiems;
+
 
     public enum GioiTinh {
         NAM, NU

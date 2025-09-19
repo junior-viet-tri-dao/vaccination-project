@@ -105,6 +105,10 @@ public class TaiKhoanEntity implements UserDetails {
     @OneToMany(mappedBy = "taoBoi")
     private Set<BangGiaVacXinEntity> bangGiaVacXins;
 
+    @OneToMany(mappedBy = "nguoiThucHien")
+    private List<KetQuaTiemEntity> ketQuaTiemsThucHien;
+
+
     @OneToMany(mappedBy = "taiKhoan")
     private Set<DichBenhEntity> dichBenhs;
 

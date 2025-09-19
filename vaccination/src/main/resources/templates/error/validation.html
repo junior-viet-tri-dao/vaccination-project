@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lỗi dữ liệu không hợp lệ</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #FEF9C3; }
+        .container { max-width: 600px; margin: 100px auto; background: #FFF7ED; border-left: 5px solid #F59E0B; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        h2 { color: #B45309; }
+        p { color: #B91C1C; }
+        a { color: #1D4ED8; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 th:text="${error}">Dữ liệu không hợp lệ</h2>
+    <p th:utext="${message}">Vui lòng kiểm tra lại thông tin.</p>
+    <div style="margin-top: 20px;">
+        <a href="javascript:history.back()">Quay lại trang trước</a>
+    </div>
+</div>
+</body>
+</html>

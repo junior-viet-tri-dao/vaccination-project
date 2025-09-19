@@ -4,12 +4,14 @@ import com.viettridao.vaccination.model.DonThuocEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * Repository cho bảng đơn thuốc.
  */
+@Repository
 public interface DonThuocRepository extends JpaRepository<DonThuocEntity, String> {
 
     /**

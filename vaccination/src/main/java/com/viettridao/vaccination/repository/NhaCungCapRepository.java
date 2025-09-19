@@ -9,6 +9,5 @@ import com.viettridao.vaccination.model.NhaCungCapEntity;
 
 @Repository
 public interface NhaCungCapRepository extends JpaRepository<NhaCungCapEntity, String> {
-    Optional<NhaCungCapEntity> findByTen(String ten);
-
+	Optional<NhaCungCapEntity> findByTen(String ten);
 }

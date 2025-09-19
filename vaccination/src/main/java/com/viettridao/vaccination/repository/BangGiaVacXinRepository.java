@@ -17,8 +17,17 @@ import com.viettridao.vaccination.model.VacXinEntity;
 @Repository
 public interface BangGiaVacXinRepository extends JpaRepository<BangGiaVacXinEntity, String> {
 
-	// Lấy giá hiện tại của 1 vắc xin
+    // Lấy tất cả giá theo id vắc xin, mới nhất trước
     List<BangGiaVacXinEntity> findByVacXinIdOrderByHieuLucTuDesc(String maCode);
+
+    // Lấy tất cả giá theo mã code của vắc xin
+    List<BangGiaVacXinEntity> findByVacXinMaCodeOrderByHieuLucTuDesc(String maCode);
+
+    // Lấy giá mới nhất theo id vắc xin
+    BangGiaVacXinEntity findTopByVacXin_IdOrderByHieuLucTuDesc(String maVacXin);
+
+    // Lấy giá mới nhất theo entity vắc xin
+    BangGiaVacXinEntity findTopByVacXinOrderByHieuLucTuDesc(VacXinEntity vacXin);
 
     // Lấy giá còn hiệu lực tại ngày chỉ định (ưu tiên giá mới nhất)
     @Query("""
@@ -33,9 +42,10 @@ public interface BangGiaVacXinRepository extends JpaRepository<BangGiaVacXinEnti
             @Param("vacXinId") String vacXinId,
             @Param("targetDate") LocalDate targetDate
     );
-    
+
     void deleteByVacXin(VacXinEntity vacXin);
 
+    // Các hàm search phân trang, chỉ lấy bản ghi chưa xóa
     Page<BangGiaVacXinEntity> findAllByIsDeletedFalse(Pageable pageable);
 
     Page<BangGiaVacXinEntity> findByVacXin_MaCodeContainingIgnoreCaseAndIsDeletedFalse(String maCode, Pageable pageable);
