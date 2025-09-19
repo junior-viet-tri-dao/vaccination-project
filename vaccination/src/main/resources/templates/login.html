@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome (icon y tế) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Utils alert -->
+    <script th:src="@{/js/alert-utils.js}"></script>
 </head>
 <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex items-center justify-center">
 
@@ -20,28 +24,47 @@
         <p class="text-gray-500 mt-2">Vui lòng đăng nhập để tiếp tục</p>
     </div>
 
+    <!-- ALERT: Hiển thị thông báo lỗi/thành công -->
+    <div th:if="${error}" class="mb-4">
+        <div class="bg-red-100 text-red-700 px-4 py-3 rounded">
+            <span th:text="${error}"></span>
+        </div>
+    </div>
+    <div th:if="${success}" class="mb-4">
+        <div class="bg-green-100 text-green-700 px-4 py-3 rounded">
+            <span th:text="${success}"></span>
+        </div>
+    </div>
+
     <!-- Form -->
-    <form th:action="@{/login}" method="post" class="space-y-6">
+    <form th:action="@{/login}" th:object="${login}" method="post" class="space-y-6">
         <!-- Username -->
         <div>
             <label class="block text-gray-700 font-medium mb-2">Username</label>
-            <input type="text" name="username" required minlength="4" maxlength="20" autofocus
+            <input type="text" th:field="*{username}" required minlength="4" maxlength="20" autofocus
                    placeholder="Nhập tên đăng nhập"
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none
+                   " th:classappend="${#fields.hasErrors('username')} ? 'border-red-500'"/>
+            <!-- Hiển thị lỗi username -->
+            <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+               class="text-red-500 text-sm mt-1"></p>
         </div>
-        <!-- Password -->
         <!-- Password -->
         <div>
             <label class="block text-gray-700 font-medium mb-2">Password</label>
             <div class="relative">
-                <input type="password" name="password" id="password-input" required minlength="6" maxlength="20"
+                <input type="password" th:field="*{password}" id="password-input" required minlength="6" maxlength="20"
                        placeholder="Nhập mật khẩu"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"/>
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none
+                       " th:classappend="${#fields.hasErrors('password')} ? 'border-red-500'"/>
                 <button type="button" onclick="togglePassword()" tabindex="-1"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none">
                     <i id="eye-icon" class="fas fa-eye"></i>
                 </button>
             </div>
+            <!-- Hiển thị lỗi password -->
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
+               class="text-red-500 text-sm mt-1"></p>
         </div>
 
         <!-- Buttons -->
@@ -58,7 +81,7 @@
 
         <!-- Forgot password -->
         <div class="text-center mt-4">
-            <a href="#" th:href="@{/forgot-password}"
+            <a th:href="@{/forgot-password}"
                class="text-sm text-blue-600 hover:underline">Quên mật khẩu?</a>
         </div>
     </form>
@@ -78,6 +101,10 @@
         }
     </script>
 </div>
+
+<!-- Nếu dùng Thymeleaf fragment alert, giữ lại dòng này -->
+<div th:replace="~{alert :: alerts}"></div>
+<script th:src="@{/js/global.js}"></script>
 
 </body>
 </html>

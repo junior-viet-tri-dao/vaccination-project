@@ -27,4 +27,12 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
      */
     @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap AND a.isDeleted = FALSE")
     Optional<TaiKhoanEntity> findByTenDangNhapAndIsDeletedFalse(String tenDangNhap);
+
+    // Trong TaiKhoanRepository
+    Optional<TaiKhoanEntity> findFirstByVaiTro_TenAndHoatDongIsTrueAndIsDeletedFalse(String tenVaiTro);
+
+    Optional<TaiKhoanEntity> findByTenDangNhap(String tenDangNhap);
+
+    @Query("select a from TaiKhoanEntity a  left join fetch a.vaiTro v left join fetch v.quyenHans where a.tenDangNhap = :tenDangNhap")
+    Optional<TaiKhoanEntity> findByTenDangNhapWithRoleAndPermission(String tenDangNhap);
 }

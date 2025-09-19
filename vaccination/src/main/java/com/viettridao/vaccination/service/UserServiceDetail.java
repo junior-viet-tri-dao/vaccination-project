@@ -1,15 +1,20 @@
 package com.viettridao.vaccination.service;
 
+import com.viettridao.vaccination.model.QuyenHanEntity;
 import com.viettridao.vaccination.model.TaiKhoanEntity;
 import com.viettridao.vaccination.repository.TaiKhoanRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * UserServiceDetail
@@ -24,22 +29,19 @@ public class UserServiceDetail implements UserDetailsService {
     // Repository cho thực thể AccountEntity
     private final TaiKhoanRepository accountRepository;
 
-    /**
-     * Tải thông tin người dùng dựa trên tên đăng nhập.
-     *
-     * @param username Tên đăng nhập của người dùng.
-     * @return Đối tượng UserDetails chứa thông tin người dùng.
-     * @throws UsernameNotFoundException Nếu không tìm thấy người dùng với tên đăng nhập đã cung cấp.
-     */
     @Override
     public UserDetails loadUserByUsername(String tenDangNhap) throws UsernameNotFoundException {
-        TaiKhoanEntity account = accountRepository.findByUsername(tenDangNhap)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("Không tìm thấy tài khoản có username = " + tenDangNhap));
+        TaiKhoanEntity account = accountRepository.findByTenDangNhapWithRoleAndPermission(tenDangNhap)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản có username = " + tenDangNhap));
 
-        return User.withUsername(account.getTenDangNhap())   // ✅ getter đúng
-                .password(account.getMatKhauHash())          // BCrypt hash
-                .roles(account.getVaiTro().getTen())         // tên vai trò, ví dụ: ADMIN, USER
-                .build();
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        // Gán quyền hạn
+        if (account.getVaiTro().getQuyenHans() != null) {
+            for (QuyenHanEntity permission : account.getVaiTro().getQuyenHans()) {
+                authorities.add(new SimpleGrantedAuthority(permission.getTen()));
+            }
+        }
+
+        return account;
     }
 }

@@ -1,14 +1,13 @@
 package com.viettridao.vaccination.controller;
 
 import com.viettridao.vaccination.dto.request.normalUser.EditProfileRequest;
+import com.viettridao.vaccination.dto.request.normalUser.PhanHoiCapCaoRequest;
 import com.viettridao.vaccination.dto.response.DichBenhResponse;
 import com.viettridao.vaccination.dto.response.normalUser.ProfileDetailResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineScheduleResponse;
-import com.viettridao.vaccination.service.DichBenhService;
-import com.viettridao.vaccination.service.ProfileService;
-import com.viettridao.vaccination.service.VaccineListService;
-import com.viettridao.vaccination.service.VaccineScheduleService;
+import com.viettridao.vaccination.model.PhanHoiEntity;
+import com.viettridao.vaccination.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ public class NormalUserController {
     private final VaccineScheduleService vaccineScheduleService;
     private final ProfileService profileService;
     private final DichBenhService dichBenhService;
+    private final PhanHoiCapCaoService phanHoiService;
 
     // Hiển thị trang danh sách vắc xin
     @GetMapping("/view-vaccines")
@@ -161,6 +161,40 @@ public class NormalUserController {
         model.addAttribute("dichBenhPage", dichBenhPage);
 
         return "normalUser/epidemic";
+    }
+
+    @GetMapping("/feedback-highlevel")
+    public String showHighFeedbackForm(Model model) {
+        model.addAttribute("pageTitle", "Phản hồi cấp cao");
+        if (!model.containsAttribute("phanHoiCapCaoRequest")) {
+            model.addAttribute("phanHoiCapCaoRequest", new PhanHoiCapCaoRequest());
+        }
+        model.addAttribute("dsLoaiPhanHoi", PhanHoiEntity.LoaiPhanHoi.values());
+        return "normalUser/feedback-highlevel";
+    }
+
+    @PostMapping("/feedback-highlevel")
+    public String submitHighFeedback(
+            @ModelAttribute("phanHoiCapCaoRequest") @Valid PhanHoiCapCaoRequest request,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        model.addAttribute("pageTitle", "Phản hồi cấp cao");
+        model.addAttribute("dsLoaiPhanHoi", PhanHoiEntity.LoaiPhanHoi.values());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("hasError", true);
+            return "normalUser/feedback-highlevel";
+        }
+        try {
+            phanHoiService.guiPhanHoiCapCao(request);
+            redirectAttributes.addFlashAttribute("successMessage", "Gửi phản hồi thành công!");
+            return "redirect:/normalUser/view-profile";
+        } catch (Exception e) {
+            model.addAttribute("hasError", true);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "normalUser/feedback-highlevel";
+        }
     }
 
 }

@@ -2,13 +2,7 @@ package com.viettridao.vaccination.model;
 
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,4 +33,13 @@ public class VaiTroEntity {
 
 	@OneToMany(mappedBy = "vaiTro")
 	private Set<TaiKhoanEntity> taiKhoans;
+
+	// Many-to-Many với Quyền hạn
+	@ManyToMany
+	@JoinTable(
+			name = "vai_tro_quyen_han", // bảng trung gian
+			joinColumns = @JoinColumn(name = "ma_vai_tro"), // FK đến vai_tro
+			inverseJoinColumns = @JoinColumn(name = "ma_quyen_han") // FK đến quyen_han
+	)
+	private Set<QuyenHanEntity> quyenHans;
 }
