@@ -2,8 +2,43 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Phản hồi cấp cao</title>
+    <title th:text="${pageTitle}">Phản hồi cấp cao</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/alert-utils.js}"></script>
+    <script>
+        // Frontend validation
+        function validateForm(event) {
+            let hasError = false;
+            const loaiPhanHoi = document.getElementById("loaiPhanHoi");
+            const noiDung = document.getElementById("noiDung");
+            const loaiPhanHoiError = document.getElementById("loaiPhanHoiError");
+            const noiDungError = document.getElementById("noiDungError");
+
+            loaiPhanHoiError.textContent = "";
+            noiDungError.textContent = "";
+
+            if (!loaiPhanHoi.value) {
+                loaiPhanHoiError.textContent = "Vui lòng chọn loại phản hồi.";
+                hasError = true;
+            }
+            if (!noiDung.value.trim()) {
+                noiDungError.textContent = "Vui lòng nhập nội dung phản hồi.";
+                hasError = true;
+            } else if (noiDung.value.length < 10) {
+                noiDungError.textContent = "Nội dung phải từ 10 ký tự trở lên.";
+                hasError = true;
+            }
+            if (hasError) event.preventDefault();
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById("feedbackForm").addEventListener('submit', validateForm);
+            document.getElementById("cancelBtn").addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/normalUser/view-profile';
+            });
+        });
+    </script>
 </head>
 <body class="bg-gradient-to-r from-cyan-100 to-green-100 min-h-screen flex items-center justify-center px-4">
 <div class="bg-white shadow-xl rounded-2xl w-full max-w-2xl p-6">
@@ -11,36 +46,47 @@
         Phản hồi <span class="not-italic font-bold">cấp cao</span>
     </h2>
 
-    <form>
+    <form th:action="@{/normalUser/feedback-highlevel}" th:object="${phanHoiCapCaoRequest}" method="post" id="feedbackForm" novalidate>
         <!-- Loại phản hồi -->
         <div class="mb-4">
-            <label for="feedbackType" class="block text-gray-700 font-medium mb-1">Loại phản hồi</label>
-            <select id="feedbackType" name="feedbackType"
+            <label for="loaiPhanHoi" class="block text-gray-700 font-medium mb-1">Loại phản hồi</label>
+            <select id="loaiPhanHoi" name="loaiPhanHoi"
+                    th:field="*{loaiPhanHoi}"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-blue-300">
-                <option>Phàn nàn</option>
-                <option>Động viên</option>
-                <option>Góp ý</option>
+                <option value="" th:text="'-- Chọn loại phản hồi --'"></option>
+                <option th:each="loai : ${dsLoaiPhanHoi}" th:value="${loai}" th:text="${loai}"></option>
             </select>
+            <p id="loaiPhanHoiError" class="text-red-500 text-sm"></p>
+            <p th:if="${#fields.hasErrors('loaiPhanHoi')}" th:errors="*{loaiPhanHoi}" class="text-red-500 text-sm"></p>
         </div>
 
         <!-- Nội dung -->
         <div class="mb-6">
-            <label for="content" class="block text-gray-700 font-medium mb-1">Nội dung</label>
-            <textarea id="content" name="content" rows="5"
+            <label for="noiDung" class="block text-gray-700 font-medium mb-1">Nội dung</label>
+            <textarea id="noiDung" name="noiDung" rows="5"
+                      th:field="*{noiDung}"
                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-blue-300"
                       placeholder="Nhập nội dung phản hồi..."></textarea>
+            <p id="noiDungError" class="text-red-500 text-sm"></p>
+            <p th:if="${#fields.hasErrors('noiDung')}" th:errors="*{noiDung}" class="text-red-500 text-sm"></p>
         </div>
+
+        <!-- Thông báo thành công/lỗi BE -->
+        <div th:if="${successMessage}" class="text-green-600 text-center mb-4 font-semibold" th:text="${successMessage}"></div>
+        <div th:if="${hasError}" class="text-red-600 text-center mb-4 font-semibold" th:text="${errorMessage}"></div>
 
         <!-- Nút -->
         <div class="flex justify-center gap-4">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
                 Gửi
             </button>
-            <button type="reset" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg">
+            <button type="button" id="cancelBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg">
                 Hủy bỏ
             </button>
         </div>
     </form>
 </div>
+<div th:replace="~{alert :: alerts}"></div>
+<script th:src="@{/js/global.js}"></script>
 </body>
 </html>
