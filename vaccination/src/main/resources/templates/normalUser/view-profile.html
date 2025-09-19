@@ -13,7 +13,7 @@
     <!-- Header -->
     <div class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center">
         <h2 class="text-xl font-semibold">Hồ sơ thông tin cá nhân</h2>
-        <a href="#"
+        <a th:href="@{/normalUser/edit-profile}"
            class="text-sm underline hover:text-gray-200 transition">
             Nhấn vào đây để sửa đổi thông tin cá nhân
         </a>
@@ -21,10 +21,11 @@
 
     <!-- Thông tin cá nhân -->
     <div class="p-6 grid grid-cols-2 gap-4 text-gray-700">
-        <p><span class="font-semibold">Tên:</span> Nguyễn Văn X</p>
-        <p><span class="font-semibold">Ngày sinh:</span> 20/08/1993</p>
-        <p><span class="font-semibold">Giới tính:</span> Nam</p>
-        <p><span class="font-semibold">Địa chỉ:</span> 193 Nguyễn Lương Bằng, Đà Nẵng</p>
+        <p><span class="font-semibold">Tên:</span> <span th:text="${profile.ten}">Nguyễn Văn X</span></p>
+        <p><span class="font-semibold">Ngày sinh:</span>
+            <span th:text="${#temporals.format(profile.ngaySinh, 'dd/MM/yyyy')}">20/08/1993</span></p>
+        <p><span class="font-semibold">Giới tính:</span> <span th:text="${profile.gioiTinh}">Nam</span></p>
+        <p><span class="font-semibold">Địa chỉ:</span> <span th:text="${profile.diaChi}">193 Nguyễn Lương Bằng, Đà Nẵng</span></p>
     </div>
 
     <!-- Bảng lịch sử tiêm -->
@@ -44,39 +45,22 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="hover:bg-gray-50">
-                <td class="border border-gray-300 px-2 py-2">1</td>
-                <td class="border border-gray-300 px-2 py-2">9h30 12/01/2015</td>
-                <td class="border border-gray-300 px-2 py-2">ĐHBK</td>
-                <td class="border border-gray-300 px-2 py-2">Uống Ván</td>
-                <td class="border border-gray-300 px-2 py-2">Phòng Uống Ván</td>
-                <td class="border border-gray-300 px-2 py-2">1 liều</td>
-                <td class="border border-gray-300 px-2 py-2">BS. Phan Thanh Y</td>
-                <td class="border border-gray-300 px-2 py-2 text-green-600 font-semibold">Tốt</td>
-                <td class="border border-gray-300 px-2 py-2"></td>
+            <tr th:each="item : ${profile.lichSuTiem}" class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.stt}"></td>
+                <td class="border border-gray-300 px-2 py-2"
+                    th:text="${#temporals.format(item.thoiGian, 'HH:mm dd/MM/yyyy')}"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.diaDiem}"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.tenVacXin}"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.loaiVacXin}"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.lieuLuong}"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.nguoiTiem}"></td>
+                <td class="border border-gray-300 px-2 py-2"
+                    th:text="${item.ketQua}"
+                    th:classappend="${item.ketQua == 'Tốt'} ? 'text-green-600 font-semibold' : ''"></td>
+                <td class="border border-gray-300 px-2 py-2" th:text="${item.ghiChu}"></td>
             </tr>
-            <tr class="hover:bg-gray-50">
-                <td class="border border-gray-300 px-2 py-2">2</td>
-                <td class="border border-gray-300 px-2 py-2">8h 20/01/2015</td>
-                <td class="border border-gray-300 px-2 py-2">TTYT Liên Chiểu</td>
-                <td class="border border-gray-300 px-2 py-2">Ho Gà</td>
-                <td class="border border-gray-300 px-2 py-2">Phòng Ho gà</td>
-                <td class="border border-gray-300 px-2 py-2">1 liều</td>
-                <td class="border border-gray-300 px-2 py-2">YT. Nguyễn Thị Minh T</td>
-                <td class="border border-gray-300 px-2 py-2 text-green-600 font-semibold">Tốt</td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-            </tr>
-            <!-- hàng trống để thêm dữ liệu -->
-            <tr class="hover:bg-gray-50">
-                <td class="border border-gray-300 px-2 py-2">&nbsp;</td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
-                <td class="border border-gray-300 px-2 py-2"></td>
+            <tr th:if="${#lists.isEmpty(profile.lichSuTiem)}" class="hover:bg-gray-50">
+                <td class="border border-gray-300 px-2 py-2" colspan="9">Chưa có lịch sử tiêm chủng.</td>
             </tr>
             </tbody>
         </table>
@@ -90,6 +74,13 @@
         </button>
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/alert-utils.js}"></script>
+<script th:inline="javascript">
+    var successMsg = /*[[${success}]]*/ "";
+    if (successMsg && successMsg !== "") {
+        showSuccess(successMsg);
+    }
+</script>
 </body>
 </html>

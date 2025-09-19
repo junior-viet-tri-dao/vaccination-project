@@ -26,40 +26,40 @@ import lombok.Setter;
 @Table(name = "ket_qua_tiem")
 public class KetQuaTiemEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "ma_kq", columnDefinition = "CHAR(36)")
-	private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ma_kq", columnDefinition = "CHAR(36)")
+    private String id;
 
-	@ManyToOne
-	@JoinColumn(name = "ma_benh_nhan", nullable = false)
-	private BenhNhanEntity benhNhan;
+    @ManyToOne
+    @JoinColumn(name = "ma_benh_nhan", nullable = false)
+    private BenhNhanEntity benhNhan;
 
-	@ManyToOne
-	@JoinColumn(name = "ma_lich", nullable = false)
-	private LichTiemEntity lichTiem;
+    @ManyToOne
+    @JoinColumn(name = "ma_lich", nullable = false)
+    private LichTiemEntity lichTiem;
 
-	@Column(name = "ngay_tiem", nullable = false)
-	private LocalDateTime ngayTiem;
+    @Column(name = "ngay_tiem", nullable = false)
+    private LocalDateTime ngayTiem;
 
-	@ManyToOne
-	@JoinColumn(name = "nguoi_thuc_hien")
-	private TaiKhoanEntity nguoiThucHien; 
+    @ManyToOne
+    @JoinColumn(name = "nguoi_thuc_hien")
+    private TaiKhoanEntity nguoiThucHien;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "tinh_trang")
-	private TinhTrangTinhTrang tinhTrang = TinhTrangTinhTrang.CHUA_TIEM;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tinh_trang")
+    private TinhTrangTinhTrang tinhTrang = TinhTrangTinhTrang.CHUA_TIEM;
 
-	@Column(name = "phan_ung_sau_tiem")
-	private String phanUngSauTiem;
+    @Column(name = "phan_ung_sau_tiem")
+    private String phanUngSauTiem;
 
-	@Column(name = "ghi_chu")
-	private String ghiChu;
+    @Column(name = "ghi_chu")
+    private String ghiChu;
 
-	@Column(name = "isDeleted")
-	private Boolean isDeleted = Boolean.FALSE;
+    @Column(name = "isDeleted")
+    private Boolean isDeleted = Boolean.FALSE;
 
-	public enum TinhTrangTinhTrang {
-		HOAN_THANH, HUY, CHUA_TIEM
-	}
+    public enum TinhTrangTinhTrang {
+        HOAN_THANH, HUY, CHUA_TIEM
+    }
 }
