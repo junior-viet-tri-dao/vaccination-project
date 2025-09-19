@@ -1,6 +1,10 @@
 package com.viettridao.vaccination.controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +26,10 @@ import com.viettridao.vaccination.dto.request.finance.QuanLyGiaVacXinUpdateReque
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichNhaCungCapResponse;
 import com.viettridao.vaccination.dto.response.finance.QuanLyGiaVacXinResponse;
+import com.viettridao.vaccination.model.BangGiaVacXinEntity;
+import com.viettridao.vaccination.model.LoVacXinEntity;
+import com.viettridao.vaccination.model.VacXinEntity;
+import com.viettridao.vaccination.service.BangGiaVacXinService;
 import com.viettridao.vaccination.service.BenhNhanService;
 import com.viettridao.vaccination.service.GiaoDichKhachHangService;
 import com.viettridao.vaccination.service.GiaoDichNccService;
@@ -41,6 +49,7 @@ public class FinanceEmployeeController {
 	private final QuanLyGiaVacXinService quanLyGiaVacXinService;
 	private final GiaoDichKhachHangService giaoDichKhachHangService;
 	private final GiaoDichNccService giaoDichNccService;
+	private final BangGiaVacXinService bangGiaVacXinService;
 
 	// --- Vaccine Price ---
 	@GetMapping("/vaccine-price")
@@ -56,6 +65,49 @@ public class FinanceEmployeeController {
 		model.addAttribute("pageSize", size);
 
 		return "financeEmployee/vaccine-price";
+	}
+
+	@GetMapping("/vaccine-price/create")
+	public String showCreateVaccinePriceForm(Model model) {
+		QuanLyGiaVacXinUpdateRequest createRequest = new QuanLyGiaVacXinUpdateRequest();
+		model.addAttribute("createRequest", createRequest);
+
+		List<VacXinEntity> vaccines = vacXinService.getAllActiveVaccines();
+		model.addAttribute("vaccines", vaccines);
+
+		List<Map<String, Object>> vaccineDataForJs = vaccines.stream().map(vx -> {
+			LoVacXinEntity lo = vx.getLoVacXins().stream().findFirst().orElse(null);
+			Integer gia = bangGiaVacXinService.findByVacXinIdOrderByHieuLucTuDesc(vx.getId()).stream().findFirst()
+					.map(BangGiaVacXinEntity::getGia).orElse(0);
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("maCode", vx.getMaCode());
+			map.put("donVi", lo != null ? lo.getDonVi() : "");
+			map.put("namSX", lo != null ? lo.getNgaySanXuat() : null);
+			map.put("gia", gia);
+			return map;
+		}).collect(Collectors.toList());
+
+		model.addAttribute("vaccineDataForJs", vaccineDataForJs);
+		return "financeEmployee/create-vaccine-price";
+	}
+
+	@PostMapping("/vaccine-price/create")
+	public String createVaccinePrice(@Valid @ModelAttribute("createRequest") QuanLyGiaVacXinUpdateRequest request,
+			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+		if (bindingResult.hasErrors()) {
+			return "financeEmployee/create-vaccine-price";
+		}
+
+		try {
+			quanLyGiaVacXinService.createGiaVacXin(request);
+			redirectAttrs.addFlashAttribute("success", "Thêm giá vắc xin thành công!");
+		} catch (Exception e) {
+			redirectAttrs.addFlashAttribute("error", "Thêm thất bại: " + e.getMessage());
+			return "redirect:/finance/vaccine-price/create";
+		}
+
+		return "redirect:/finance/vaccine-price";
 	}
 
 	@GetMapping("/vaccine-price/edit")
@@ -114,14 +166,26 @@ public class FinanceEmployeeController {
 	}
 
 	@GetMapping("/transactions-customer/create")
-	public String showCreateForm(Model model) {
-		if (!model.containsAttribute("transactionRequest")) {
-			GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
-			dto.setNgayHD(LocalDateTime.now());
-			model.addAttribute("transactionRequest", dto);
+	public String showCreateForm(@RequestParam(required = false) String maVacXin, Model model) {
+		GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
+		dto.setNgayHD(LocalDateTime.now());
+
+		// Lấy danh sách vắc xin
+		List<VacXinEntity> vaccines = vacXinService.getAllVaccines();
+		model.addAttribute("vaccines", vaccines);
+
+		// Map mã vắc xin -> giá
+		Map<String, Integer> vaccinePriceMap = vaccines.stream().collect(Collectors.toMap(VacXinEntity::getMaCode,
+				v -> giaoDichKhachHangService.getGiaTheoMaVacXin(v.getMaCode())));
+		model.addAttribute("vaccinePriceMap", vaccinePriceMap);
+
+		// Nếu có mã vắc xin truyền vào, set giá
+		if (maVacXin != null && !maVacXin.isEmpty()) {
+			dto.setMaVacXin(maVacXin);
+			dto.setGia(vaccinePriceMap.getOrDefault(maVacXin, 0));
 		}
 
-		model.addAttribute("vaccines", vacXinService.getAllVaccines());
+		model.addAttribute("transactionRequest", dto);
 		model.addAttribute("patients", benhNhanService.getAllPatients());
 
 		return "financeEmployee/create-transaction-customer";
@@ -140,15 +204,23 @@ public class FinanceEmployeeController {
 		try {
 			giaoDichKhachHangService.create(request);
 			redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
-		} catch (Exception e) {
+			return "redirect:/finance/transactions-customer";
+		} catch (IllegalArgumentException e) {
+			// Phân loại lỗi theo field
+			String msg = e.getMessage();
+			if (msg.contains("MaLo")) {
+				model.addAttribute("maLoError", msg);
+			} else if (msg.contains("SoHoaDon")) {
+				model.addAttribute("soHoaDonError", msg);
+			} else {
+				model.addAttribute("globalError", msg);
+			}
+
 			model.addAttribute("transactionRequest", request);
 			model.addAttribute("vaccines", vacXinService.getAllVaccines());
 			model.addAttribute("patients", benhNhanService.getAllPatients());
-			model.addAttribute("error", "Tạo giao dịch thất bại: " + e.getMessage());
 			return "financeEmployee/create-transaction-customer";
 		}
-
-		return "redirect:/finance/transactions-customer";
 	}
 
 	@GetMapping("/transactions-customer/update/{soHoaDon}")
@@ -161,11 +233,16 @@ public class FinanceEmployeeController {
 		request.setMaVacXin(transaction.getMaVacXin());
 		request.setSoLuong(transaction.getSoLuong());
 		request.setTenKhachHang(transaction.getTenKhachHang());
-		request.setGia(transaction.getGia());
+		request.setGia(transaction.getGia() != null ? transaction.getGia() : 0);
 
 		model.addAttribute("transactionRequest", request);
 		model.addAttribute("vaccines", vacXinService.getAllVaccines());
 		model.addAttribute("patients", benhNhanService.getAllPatients());
+
+		// ⚡ Add vaccinePriceMap
+		Map<String, Integer> vaccinePriceMap = vacXinService.getAllVaccines().stream().collect(Collectors
+				.toMap(VacXinEntity::getMaCode, v -> giaoDichKhachHangService.getGiaTheoMaVacXin(v.getMaCode())));
+		model.addAttribute("vaccinePriceMap", vaccinePriceMap);
 
 		return "financeEmployee/edit-transaction-customer";
 	}

@@ -2,6 +2,7 @@ package com.viettridao.vaccination.service.impl;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -15,12 +16,14 @@ import com.viettridao.vaccination.dto.response.finance.QuanLyGiaVacXinResponse;
 import com.viettridao.vaccination.mapper.QuanLyGiaVacXinMapper;
 import com.viettridao.vaccination.model.BangGiaVacXinEntity;
 import com.viettridao.vaccination.model.LoVacXinEntity;
+import com.viettridao.vaccination.model.VacXinEntity;
 import com.viettridao.vaccination.service.BangGiaVacXinService;
 import com.viettridao.vaccination.service.BienDongKhoService;
 import com.viettridao.vaccination.service.ChiTietHdNccService;
 import com.viettridao.vaccination.service.GiaoDichKhachHangService;
 import com.viettridao.vaccination.service.LoVacXinService;
 import com.viettridao.vaccination.service.QuanLyGiaVacXinService;
+import com.viettridao.vaccination.service.VacXinService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,27 +37,81 @@ public class QuanLyGiaVacXinServiceImpl implements QuanLyGiaVacXinService {
 	private final BangGiaVacXinService bangGiaVacXinService;
 	private final ChiTietHdNccService chiTietHdNccService;
 	private final GiaoDichKhachHangService giaoDichKhachHangService;
+	private final VacXinService vacXinService;
 
+	
+	
 	@Override
 	public Page<QuanLyGiaVacXinResponse> getAllGiaVacXinHienTai(Pageable pageable) {
-		List<LoVacXinEntity> loVacXins = loVacXinService.findAll(); // <-- dùng instance
+		// Lấy tất cả vaccine distinct từ lô
+		List<VacXinEntity> vacXins = loVacXinService.findAll().stream().map(LoVacXinEntity::getVacXin).distinct()
+				.collect(Collectors.toList());
 
-		List<QuanLyGiaVacXinResponse> dtoList = loVacXins.stream().map(lv -> {
-			BangGiaVacXinEntity bangGia = bangGiaVacXinService
-					.findByVacXinIdOrderByHieuLucTuDesc(lv.getVacXin().getId()).stream()
+		List<QuanLyGiaVacXinResponse> dtoList = vacXins.stream().map(vx -> {
+			// Tìm giá hiện tại
+			BangGiaVacXinEntity bangGia = bangGiaVacXinService.findByVacXinIdOrderByHieuLucTuDesc(vx.getId()).stream()
 					.filter(bg -> (bg.getHieuLucTu() == null || !bg.getHieuLucTu().isAfter(LocalDate.now()))
 							&& (bg.getHieuLucDen() == null || !bg.getHieuLucDen().isBefore(LocalDate.now())))
 					.findFirst().orElse(null);
 
-			return mapper.toResponse(lv, bangGia);
-		}).collect(Collectors.toList());
+			if (bangGia == null) {
+				return null; // ❌ Không có giá thì bỏ qua
+			}
 
+			// Lấy thông tin từ 1 lô bất kỳ để hiển thị
+			LoVacXinEntity lo = vx.getLoVacXins().stream().findFirst().orElse(null);
+
+			return QuanLyGiaVacXinResponse.builder().maCode(vx.getMaCode()).donVi(lo != null ? lo.getDonVi() : "-")
+					.namSX(lo != null ? lo.getNgaySanXuat() : null).gia(bangGia.getGia()) // ✅ Giá từ bảng
+																							// bang_gia_vac_xin
+					.build();
+		}).filter(Objects::nonNull) // ❌ Loại bỏ vaccine không có giá
+				.collect(Collectors.toList());
+
+		// Phân trang thủ công
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), dtoList.size());
 		List<QuanLyGiaVacXinResponse> content = dtoList.subList(start, end);
 
 		return new PageImpl<>(content, pageable, dtoList.size());
 	}
+	
+	
+
+	@Transactional
+	@Override
+	public void createGiaVacXin(QuanLyGiaVacXinUpdateRequest request) {
+	    LoVacXinEntity loVacXin = loVacXinService.findByVacXinMaCode(request.getMaCode()).orElseGet(() -> {
+	        VacXinEntity vacXin = vacXinService.getAllActiveVaccines().stream()
+	                .filter(v -> v.getMaCode().equals(request.getMaCode())).findFirst()
+	                .orElseThrow(() -> new IllegalArgumentException("Mã vaccine không tồn tại"));
+
+	        LoVacXinEntity newLo = new LoVacXinEntity();
+	        newLo.setVacXin(vacXin);
+	        newLo.setMaLoCode(request.getMaCode());
+	        newLo.setDonVi(request.getDonVi());
+	        newLo.setNgaySanXuat(request.getNamSX());
+	        return loVacXinService.save(newLo);
+	    });
+
+	    // 1. Nếu muốn đánh dấu giá cũ hết hiệu lực
+	    bangGiaVacXinService.findByVacXinIdOrderByHieuLucTuDesc(loVacXin.getVacXin().getId())
+	        .forEach(bg -> {
+	            if (bg.getHieuLucDen() == null) {
+	                bg.setHieuLucDen(LocalDate.now().minusDays(1));
+	                bangGiaVacXinService.save(bg);
+	            }
+	        });
+
+	    // 2. Tạo bảng giá mới
+	    BangGiaVacXinEntity bangGia = new BangGiaVacXinEntity();
+	    mapper.updateBangGiaFromRequest(request, bangGia);
+	    bangGia.setVacXin(loVacXin.getVacXin());
+	    bangGia.setHieuLucTu(LocalDate.now());
+	    bangGia.setHieuLucDen(null); // Giá mới chưa hết hạn
+	    bangGiaVacXinService.save(bangGia);
+	}
+
 
 	public void updateGiaVacXin(QuanLyGiaVacXinUpdateRequest request) {
 		LoVacXinEntity loVacXin = loVacXinService.findByVacXinMaCode(request.getMaCode())
@@ -62,13 +119,16 @@ public class QuanLyGiaVacXinServiceImpl implements QuanLyGiaVacXinService {
 
 		BangGiaVacXinEntity bangGia = bangGiaVacXinService
 				.findByVacXinIdOrderByHieuLucTuDesc(loVacXin.getVacXin().getId()).stream().findFirst()
-				.orElseThrow(() -> new IllegalArgumentException("Giá vắc xin không tồn tại"));
+				.orElse(new BangGiaVacXinEntity()); // nếu chưa có thì tạo mới
 
 		mapper.updateLoVacXinFromRequest(request, loVacXin);
 		mapper.updateBangGiaFromRequest(request, bangGia);
 
-		loVacXinService.save(loVacXin); // <-- dùng instance service
-		bangGiaVacXinService.save(bangGia); // <-- dùng instance service
+		bangGia.setVacXin(loVacXin.getVacXin());
+		bangGia.setHieuLucTu(LocalDate.now()); // giá mới có hiệu lực từ hôm nay
+
+		loVacXinService.save(loVacXin);
+		bangGiaVacXinService.save(bangGia); // giá nhập tay được lưu vào DB
 	}
 
 	@Override

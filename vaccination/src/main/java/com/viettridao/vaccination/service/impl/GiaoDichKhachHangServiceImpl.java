@@ -1,8 +1,8 @@
 package com.viettridao.vaccination.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,12 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.viettridao.vaccination.dto.request.finance.GiaoDichKhachHangRequest;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
 import com.viettridao.vaccination.mapper.GiaoDichKhachHangMapper;
+import com.viettridao.vaccination.model.BangGiaVacXinEntity;
 import com.viettridao.vaccination.model.BenhNhanEntity;
 import com.viettridao.vaccination.model.BienDongKhoEntity;
 import com.viettridao.vaccination.model.ChiTietHDEntity;
 import com.viettridao.vaccination.model.HoaDonEntity;
 import com.viettridao.vaccination.model.LoVacXinEntity;
 import com.viettridao.vaccination.model.VacXinEntity;
+import com.viettridao.vaccination.repository.BangGiaVacXinRepository;
 import com.viettridao.vaccination.repository.BenhNhanRepository;
 import com.viettridao.vaccination.repository.BienDongKhoRepository;
 import com.viettridao.vaccination.repository.ChiTietHdRepository;
@@ -40,16 +42,33 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 	private final GiaoDichKhachHangMapper mapper;
 	private final LoVacXinRepository loVacXinRepository;
 	private final BienDongKhoRepository bienDongKhoRepository;
+	private final BangGiaVacXinRepository bangGiaVacXinRepository;
 
 	@Override
 	public Page<GiaoDichKhachHangResponse> getAll(Pageable pageable) {
-		List<HoaDonEntity> hoaDons = hoaDonRepository.findAllByIsDeletedFalse();
+		// 1️⃣ Lấy toàn bộ hóa đơn chưa bị xóa, sắp xếp theo ngày mới nhất
+		List<HoaDonEntity> hoaDons = hoaDonRepository.findAllByIsDeletedFalse().stream()
+				.sorted(Comparator.comparing(HoaDonEntity::getNgayHD, Comparator.nullsLast(Comparator.reverseOrder())))
+				.toList();
 
-		List<GiaoDichKhachHangResponse> dtoList = hoaDons
-				.stream().flatMap(hd -> hd.getChiTietHDs().stream()
-						.filter(ct -> !Boolean.TRUE.equals(ct.getIsDeleted())).map(ct -> mapper.toResponse(hd, ct)))
-				.collect(Collectors.toList());
+		// 2️⃣ Lấy toàn bộ bảng giá vắc xin một lần
+		List<BangGiaVacXinEntity> bangGiaList = bangGiaVacXinRepository.findAll();
 
+		// 3️⃣ Map từng chi tiết hóa đơn thành DTO
+		List<GiaoDichKhachHangResponse> dtoList = hoaDons.stream().flatMap(
+				hd -> hd.getChiTietHDs().stream().filter(ct -> !Boolean.TRUE.equals(ct.getIsDeleted())).map(ct -> {
+					// Lấy giá mới nhất theo vacXin của chi tiết
+					BangGiaVacXinEntity bangGia = bangGiaList.stream()
+							.filter(bg -> bg.getVacXin().getId().equals(ct.getVacXin().getId()))
+							.max(Comparator.comparing(BangGiaVacXinEntity::getNgayTao,
+									Comparator.nullsLast(Comparator.naturalOrder())))
+							.orElse(null);
+
+					// Mapper chi tiết hóa đơn + hóa đơn
+					return mapper.toResponse(hd, ct);
+				})).toList();
+
+		// 4️⃣ Phân trang thủ công
 		int start = (int) pageable.getOffset();
 		int end = Math.min(start + pageable.getPageSize(), dtoList.size());
 		List<GiaoDichKhachHangResponse> content = dtoList.subList(start, end);
@@ -66,11 +85,17 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 		ChiTietHDEntity chiTiet = hoaDon.getChiTietHDs().stream().filter(ct -> !Boolean.TRUE.equals(ct.getIsDeleted()))
 				.findFirst().orElseThrow(() -> new IllegalArgumentException("Không có chi tiết hóa đơn"));
 
-		return mapper.toResponse(hoaDon, chiTiet);
+		return mapper.toResponse(hoaDon, chiTiet); // <- chỉ 2 tham số
 	}
 
-	@Override
+	@Transactional(readOnly = true)
+	public int getGiaTheoMaVacXin(String maCode) {
+		return bangGiaVacXinRepository.findByVacXinMaCodeOrderByHieuLucTuDesc(maCode).stream().findFirst()
+				.map(BangGiaVacXinEntity::getGia).orElse(0);
+	}
+
 	@Transactional
+	@Override
 	public void create(GiaoDichKhachHangRequest request) {
 		// 1️⃣ Lấy khách hàng hoặc tạo mới nếu chưa có
 		BenhNhanEntity benhNhan = benhNhanRepository.findByHoTen(request.getTenKhachHang()).orElseGet(() -> {
@@ -83,7 +108,12 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
 				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vắc xin"));
 
-		// 3️⃣ Tạo hóa đơn (lưu trước để có tham chiếu)
+		// 🔎 Lấy giá mới nhất từ bảng giá
+		int donGia = bangGiaVacXinRepository.findByVacXinIdOrderByHieuLucTuDesc(vacXin.getId()).stream().findFirst()
+				.map(BangGiaVacXinEntity::getGia)
+				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giá cho vắc xin"));
+
+		// 3️⃣ Tạo hóa đơn
 		HoaDonEntity hoaDon = new HoaDonEntity();
 		hoaDon.setBenhNhan(benhNhan);
 		hoaDon.setSoHoaDon(request.getSoHoaDon());
@@ -92,14 +122,11 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 		hoaDon.setTongTien(0); // tạm
 		hoaDonRepository.save(hoaDon);
 
-		// 4️⃣ Chuẩn bị xuất: tổng cần xuất và biến chứa tổng tiền (Integer)
+		// 4️⃣ Chuẩn bị xuất: tổng cần xuất và tổng tiền
 		int soLuongCanXuat = request.getSoLuong();
 		int tongTien = 0;
 
-		// Lưu ý: request.getGia() phải trả về Integer (hoặc bạn ép về int)
-		int donGia = request.getGia();
-
-		// 5️⃣ Lấy các lô theo hanSuDung tăng dần (lô sắp hết hạn trước)
+		// 5️⃣ Lấy các lô theo hanSuDung tăng dần
 		List<LoVacXinEntity> dsLo = loVacXinRepository.findByVacXinAndSoLuongGreaterThanOrderByHanSuDungAsc(vacXin, 0);
 
 		for (LoVacXinEntity lo : dsLo) {
@@ -109,7 +136,7 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 			int soLuongTru = Math.min(lo.getSoLuong(), soLuongCanXuat);
 			int thanhTien = donGia * soLuongTru;
 
-			// ➡️ Tạo chi tiết hóa đơn cho lô này
+			// ➡️ Tạo chi tiết hóa đơn
 			ChiTietHDEntity chiTiet = new ChiTietHDEntity();
 			chiTiet.setHoaDon(hoaDon);
 			chiTiet.setVacXin(vacXin);
@@ -120,7 +147,7 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 			chiTiet.setIsDeleted(false);
 			chiTietHdRepository.save(chiTiet);
 
-			// ➡️ Ghi biến động kho
+			// ➡️ Biến động kho
 			BienDongKhoEntity bienDong = new BienDongKhoEntity();
 			bienDong.setLoVacXin(lo);
 			bienDong.setLoaiBD(BienDongKhoEntity.LoaiBienDong.XUAT);
@@ -139,13 +166,11 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 			soLuongCanXuat -= soLuongTru;
 		}
 
-		// 6️⃣ Nếu còn thiếu số lượng thì rollback (bằng exception) — @Transactional sẽ
-		// rollback tự động
 		if (soLuongCanXuat > 0) {
 			throw new IllegalArgumentException("Không đủ số lượng trong kho");
 		}
 
-		// 7️⃣ Cập nhật tổng tiền (Integer) cho hóa đơn và lưu
+		// 6️⃣ Cập nhật tổng tiền
 		hoaDon.setTongTien(tongTien);
 		hoaDonRepository.save(hoaDon);
 	}
@@ -153,26 +178,45 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 	@Transactional
 	@Override
 	public void update(GiaoDichKhachHangRequest request) {
-		// Lấy hóa đơn hiện tại theo số hóa đơn
+		// 1️⃣ Lấy hóa đơn theo số hóa đơn
 		HoaDonEntity hoaDon = hoaDonRepository.findBySoHoaDonAndIsDeletedFalse(request.getSoHoaDon())
 				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy hóa đơn"));
 
-		// Update các trường cơ bản trong hóa đơn
-		hoaDon.setNgayHD(request.getNgayHD());
-		hoaDonRepository.save(hoaDon);
-
-		// Giả sử mỗi hóa đơn chỉ có 1 chi tiết, lấy chi tiết đầu tiên
+		// 2️⃣ Lấy chi tiết hóa đơn (giả sử mỗi hóa đơn 1 chi tiết)
 		ChiTietHDEntity chiTiet = hoaDon.getChiTietHDs().stream().filter(ct -> !Boolean.TRUE.equals(ct.getIsDeleted()))
 				.findFirst().orElseThrow(() -> new IllegalArgumentException("Không có chi tiết hóa đơn"));
 
-		// Update chi tiết
-		chiTiet.setSoLuong(request.getSoLuong());
-		chiTiet.setDonGia(request.getGia());
+		// 3️⃣ Kiểm tra xem có thay đổi vắc xin hoặc số lượng
+		boolean vacXinChanged = !chiTiet.getVacXin().getMaCode().equals(request.getMaVacXin());
+		boolean soLuongChanged = chiTiet.getSoLuong() != request.getSoLuong();
+
+		if (!vacXinChanged && !soLuongChanged) {
+			// Không có gì thay đổi → không update
+			return;
+		}
+
+		// 4️⃣ Lấy vắc xin mới (nếu thay đổi)
 		VacXinEntity vacXin = vacXinRepository.findByMaCode(request.getMaVacXin())
 				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy vắc xin"));
+
 		chiTiet.setVacXin(vacXin);
 
+		// 5️⃣ Lấy giá mới nhất từ bảng giá
+		BangGiaVacXinEntity bangGia = bangGiaVacXinRepository.findByVacXinIdOrderByHieuLucTuDesc(vacXin.getId())
+				.stream().findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Không tìm thấy giá cho vắc xin này"));
+
+		int donGia = bangGia.getGia();
+
+		// 6️⃣ Cập nhật số lượng, giá và thành tiền
+		chiTiet.setSoLuong(request.getSoLuong());
+		chiTiet.setDonGia(donGia);
+		chiTiet.setThanhTien(donGia * request.getSoLuong());
 		chiTietHdRepository.save(chiTiet);
+
+		// 7️⃣ Cập nhật tổng tiền hóa đơn
+		hoaDon.setTongTien(chiTiet.getThanhTien());
+		hoaDonRepository.save(hoaDon);
 	}
 
 	@Transactional

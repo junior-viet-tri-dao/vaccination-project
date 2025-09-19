@@ -15,7 +15,13 @@
     <h2 class="text-3xl font-bold text-rose-700 text-center mb-6">
         Quản lý giá vắc xin
     </h2>
-
+    
+<div class="flex justify-end mb-4">
+        <a th:href="@{/finance/vaccine-price/create}"
+           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
+            ➕ Thêm mới
+        </a>
+    </div>
     <!-- Bảng -->
     <div class="overflow-x-auto w-full">
         <table class="min-w-full border border-gray-300 text-center">
