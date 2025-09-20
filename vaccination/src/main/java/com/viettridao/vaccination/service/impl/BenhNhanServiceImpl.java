@@ -27,38 +27,38 @@ public class BenhNhanServiceImpl implements BenhNhanService {
 	}
 
 	@Override
+	public List<BenhNhanEntity> getAll() {
+		return benhNhanRepository.findAll();
+	}
+
+	@Override
 	public UpdateBenhNhanResponse getBenhNhanById(String maBenhNhan) {
 		BenhNhanEntity entity = benhNhanRepository.findById(maBenhNhan)
 				.orElseThrow(() -> new RuntimeException("Không tìm thấy bệnh nhân với ID: " + maBenhNhan));
 		return benhNhanMapper.toResponse(entity);
 	}
-	
-	
+
 	@Override
 	public List<UpdateBenhNhanResponse> getAllBenhNhan() {
-	    return benhNhanRepository.findAll()
-	            .stream()
-	            .map(benhNhanMapper::toResponse)
-	            .collect(Collectors.toList());
+		return benhNhanRepository.findAll().stream().map(benhNhanMapper::toResponse).collect(Collectors.toList());
 	}
-
 
 	@Override
 	@Transactional
 	public UpdateBenhNhanResponse updateBenhNhan(UpdateBenhNhanRequest request) {
-	    BenhNhanEntity entity = benhNhanRepository.findById(request.getMaBenhNhan())
-	            .orElseThrow(() -> new RuntimeException("Bệnh nhân không tồn tại"));
+		BenhNhanEntity entity = benhNhanRepository.findById(request.getMaBenhNhan())
+				.orElseThrow(() -> new RuntimeException("Bệnh nhân không tồn tại"));
 
-	    entity.setHoTen(request.getHoTen());
-	    entity.setGioiTinh(BenhNhanEntity.GioiTinh.valueOf(request.getGioiTinh().trim()));
-	    entity.setNgaySinh(java.time.LocalDate.now().minusYears(request.getTuoi()));
-	    entity.setTenNguoiGiamHo(request.getTenNguoiGiamHo());
-	    entity.setDiaChi(request.getDiaChi());
-	    entity.setSoDienThoai(request.getSoDienThoai());
+		entity.setHoTen(request.getHoTen());
+		entity.setGioiTinh(BenhNhanEntity.GioiTinh.valueOf(request.getGioiTinh().trim()));
+		entity.setNgaySinh(java.time.LocalDate.now().minusYears(request.getTuoi()));
+		entity.setTenNguoiGiamHo(request.getTenNguoiGiamHo());
+		entity.setDiaChi(request.getDiaChi());
+		entity.setSoDienThoai(request.getSoDienThoai());
 
-	    benhNhanRepository.save(entity);
+		benhNhanRepository.save(entity);
 
-	    return benhNhanMapper.toResponse(entity);
+		return benhNhanMapper.toResponse(entity);
 	}
 
 }

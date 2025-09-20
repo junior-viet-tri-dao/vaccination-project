@@ -53,7 +53,7 @@ public class TaiKhoanEntity {
 
 	@Column(name = "dia_chi")
 	private String diaChi;
-	
+
 	private Boolean isDeleted = Boolean.FALSE;
 
 	@ManyToOne
@@ -101,10 +101,8 @@ public class TaiKhoanEntity {
 
 	@OneToMany(mappedBy = "taoBoi")
 	private Set<BangGiaVacXinEntity> bangGiaVacXins;
-	
+
 	@OneToMany(mappedBy = "nguoiThucHien")
 	private List<KetQuaTiemEntity> ketQuaTiemsThucHien;
-	
-	
 
 }

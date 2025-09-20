@@ -24,7 +24,6 @@ public class FaqController {
 
 	private final GiaiDapThacMacService giaiDapThacMacService;
 
-	// Trang danh sách câu hỏi
 	@GetMapping
 	public String listFaq(Model model) {
 		var danhSach = giaiDapThacMacService.getAll();
@@ -33,7 +32,6 @@ public class FaqController {
 		return "supportEmployee/faq-list";
 	}
 
-	// Form trả lời 1 phản hồi cụ thể
 	@GetMapping("/{maPh}")
 	public String showFaqForm(@PathVariable String maPh, Model model) {
 		GiaiDapThacMacResponse faqResponse = giaiDapThacMacService.getByMaPh(maPh);
@@ -49,37 +47,26 @@ public class FaqController {
 	}
 
 	@PostMapping("/tra-loi")
-	public String traLoi(@Valid @ModelAttribute("faqRequest") GiaiDapThacMacRequest request, 
-	                     BindingResult result,
-	                     Model model, 
-	                     RedirectAttributes redirectAttrs) {
+	public String traLoi(@Valid @ModelAttribute("faqRequest") GiaiDapThacMacRequest request, BindingResult result,
+			Model model, RedirectAttributes redirectAttrs) {
 
-	    if (result.hasErrors()) {
-	        if (request.getMaPh() != null && !request.getMaPh().isBlank()) {
-	            model.addAttribute("faqResponse", giaiDapThacMacService.getByMaPh(request.getMaPh()));
-	        }
-	        model.addAttribute("pageTitle", "Giải đáp thắc mắc");
-	        return "supportEmployee/faq-form";
-	    }
+		if (result.hasErrors()) {
+			if (request.getMaPh() != null && !request.getMaPh().isBlank()) {
+				model.addAttribute("faqResponse", giaiDapThacMacService.getByMaPh(request.getMaPh()));
+			}
+			model.addAttribute("pageTitle", "Giải đáp thắc mắc");
+			return "supportEmployee/faq-form";
+		}
 
-	    if (request.getMaPh() == null || request.getMaPh().isBlank()) {
-	        redirectAttrs.addFlashAttribute("errorMessage",
-	                "Mã phản hồi không hợp lệ hoặc đã hết phiên. Vui lòng chọn lại từ danh sách.");
-	        return "redirect:/faq";
-	    }
+		try {
+			giaiDapThacMacService.traLoi(request);
+			redirectAttrs.addFlashAttribute("success", "Trả lời thành công, email đã được gửi!");
+		} catch (IllegalArgumentException ex) {
+			redirectAttrs.addFlashAttribute("error", ex.getMessage());
+		} catch (RuntimeException ex) {
+			redirectAttrs.addFlashAttribute("error", "Đã có lỗi: " + ex.getMessage());
+		}
 
-	    try {
-	        giaiDapThacMacService.traLoi(request);
-	        redirectAttrs.addFlashAttribute("successMessage", "Trả lời thành công, email đã được gửi!");
-	        // 👉 Sau khi gửi thì quay về danh sách
-	        return "redirect:/faq";
-	    } catch (RuntimeException ex) {
-	        redirectAttrs.addFlashAttribute("errorMessage", ex.getMessage());
-	        return "redirect:/faq";
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        redirectAttrs.addFlashAttribute("errorMessage", "Đã có lỗi xảy ra: " + e.getMessage());
-	        return "redirect:/faq";
-	    }
+		return "redirect:/faq";
 	}
 }

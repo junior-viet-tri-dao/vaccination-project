@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,17 @@ public interface KetQuaTiemRepository extends JpaRepository<KetQuaTiemEntity, St
 	List<KetQuaTiemEntity> findAllByIsDeletedFalse();
 
 	List<KetQuaTiemEntity> findAllByBenhNhanIdAndIsDeletedFalse(String maBenhNhan);
-	
-    List<KetQuaTiemEntity> findByBenhNhanIdAndIsDeletedFalse(String benhNhanId);
+
+	List<KetQuaTiemEntity> findByBenhNhanIdAndIsDeletedFalse(String benhNhanId);
+
+	List<KetQuaTiemEntity> findByBenhNhanId(String maBenhNhan);
+
+	List<KetQuaTiemEntity> findByLichTiemId(String maLich);
+
+	List<KetQuaTiemEntity> findByNguoiThucHienId(String maNguoiThucHien);
+	    
+    List<KetQuaTiemEntity> findByIsDeletedFalse();
+    
+    Optional<KetQuaTiemEntity> findTopByBenhNhan_HoTenOrderByNgayTiemDesc(String hoTenBenhNhan);
 
 }

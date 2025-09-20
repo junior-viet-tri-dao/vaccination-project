@@ -26,13 +26,10 @@ public class GiaiDapThacMacServiceImpl implements GiaiDapThacMacService {
 
 	@Override
 	public List<GiaiDapThacMacResponse> getAll() {
-	    return phanHoiRepository.findAll().stream()
-	        .filter(p -> p.getLoaiPhanHoi() != PhanHoiEntity.LoaiPhanHoi.CAU_HOI) // bỏ CAU_HOI
-	        .map(mapper::toResponse)
-	        .toList();
+		return phanHoiRepository.findAll().stream().filter(p -> p.getLoaiPhanHoi() != PhanHoiEntity.LoaiPhanHoi.CAU_HOI) // bỏ
+																															// CAU_HOI
+				.map(mapper::toResponse).toList();
 	}
-
-
 
 	@Override
 	public GiaiDapThacMacResponse getByMaPh(String maPh) {
@@ -41,10 +38,13 @@ public class GiaiDapThacMacServiceImpl implements GiaiDapThacMacService {
 		return mapper.toResponse(entity);
 	}
 
-	
 	@Override
 	@Transactional
 	public void traLoi(GiaiDapThacMacRequest request) {
+		if (request.getMaPh() == null || request.getMaPh().isBlank()) {
+			throw new IllegalArgumentException("Mã phản hồi không hợp lệ hoặc đã hết phiên.");
+		}
+
 		PhanHoiEntity entity = phanHoiRepository.findById(request.getMaPh())
 				.orElseThrow(() -> new RuntimeException("Không tìm thấy phản hồi với mã: " + request.getMaPh()));
 
@@ -53,13 +53,15 @@ public class GiaiDapThacMacServiceImpl implements GiaiDapThacMacService {
 		phanHoiRepository.save(entity);
 
 		// Gửi email trả lời
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(request.getEmailBenhNhan());
-		message.setSubject("Giải đáp thắc mắc từ Trung tâm tiêm chủng");
-		message.setText("Câu hỏi của bạn: \n" + entity.getTieuDe() + "\n\nNội dung: \n" + entity.getNoiDung()
-				+ "\n\nTrả lời: \n" + request.getTraLoi());
-
-		mailSender.send(message);
+		try {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setTo(request.getEmailBenhNhan());
+			message.setSubject("Giải đáp thắc mắc từ Trung tâm tiêm chủng");
+			message.setText("Câu hỏi của bạn: \n" + entity.getTieuDe() + "\n\nNội dung: \n" + entity.getNoiDung()
+					+ "\n\nTrả lời: \n" + request.getTraLoi());
+			mailSender.send(message);
+		} catch (Exception e) {
+			throw new RuntimeException("Gửi email thất bại: " + e.getMessage(), e);
+		}
 	}
-
 }
