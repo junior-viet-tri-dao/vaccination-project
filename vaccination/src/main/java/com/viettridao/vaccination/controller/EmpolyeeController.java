@@ -9,15 +9,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.viettridao.vaccination.dto.request.employee.KeDonRequest;
+import com.viettridao.vaccination.dto.request.employee.KetQuaTiemRequest;
 import com.viettridao.vaccination.dto.request.employee.UpdateBenhNhanRequest;
 import com.viettridao.vaccination.dto.response.employee.HoSoBenhAnResponse;
 import com.viettridao.vaccination.dto.response.employee.KeDonResponse;
+import com.viettridao.vaccination.dto.response.employee.KetQuaTiemResponse;
 import com.viettridao.vaccination.dto.response.employee.UpdateBenhNhanResponse;
+import com.viettridao.vaccination.model.VacXinEntity;
 import com.viettridao.vaccination.service.BenhNhanService;
 import com.viettridao.vaccination.service.HoSoBenhAnService;
 import com.viettridao.vaccination.service.KeDonService;
+import com.viettridao.vaccination.service.KetQuaTiemService;
+import com.viettridao.vaccination.service.VacXinService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +35,8 @@ public class EmpolyeeController {
 	private final HoSoBenhAnService hoSoBenhAnService;
 	private final BenhNhanService benhNhanService;
 	private final KeDonService keDonService;
+	private final KetQuaTiemService ketQuaTiemService;
+	private final VacXinService vacXinService; // giờ sẽ resolve được
 
 	@GetMapping("/view")
 	public String showEmployeeView(Model model) {
@@ -41,9 +49,9 @@ public class EmpolyeeController {
 		try {
 			HoSoBenhAnResponse hoSo = hoSoBenhAnService.getHoSoBenhAnById(maBenhNhan);
 			model.addAttribute("hoSo", hoSo);
-			model.addAttribute("successMessage", "Tìm kiếm thành công");
+			model.addAttribute("success", "Tìm kiếm thành công");
 		} catch (RuntimeException ex) {
-			model.addAttribute("errorMessage", ex.getMessage());
+			model.addAttribute("error", ex.getMessage());
 		}
 		model.addAttribute("tab", "view");
 		return "employee/view";
@@ -83,9 +91,9 @@ public class EmpolyeeController {
 							.tenNguoiGiamHo(response.getTenNguoiGiamHo()).diaChi(response.getDiaChi())
 							.soDienThoai(response.getSoDienThoai()).build());
 
-			model.addAttribute("successMessage", "Cập nhật thành công");
+			model.addAttribute("success", "Cập nhật thành công");
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", "Lỗi: " + e.getMessage());
+			model.addAttribute("error", "Lỗi: " + e.getMessage());
 		}
 
 		// Luôn load lại danh sách bệnh nhân cho dropdown
@@ -109,9 +117,9 @@ public class EmpolyeeController {
 	public String keDon(@ModelAttribute("keDonRequest") KeDonRequest request, Model model) {
 		try {
 			KeDonResponse response = keDonService.keDon(request, "userLoginFake");
-			model.addAttribute("successMessage", "Kê đơn thành công!");
+			model.addAttribute("success", "Kê đơn thành công!");
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", "Có lỗi khi kê đơn: " + e.getMessage());
+			model.addAttribute("error", "Có lỗi khi kê đơn: " + e.getMessage());
 		}
 
 		model.addAttribute("benhNhanList", keDonService.getAllBenhNhan());
@@ -120,4 +128,59 @@ public class EmpolyeeController {
 
 		return "employee/prescripe";
 	}
+
+	@GetMapping("/list")
+	public String listKetQuaTiem(Model model) {
+		List<KetQuaTiemResponse> ketQuaTiems = ketQuaTiemService.getAllKetQuaTiem();
+		model.addAttribute("ketQuaTiems", ketQuaTiems);
+		return "employee/immunization-result-list";
+	}
+	
+	@GetMapping("/add")
+	public String showAddKetQuaForm(Model model) {
+	    KetQuaTiemRequest request = new KetQuaTiemRequest();
+
+	    model.addAttribute("ketQuaTiemRequest", request);
+
+	    model.addAttribute("benhNhanList", ketQuaTiemService.getAllKetQuaTiem()
+	            .stream().map(KetQuaTiemResponse::getTenBenhNhan).distinct().toList());
+	    model.addAttribute("vacXinList", vacXinService.getAllVaccines()
+	            .stream().map(VacXinEntity::getTen).toList());
+	    model.addAttribute("nguoiThucHienList", ketQuaTiemService.getAllKetQuaTiem()
+	            .stream().map(KetQuaTiemResponse::getNguoiThucHien).distinct().toList());
+
+	    return "employee/immunization-result-add";
+	}
+	
+	@GetMapping("/benh-nhan-info")
+	@ResponseBody
+	public KetQuaTiemResponse getBenhNhanInfo(@RequestParam String tenBenhNhan) {
+	    // Lấy thông tin đầy đủ từ KetQuaTiemService nếu đã tiêm, hoặc từ BenhNhanService nếu chưa
+	    KetQuaTiemResponse response = ketQuaTiemService.getKetQuaTiemByTenBenhNhan(tenBenhNhan);
+	    if(response == null) {
+	        // Nếu bệnh nhân chưa có kết quả tiêm, chỉ trả tên bệnh nhân
+	        response = new KetQuaTiemResponse();
+	        response.setTenBenhNhan(tenBenhNhan);
+	    }
+	    return response;
+	}
+
+
+	@PostMapping("/add")
+	public String addKetQua(@ModelAttribute("ketQuaTiemRequest") KetQuaTiemRequest request, Model model) {
+	    try {
+	        ketQuaTiemService.createKetQuaTiem(request);
+	        model.addAttribute("success", "Thêm kết quả tiêm thành công!");
+	    } catch (Exception e) {
+	        model.addAttribute("error", "Có lỗi khi thêm kết quả tiêm: " + e.getMessage());
+	    }
+
+	    // Load lại list để hiển thị
+	    List<KetQuaTiemResponse> ketQuaTiems = ketQuaTiemService.getAllKetQuaTiem();
+	    model.addAttribute("ketQuaTiems", ketQuaTiems);
+
+	    model.addAttribute("tab", "addKetQua");
+	    return "employee/immunization-result-list";
+	}
+
 }

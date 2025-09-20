@@ -1,5 +1,8 @@
 package com.viettridao.vaccination.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.viettridao.vaccination.model.LichTiemEntity;
 import com.viettridao.vaccination.model.VacXinEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +15,10 @@ import java.util.Optional;
 
 @Repository
 public interface LichTiemRepository extends JpaRepository<LichTiemEntity, String> {
+	LichTiemEntity findTopByVacXinOrderByNgayGioAsc(VacXinEntity vacXin);
+    List<LichTiemEntity> findAllByIsDeletedFalse();	
+    Optional<LichTiemEntity> findByVacXinTen(String tenVacXin);
+
 
     // Tìm lịch tiêm theo id vắc xin + thời gian chỉ định, lọc bản ghi chưa xóa
     @Query("SELECT l FROM LichTiemEntity l WHERE l.vacXin.id = :vacXinId AND l.ngayGio = :ngayGio AND (l.isDeleted = false OR l.isDeleted IS NULL)")

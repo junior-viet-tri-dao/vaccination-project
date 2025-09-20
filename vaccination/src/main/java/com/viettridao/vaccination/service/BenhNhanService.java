@@ -14,5 +14,7 @@ public interface BenhNhanService {
 	UpdateBenhNhanResponse getBenhNhanById(String maBenhNhan);
 	
     List<UpdateBenhNhanResponse> getAllBenhNhan();
+    
+    List<BenhNhanEntity> getAll();
 
 }

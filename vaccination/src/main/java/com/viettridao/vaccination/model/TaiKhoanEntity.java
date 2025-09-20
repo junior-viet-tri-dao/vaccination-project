@@ -54,6 +54,10 @@ public class TaiKhoanEntity implements UserDetails {
     @Column(name = "email")
     private String email;
 
+	@Column(name = "dia_chi")
+	private String diaChi;
+
+	private Boolean isDeleted = Boolean.FALSE;
     @Column(name = "dia_chi")
     private String diaChi;
 
@@ -99,6 +103,11 @@ public class TaiKhoanEntity implements UserDetails {
     @OneToMany(mappedBy = "taoBoi")
     private Set<BaoCaoPhanUngEntity> baoCaoPhanUngs;
 
+	@OneToMany(mappedBy = "taoBoi")
+	private Set<BangGiaVacXinEntity> bangGiaVacXins;
+
+	@OneToMany(mappedBy = "nguoiThucHien")
+	private List<KetQuaTiemEntity> ketQuaTiemsThucHien;
     @OneToMany(mappedBy = "taoBoi")
     private Set<PhanHoiEntity> phanHois;
 

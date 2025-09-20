@@ -67,6 +67,4 @@ public class LichTiemEntity {
     @OneToMany(mappedBy = "lichTiem")
     private List<KetQuaTiemEntity> ketQuaTiems;
 
-    
-
 }
