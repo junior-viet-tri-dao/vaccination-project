@@ -4,12 +4,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -44,15 +41,44 @@ public class AppConfig {
      * @return SecurityFilterChain
      * @throws Exception
      */
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//
+//        http
+//                .csrf(Customizer.withDefaults())
+//                .cors(withDefaults())
+//                .authorizeHttpRequests(request -> request
+//                        .requestMatchers(AUTH_WHITELIST).permitAll()
+//                        .anyRequest().authenticated())
+//                .httpBasic(AbstractHttpConfigurer::disable)
+//                .authenticationProvider(authenticationProvider())
+//                .logout(logout -> logout
+//                        .logoutUrl("/logout")
+//                        .logoutSuccessUrl("/login?logout")
+//                        .invalidateHttpSession(true)
+//                        .deleteCookies("JSESSIONID")
+//                        .permitAll()
+//                );
+//
+//        return http.build();
+//    }
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   CustomAuthenticationSuccessHandler successHandler) throws Exception {
 
         http
-                .csrf(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable) // disable CSRF nếu test API, còn form thì có thể bật
                 .cors(withDefaults())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")                 // GET hiển thị form login
+                        .loginProcessingUrl("/login")        // POST form login
+                        .successHandler(successHandler)      // gọi CustomAuthenticationSuccessHandler
+                        .permitAll()
+                )
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
                 .logout(logout -> logout
@@ -65,6 +91,7 @@ public class AppConfig {
 
         return http.build();
     }
+
 
     /**
      * Provider xác thực với userServiceDetail và passwordEncoder.

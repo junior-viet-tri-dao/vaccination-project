@@ -24,6 +24,7 @@ public class FaqController {
 
 	private final GiaiDapThacMacService giaiDapThacMacService;
 
+
 	@GetMapping
 	public String listFaq(Model model) {
 		var danhSach = giaiDapThacMacService.getAll();
