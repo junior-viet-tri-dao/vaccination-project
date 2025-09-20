@@ -36,7 +36,9 @@ public class EmpolyeeController {
 	private final BenhNhanService benhNhanService;
 	private final KeDonService keDonService;
 	private final KetQuaTiemService ketQuaTiemService;
-	private final VacXinService vacXinService; // giờ sẽ resolve được
+	private final VacXinService vacXinService; 
+	
+	
 
 	@GetMapping("/view")
 	public String showEmployeeView(Model model) {

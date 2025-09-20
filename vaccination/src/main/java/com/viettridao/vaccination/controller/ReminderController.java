@@ -18,7 +18,7 @@ import com.viettridao.vaccination.service.NhacNhoTiemService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequestMapping("/reminder") // đường dẫn gốc chung
+@RequestMapping("/reminder")
 @RequiredArgsConstructor
 public class ReminderController {
 

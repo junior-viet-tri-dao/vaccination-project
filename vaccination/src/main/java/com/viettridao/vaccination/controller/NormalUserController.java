@@ -1,5 +1,20 @@
 package com.viettridao.vaccination.controller;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.viettridao.vaccination.dto.request.normalUser.EditProfileRequest;
 import com.viettridao.vaccination.dto.request.normalUser.PhanHoiCapCaoRequest;
 import com.viettridao.vaccination.dto.response.DichBenhResponse;
@@ -7,20 +22,14 @@ import com.viettridao.vaccination.dto.response.normalUser.ProfileDetailResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineScheduleResponse;
 import com.viettridao.vaccination.model.PhanHoiEntity;
-import com.viettridao.vaccination.service.*;
+import com.viettridao.vaccination.service.DichBenhService;
+import com.viettridao.vaccination.service.PhanHoiCapCaoService;
+import com.viettridao.vaccination.service.ProfileService;
+import com.viettridao.vaccination.service.VaccineListService;
+import com.viettridao.vaccination.service.VaccineScheduleService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +40,9 @@ public class NormalUserController {
     private final ProfileService profileService;
     private final DichBenhService dichBenhService;
     private final PhanHoiCapCaoService phanHoiService;
+    
+    
+
 
     // Hiển thị trang danh sách vắc xin
     @GetMapping("/view-vaccines")

@@ -25,6 +25,7 @@ import java.util.List;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+    
 
     @GetMapping
     public String getWarehouses(
