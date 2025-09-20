@@ -15,3 +15,11 @@ public interface BenhNhanRepository extends JpaRepository<BenhNhanEntity, String
     List<BenhNhanEntity> findAllByIsDeletedFalse();
 
 }
+
+	Optional<BenhNhanEntity> findById(String id);
+
+	Optional<BenhNhanEntity> findByIdAndIsDeletedFalse(String id);
+
+	// Trong BenhNhanRepository
+	Optional<BenhNhanEntity> findByTaoBoiTaiKhoan_TenDangNhapAndIsDeletedFalse(String tenDangNhap);
+}

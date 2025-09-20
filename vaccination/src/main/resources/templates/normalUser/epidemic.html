@@ -37,17 +37,17 @@
             </tr>
             </thead>
             <tbody>
-            <!-- Lặp danh sách epidemic -->
-            <tr th:each="epidemic, stat : ${epidemicPage.content}" class="hover:bg-blue-50 transition">
-                <td class="border px-4 py-3" th:text="${stat.index + 1 + epidemicPage.number * epidemicPage.size}"></td>
-                <td class="border px-4 py-3" th:text="${#temporals.format(epidemic.surveyTime, 'dd/MM/yyyy')}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.address}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.epidemicName}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.infectedCount}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.transmissionMode}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.healthImpact}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.vaccineType}"></td>
-                <td class="border px-4 py-3" th:text="${epidemic.note}"></td>
+            <!-- Lặp danh sách dịch bệnh -->
+            <tr th:each="dichBenh, stat : ${dichBenhPage.content}" class="hover:bg-blue-50 transition">
+                <td class="border px-4 py-3" th:text="${stat.index + 1 + dichBenhPage.number * dichBenhPage.size}"></td>
+                <td class="border px-4 py-3" th:text="${#temporals.format(dichBenh.thoiDiemKhaoSat, 'dd/MM/yyyy')}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.diaChi}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.tenBenh}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.soNguoiBiNhiem}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.duongLayNhiem}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.tacHaiSucKhoe}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.loaiVacXinPhongBenh}"></td>
+                <td class="border px-4 py-3" th:text="${dichBenh.ghiChu}"></td>
             </tr>
             </tbody>
         </table>
@@ -56,33 +56,33 @@
     <!-- Phân trang -->
     <div class="flex justify-center items-center mt-6 space-x-2">
         <!-- Nút Trước -->
-        <span th:if="${epidemicPage.first}"
+        <span th:if="${dichBenhPage.first}"
               class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
         Trước
     </span>
-        <a th:if="${!epidemicPage.first}"
-           th:href="@{/epidemic(page=${epidemicPage.number - 1}, size=${epidemicPage.size})}"
+        <a th:if="${!dichBenhPage.first}"
+           th:href="@{/epidemic(page=${dichBenhPage.number - 1}, size=${dichBenhPage.size})}"
            class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
             Trước
         </a>
 
         <!-- Số trang -->
-        <span th:each="i : ${#numbers.sequence(0, epidemicPage.totalPages - 1)}">
-        <a th:href="@{/epidemic(page=${i}, size=${epidemicPage.size})}"
+        <span th:each="i : ${#numbers.sequence(0, dichBenhPage.totalPages - 1)}">
+        <a th:href="@{/epidemic(page=${i}, size=${dichBenhPage.size})}"
            th:text="${i + 1}"
-           th:classappend="${i == epidemicPage.number} ?
+           th:classappend="${i == dichBenhPage.number} ?
                'bg-blue-600 text-white' :
                'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
            class="px-3 py-1 rounded-lg mx-1 transition"></a>
     </span>
 
         <!-- Nút Sau -->
-        <span th:if="${epidemicPage.last}"
+        <span th:if="${dichBenhPage.last}"
               class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">
         Sau
     </span>
-        <a th:if="${!epidemicPage.last}"
-           th:href="@{/epidemic(page=${epidemicPage.number + 1}, size=${epidemicPage.size})}"
+        <a th:if="${!dichBenhPage.last}"
+           th:href="@{/epidemic(page=${dichBenhPage.number + 1}, size=${dichBenhPage.size})}"
            class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
             Sau
         </a>

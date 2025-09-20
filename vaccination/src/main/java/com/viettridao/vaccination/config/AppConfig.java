@@ -31,8 +31,7 @@ public class AppConfig {
 
     // Danh sách các endpoint cho phép truy cập mà không cần đăng nhập
     private static final String[] AUTH_WHITELIST = {
-//            "/login", "/js/**", "/css/**", "/images/**"
-            "/**"
+            "/login", "/js/**", "/css/**", "/images/**"
     };
 
     // Service dùng để load user khi xác thực
@@ -74,7 +73,8 @@ public class AppConfig {
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userServiceDetail);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userServiceDetail);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

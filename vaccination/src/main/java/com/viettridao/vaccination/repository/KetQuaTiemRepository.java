@@ -10,9 +10,9 @@ import com.viettridao.vaccination.model.KetQuaTiemEntity;
 
 @Repository
 public interface KetQuaTiemRepository extends JpaRepository<KetQuaTiemEntity, String> {
-	List<KetQuaTiemEntity> findAllByBenhNhan_IdAndIsDeletedFalse(String maBenhNhan);
 
-	List<KetQuaTiemEntity> findAllByIsDeletedFalse();
+    // Lấy danh sách kết quả tiêm của một bệnh nhân, lọc chưa xóa, sắp xếp theo ngày tiêm tăng dần
+    List<KetQuaTiemEntity> findByBenhNhan_IdAndIsDeletedFalseOrderByNgayTiemAsc(String benhNhanId);
 
 	List<KetQuaTiemEntity> findAllByBenhNhanIdAndIsDeletedFalse(String maBenhNhan);
 
@@ -28,4 +28,15 @@ public interface KetQuaTiemRepository extends JpaRepository<KetQuaTiemEntity, St
     
     Optional<KetQuaTiemEntity> findTopByBenhNhan_HoTenOrderByNgayTiemDesc(String hoTenBenhNhan);
 
+    // Lấy tất cả kết quả tiêm theo bệnh nhân (lọc chưa xóa)
+    List<KetQuaTiemEntity> findAllByBenhNhan_IdAndIsDeletedFalse(String maBenhNhan);
+
+    // Lấy tất cả kết quả tiêm chưa xóa
+    List<KetQuaTiemEntity> findAllByIsDeletedFalse();
+
+    // Lấy kết quả tiêm theo mã bệnh nhân (field trực tiếp)
+    List<KetQuaTiemEntity> findAllByBenhNhanIdAndIsDeletedFalse(String maBenhNhan);
+
+    // Alias khác cho việc tìm theo mã bệnh nhân
+    List<KetQuaTiemEntity> findByBenhNhanIdAndIsDeletedFalse(String benhNhanId);
 }
