@@ -1,5 +1,6 @@
 package com.viettridao.vaccination.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,6 +28,12 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
      */
     @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap AND a.isDeleted = FALSE")
     Optional<TaiKhoanEntity> findByTenDangNhapAndIsDeletedFalse(String tenDangNhap);
+    
+    Optional<TaiKhoanEntity> findByHoTen(String hoTen);
+    
+    List<TaiKhoanEntity> findAllByHoatDongTrue();
+    
+
 
     // Trong TaiKhoanRepository
     Optional<TaiKhoanEntity> findFirstByVaiTro_TenAndHoatDongIsTrueAndIsDeletedFalse(String tenVaiTro);
