@@ -2,87 +2,85 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome (icon y tế) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Utils alert -->
-    <script th:src="@{/js/alert-utils.js}"></script>
 </head>
 <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex items-center justify-center">
 
-<div class="w-full max-w-lg bg-white shadow-2xl rounded-2xl p-10">
+<div class="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-lg bg-white shadow-2xl rounded-2xl px-4 py-8 sm:px-8 sm:py-10">
     <!-- Header -->
     <div class="text-center mb-8">
         <div class="flex justify-center items-center mb-4">
-            <i class="fas fa-syringe text-blue-600 text-5xl"></i>
+            <i class="fas fa-syringe text-blue-600 text-4xl sm:text-5xl"></i>
         </div>
-        <h2 class="text-3xl font-bold text-blue-700">Hệ thống Tiêm chủng</h2>
-        <p class="text-gray-500 mt-2">Vui lòng đăng nhập để tiếp tục</p>
+        <h2 class="text-2xl sm:text-3xl font-bold text-blue-700">Hệ thống Tiêm chủng</h2>
+        <p class="text-gray-500 mt-2 text-sm sm:text-base">Vui lòng đăng nhập</p>
     </div>
 
     <!-- ALERT: Hiển thị thông báo lỗi/thành công -->
     <div th:if="${error}" class="mb-4">
-        <div class="bg-red-100 text-red-700 px-4 py-3 rounded">
+        <div id="alert-error" class="relative bg-red-100 text-red-700 px-4 py-3 rounded flex items-center">
             <span th:text="${error}"></span>
+            <button type="button" onclick="closeAlert('alert-error')"
+                    class="absolute right-2 top-2 text-red-400 hover:text-red-700 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
+
     <div th:if="${success}" class="mb-4">
-        <div class="bg-green-100 text-green-700 px-4 py-3 rounded">
+        <div id="alert-success" class="relative bg-green-100 text-green-700 px-4 py-3 rounded flex items-center">
             <span th:text="${success}"></span>
+            <button type="button" onclick="closeAlert('alert-success')"
+                    class="absolute right-2 top-2 text-green-400 hover:text-green-700 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 
     <!-- Form -->
-    <form th:action="@{/login}" th:object="${login}" method="post" class="space-y-6">
+    <form th:action="@{/login}" th:object="${login}" method="post" class="space-y-5 sm:space-y-6">
         <!-- Username -->
         <div>
-            <label class="block text-gray-700 font-medium mb-2">Username</label>
+            <label class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Tên đăng nhập</label>
             <input type="text" th:field="*{username}" required minlength="4" maxlength="20" autofocus
                    placeholder="Nhập tên đăng nhập"
-                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none
+                   class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base
                    " th:classappend="${#fields.hasErrors('username')} ? 'border-red-500'"/>
-            <!-- Hiển thị lỗi username -->
             <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-               class="text-red-500 text-sm mt-1"></p>
+               class="text-red-500 text-xs sm:text-sm mt-1"></p>
         </div>
         <!-- Password -->
         <div>
-            <label class="block text-gray-700 font-medium mb-2">Password</label>
+            <label class="block text-gray-700 font-medium mb-2 text-sm sm:text-base">Mật khẩu</label>
             <div class="relative">
                 <input type="password" th:field="*{password}" id="password-input" required minlength="6" maxlength="20"
                        placeholder="Nhập mật khẩu"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none
+                       class="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm sm:text-base
                        " th:classappend="${#fields.hasErrors('password')} ? 'border-red-500'"/>
                 <button type="button" onclick="togglePassword()" tabindex="-1"
                         class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none">
                     <i id="eye-icon" class="fas fa-eye"></i>
                 </button>
             </div>
-            <!-- Hiển thị lỗi password -->
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-               class="text-red-500 text-sm mt-1"></p>
+               class="text-red-500 text-xs sm:text-sm mt-1"></p>
         </div>
 
         <!-- Buttons -->
-        <div class="flex items-center justify-between space-x-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:space-x-4">
             <button type="submit"
-                    class="w-1/2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg shadow-lg font-semibold transition transform hover:scale-105">
-                Login
+                    class="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-3 rounded-lg shadow-lg font-semibold transition transform hover:scale-105 text-sm sm:text-base">
+                Đăng nhập
             </button>
             <button type="reset"
-                    class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-lg shadow-md font-semibold transition transform hover:scale-105">
-                Cancel
+                    class="w-full sm:w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 sm:py-3 rounded-lg shadow-md font-semibold transition transform hover:scale-105 text-sm sm:text-base">
+                Hủy bỏ
             </button>
-        </div>
-
-        <!-- Forgot password -->
-        <div class="text-center mt-4">
-            <a th:href="@{/forgot-password}"
-               class="text-sm text-blue-600 hover:underline">Quên mật khẩu?</a>
         </div>
     </form>
     <script>
@@ -99,12 +97,22 @@
                 icon.classList.add('fa-eye');
             }
         }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const error = document.getElementById('alert-error');
+                if (error) error.style.display = 'none';
+                const success = document.getElementById('alert-success');
+                if (success) success.style.display = 'none';
+            }, 5000);
+        });
+
+        function closeAlert(id) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = 'none';
+        }
     </script>
 </div>
-
-<!-- Nếu dùng Thymeleaf fragment alert, giữ lại dòng này -->
-<div th:replace="~{alert :: alerts}"></div>
-<script th:src="@{/js/global.js}"></script>
 
 </body>
 </html>
