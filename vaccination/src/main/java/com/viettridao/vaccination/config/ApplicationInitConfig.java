@@ -172,4 +172,32 @@ public class ApplicationInitConfig implements ApplicationRunner {
         }
     }
 
+    /**
+     * Khởi tạo tài khoản normal user nếu chưa tồn tại
+     */
+    private void initNormalUserAccount() {
+        if (taiKhoanRepository.findByTenDangNhap("user1").isEmpty()) {
+            VaiTroEntity userRole = vaiTroRepository.findByTen("NORMAL_USER")
+                    .orElseThrow(() -> new RuntimeException("Role bệnh nhân chưa tồn tại"));
+
+            System.out.println("loadding normal user account...");
+            TaiKhoanEntity user = TaiKhoanEntity.builder()
+                    .tenDangNhap("user1")
+                    .matKhauHash(passwordEncoder.encode("user123")) // mã hóa password
+                    .email("user1@system.com")
+                    .vaiTro(userRole)
+                    .hoTen("Nguyễn Văn Nam")
+                    .soCmnd("01546456789")
+                    .soDienThoai("0968787321")
+                    .diaChi("An Khánh, Huyện Hoài Đức, Hà Nội")
+                    .isDeleted(false)
+                    .hoatDong(true)
+                    .ngayTao(java.time.LocalDateTime.now())
+                    .ngayCapNhat(java.time.LocalDateTime.now())
+                    .build();
+
+            taiKhoanRepository.save(user);
+        }
+    }
+
 }

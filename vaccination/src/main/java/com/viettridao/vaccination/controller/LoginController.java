@@ -51,7 +51,7 @@ public class LoginController {
             boolean result = authService.login(request.getUsername(), request.getPassword());
             if (result) {
                 redirectAttributes.addFlashAttribute("success", "Đăng nhập thành công!");
-                return "redirect:/dashboard";
+                return "redirect:/admin/dashboard";
             }
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
