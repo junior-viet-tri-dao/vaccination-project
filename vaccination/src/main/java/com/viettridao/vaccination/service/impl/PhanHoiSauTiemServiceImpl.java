@@ -73,6 +73,6 @@ public class PhanHoiSauTiemServiceImpl implements PhanHoiSauTiemService {
         entity.setKenhBaoCao(BaoCaoPhanUngEntity.KenhBaoCao.BENH_NHAN);
 
         // 4. Lưu vào DB
-        baoCaoPhanUngRepository.save(entity);
+        baoCaoPhanUngRepository.save(entity); 
     }
 }

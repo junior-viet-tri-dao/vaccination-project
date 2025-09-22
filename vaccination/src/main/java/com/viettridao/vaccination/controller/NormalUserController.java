@@ -2,10 +2,6 @@ package com.viettridao.vaccination.controller;
 
 import java.util.List;
 
-import com.viettridao.vaccination.dto.request.normalUser.PhanHoiSauTiemRequest;
-import com.viettridao.vaccination.dto.response.employee.KetQuaTiemResponse;
-import com.viettridao.vaccination.dto.response.normalUser.PhanHoiSauTiemResponse;
-import com.viettridao.vaccination.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,11 +18,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.viettridao.vaccination.dto.request.normalUser.EditProfileRequest;
 import com.viettridao.vaccination.dto.request.normalUser.PhanHoiCapCaoRequest;
+import com.viettridao.vaccination.dto.request.normalUser.PhanHoiSauTiemRequest;
 import com.viettridao.vaccination.dto.response.DichBenhResponse;
+import com.viettridao.vaccination.dto.response.normalUser.PhanHoiSauTiemResponse;
 import com.viettridao.vaccination.dto.response.normalUser.ProfileDetailResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineScheduleResponse;
 import com.viettridao.vaccination.model.PhanHoiEntity;
+import com.viettridao.vaccination.service.DichBenhService;
+import com.viettridao.vaccination.service.KetQuaTiemService;
+import com.viettridao.vaccination.service.PhanHoiCapCaoService;
+import com.viettridao.vaccination.service.PhanHoiSauTiemService;
+import com.viettridao.vaccination.service.ProfileService;
+import com.viettridao.vaccination.service.VaccineListService;
+import com.viettridao.vaccination.service.VaccineScheduleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +51,7 @@ public class NormalUserController {
 
     // Hiển thị trang danh sách vắc xin
     @GetMapping("/view-vaccines")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('VIEW_VACCINE') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('VIEW_VACCINE')) or hasRole('ADMIN')")
     public String showVaccineList(
             @RequestParam(name = "searchType", required = false, defaultValue = "") String searchType,
             @RequestParam(name = "keyword", required = false, defaultValue = "") String keyword,
@@ -67,7 +72,7 @@ public class NormalUserController {
 
     // Tra cứu lịch tiêm phòng cho user đang đăng nhập
     @GetMapping("/vaccine-schedule")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('VIEW_SCHEDULE') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('VIEW_SCHEDULE')) or hasRole('ADMIN')")
     public String showSchedule(Model model, Authentication authentication) {
         String tenDangNhap = authentication.getName();
         // Giả sử vaccineScheduleService nhận vào benhNhanId, bạn cần lấy benhNhanId từ ProfileService
@@ -82,7 +87,7 @@ public class NormalUserController {
 
     // Xem hồ sơ cá nhân của user đang đăng nhập
     @GetMapping("/view-profile")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('READ_PROFILE') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('READ_PROFILE')) or hasRole('ADMIN')")
     public String viewHistory(Model model, Authentication authentication) {
         String tenDangNhap = authentication.getName();
         ProfileDetailResponse profile = profileService.getProfileDetailByUsername(tenDangNhap);
@@ -95,7 +100,7 @@ public class NormalUserController {
 
     // Sửa thông tin cá nhân - Hiển thị form với thông tin cũ
     @GetMapping("/edit-profile")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('UPDATE_PROFILE') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('UPDATE_PROFILE')) or hasRole('ADMIN')")
     public String editProfile(Model model, Authentication authentication) {
         String tenDangNhap = authentication.getName();
         EditProfileRequest editProfileRequest = profileService.getEditProfileRequestByUsername(tenDangNhap);
@@ -106,7 +111,7 @@ public class NormalUserController {
 
     // Sửa thông tin cá nhân - Submit cập nhật
     @PostMapping("/edit-profile")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('UPDATE_PROFILE') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('UPDATE_PROFILE')) or hasRole('ADMIN')")
     public String updateProfile(
             @ModelAttribute("editProfileRequest") @Valid EditProfileRequest editProfileRequest,
             BindingResult bindingResult,
@@ -129,7 +134,7 @@ public class NormalUserController {
      * Hiển thị danh sách tình hình dịch bệnh có phân trang.
      */
     @GetMapping("/epidemic")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('VIEW_EPIDEMIC') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('VIEW_EPIDEMIC')) or hasRole('ADMIN')")
     public String showDiseaseReport(
             Model model,
             @RequestParam(defaultValue = "0") int page,
@@ -152,7 +157,7 @@ public class NormalUserController {
     }
 
     @GetMapping("/feedback-highlevel")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK')) or hasRole('ADMIN')")
     public String showHighFeedbackForm(Model model) {
         model.addAttribute("pageTitle", "Phản hồi cấp cao");
         if (!model.containsAttribute("phanHoiCapCaoRequest")) {
@@ -163,7 +168,7 @@ public class NormalUserController {
     }
 
     @PostMapping("/feedback-highlevel")
-    @PreAuthorize("hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK') or hasRole('ADMIN')")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK')) or hasRole('ADMIN')")
     public String submitHighFeedback(
             @ModelAttribute("phanHoiCapCaoRequest") @Valid PhanHoiCapCaoRequest request,
             BindingResult bindingResult,
@@ -190,6 +195,7 @@ public class NormalUserController {
     }
 
     @GetMapping("/feedback")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK')) or hasRole('ADMIN')")
     public String showFeedbackForm(
             @RequestParam(name = "ketQuaTiemId") String ketQuaTiemId,
             Model model,
@@ -227,6 +233,7 @@ public class NormalUserController {
     }
 
     @PostMapping("/feedback")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK')) or hasRole('ADMIN')")
     public String submitFeedback(
             @ModelAttribute("phanHoiSauTiemRequest") @Valid PhanHoiSauTiemRequest request,
             BindingResult bindingResult,
@@ -261,6 +268,7 @@ public class NormalUserController {
      * Hiển thị danh sách các mũi tiêm đã hoàn thành cần phản hồi
      */
     @GetMapping("/completed-vaccines")
+    @PreAuthorize("(hasRole('NORMAL_USER') and hasAuthority('SUBMIT_FEEDBACK')) or hasRole('ADMIN')")
     public String showCompletedVaccines(Model model) {
         List<PhanHoiSauTiemResponse> danhSachCanPhanHoi =
                 phanHoiSauTiemService.getKetQuaTiemCanPhanHoiByCurrentUser();

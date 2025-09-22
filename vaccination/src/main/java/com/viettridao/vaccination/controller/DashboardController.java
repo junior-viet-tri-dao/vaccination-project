@@ -39,9 +39,9 @@ public class DashboardController {
 		return "finance/dashboard";
 	}
 
-	@GetMapping("/user/dashboard")
+	@GetMapping("/normalUser/dashboard")
 	@PreAuthorize("hasRole('NORMAL_USER')")
 	public String userDashboard() {
-		return "user/dashboard"; 
+		return "normalUser/dashboard"; 
 	}
 }
