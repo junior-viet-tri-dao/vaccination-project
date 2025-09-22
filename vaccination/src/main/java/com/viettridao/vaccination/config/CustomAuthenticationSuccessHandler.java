@@ -36,7 +36,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_FINANCE"))) {
             redirectUrl = "/finance/dashboard";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_NORMAL_USER"))) {
-            redirectUrl = "/user/dashboard";
+            redirectUrl = "/normalUser/dashboard";
         }
 
         System.out.println("Redirecting user '" + authentication.getName() + "' to: " + redirectUrl);

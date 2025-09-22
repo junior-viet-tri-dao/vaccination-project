@@ -123,13 +123,14 @@ public class TaiKhoanEntity implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 	    Set<GrantedAuthority> authorities = new HashSet<>();
 	    if (vaiTro != null) {
-	        authorities.add(new SimpleGrantedAuthority("ROLE_" + vaiTro.getTen().toUpperCase()));
+	        authorities.add(new SimpleGrantedAuthority("ROLE_" + vaiTro.getTen()));
 	        if (vaiTro.getQuyenHans() != null) {
-	            vaiTro.getQuyenHans().forEach(q -> authorities.add(new SimpleGrantedAuthority(q.getTen().toUpperCase())));
+	            vaiTro.getQuyenHans().forEach(q -> authorities.add(new SimpleGrantedAuthority(q.getTen())));
 	        }
 	    }
 	    return authorities;
 	}
+
 
 
 	@Override

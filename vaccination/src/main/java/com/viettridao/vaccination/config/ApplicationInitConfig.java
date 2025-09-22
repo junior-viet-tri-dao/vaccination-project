@@ -19,143 +19,152 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ApplicationInitConfig implements ApplicationRunner {
 
-    private final VaiTroRepository vaiTroRepository;
-    private final TaiKhoanRepository taiKhoanRepository;
-    private final QuyenHanRepository quyenHanRepository;
-    private final PasswordEncoder passwordEncoder;
+	private final VaiTroRepository vaiTroRepository;
+	private final TaiKhoanRepository taiKhoanRepository;
+	private final QuyenHanRepository quyenHanRepository;
+	private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public void run(ApplicationArguments args) {
-        initPermissions();
-        initRolesWithDefaultPermissions();
-        initDefaultAccounts();
-    }
+	@Override
+	public void run(ApplicationArguments args) {
+		initPermissions();
+		initRolesWithDefaultPermissions();
+		initDefaultAccounts();
+	}
 
-    /**
-     * Khởi tạo danh sách quyền hệ thống
-     */
-    private void initPermissions() {
-        List<QuyenHanEntity> permissions = List.of(
-                QuyenHanEntity.builder().ten("READ_USER").moTa("Xem thông tin người dùng").build(),
-                QuyenHanEntity.builder().ten("CREATE_USER").moTa("Tạo người dùng mới").build(),
-                QuyenHanEntity.builder().ten("UPDATE_USER").moTa("Cập nhật thông tin người dùng").build(),
-                QuyenHanEntity.builder().ten("DELETE_USER").moTa("Xóa người dùng").build(),
+	/**
+	 * Khởi tạo danh sách quyền hệ thống
+	 */
+	private void initPermissions() {
+	    List<QuyenHanEntity> permissions = List.of(
+	        // User management
+	        QuyenHanEntity.builder().ten("READ_USER").moTa("Xem thông tin người dùng").build(),
+	        QuyenHanEntity.builder().ten("CREATE_USER").moTa("Tạo người dùng mới").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_USER").moTa("Cập nhật thông tin người dùng").build(),
+	        QuyenHanEntity.builder().ten("DELETE_USER").moTa("Xóa người dùng").build(),
 
-                QuyenHanEntity.builder().ten("VIEW_WAREHOUSE").moTa("Xem tình hình kho bãi").build(),
-                QuyenHanEntity.builder().ten("CREATE_IMPORT_WAREHOUSE").moTa("Nhập kho").build(),
-                QuyenHanEntity.builder().ten("CREATE_EXPORT_WAREHOUSE").moTa("Xuất kho").build(),
+	        // Warehouse
+	        QuyenHanEntity.builder().ten("VIEW_WAREHOUSE").moTa("Xem tình hình kho bãi").build(),
+	        QuyenHanEntity.builder().ten("CREATE_IMPORT_WAREHOUSE").moTa("Nhập kho").build(),
+	        QuyenHanEntity.builder().ten("CREATE_EXPORT_WAREHOUSE").moTa("Xuất kho").build(),
 
-                QuyenHanEntity.builder().ten("READ_CONSULTATION").moTa("Xem câu hỏi tư vấn").build(),
-                QuyenHanEntity.builder().ten("CREATE_CONSULTATION").moTa("Tạo câu hỏi tư vấn").build(),
-                QuyenHanEntity.builder().ten("UPDATE_CONSULTATION").moTa("Cập nhật câu hỏi tư vấn").build(),
-                QuyenHanEntity.builder().ten("DELETE_CONSULTATION").moTa("Xóa câu hỏi tư vấn").build(),
+	        // Consultation
+	        QuyenHanEntity.builder().ten("READ_CONSULTATION").moTa("Xem câu hỏi tư vấn").build(),
+	        QuyenHanEntity.builder().ten("CREATE_CONSULTATION").moTa("Tạo câu hỏi tư vấn").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_CONSULTATION").moTa("Cập nhật câu hỏi tư vấn").build(),
+	        QuyenHanEntity.builder().ten("DELETE_CONSULTATION").moTa("Xóa câu hỏi tư vấn").build(),
 
-                QuyenHanEntity.builder().ten("READ_FAQ").moTa("Xem thắc mắc").build(),
-                QuyenHanEntity.builder().ten("ANSWER_FAQ").moTa("Trả lời thắc mắc").build(),
+	        // FAQ
+	        QuyenHanEntity.builder().ten("READ_FAQ").moTa("Xem thắc mắc").build(),
+	        QuyenHanEntity.builder().ten("ANSWER_FAQ").moTa("Trả lời thắc mắc").build(),
 
-                QuyenHanEntity.builder().ten("READ_REMINDER").moTa("Xem nhắc nhở tiêm chủng").build(),
-                QuyenHanEntity.builder().ten("SEND_REMINDER").moTa("Gửi email nhắc nhở tiêm chủng").build(),
-                
-                QuyenHanEntity.builder().ten("VIEW_VACCINE_PRICE").moTa("Xem giá vắc xin").build(),
-                QuyenHanEntity.builder().ten("CREATE_VACCINE_PRICE").moTa("Thêm giá vắc xin").build(),
-                QuyenHanEntity.builder().ten("UPDATE_VACCINE_PRICE").moTa("Cập nhật giá vắc xin").build(),
-                QuyenHanEntity.builder().ten("DELETE_VACCINE_PRICE").moTa("Xóa giá vắc xin").build(),
+	        // Reminder
+	        QuyenHanEntity.builder().ten("READ_REMINDER").moTa("Xem nhắc nhở tiêm chủng").build(),
+	        QuyenHanEntity.builder().ten("SEND_REMINDER").moTa("Gửi email nhắc nhở tiêm chủng").build(),
 
-                QuyenHanEntity.builder().ten("VIEW_CUSTOMER_TRANSACTION").moTa("Xem giao dịch khách hàng").build(),
-                QuyenHanEntity.builder().ten("CREATE_CUSTOMER_TRANSACTION").moTa("Tạo giao dịch khách hàng").build(),
-                QuyenHanEntity.builder().ten("UPDATE_CUSTOMER_TRANSACTION").moTa("Cập nhật giao dịch khách hàng").build(),
-                QuyenHanEntity.builder().ten("DELETE_CUSTOMER_TRANSACTION").moTa("Xóa giao dịch khách hàng").build(),
+	        // Vaccine price
+	        QuyenHanEntity.builder().ten("VIEW_VACCINE_PRICE").moTa("Xem giá vắc xin").build(),
+	        QuyenHanEntity.builder().ten("CREATE_VACCINE_PRICE").moTa("Thêm giá vắc xin").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_VACCINE_PRICE").moTa("Cập nhật giá vắc xin").build(),
+	        QuyenHanEntity.builder().ten("DELETE_VACCINE_PRICE").moTa("Xóa giá vắc xin").build(),
 
-                QuyenHanEntity.builder().ten("VIEW_SUPPLIER_TRANSACTION").moTa("Xem giao dịch nhà cung cấp").build(),
-                QuyenHanEntity.builder().ten("CREATE_SUPPLIER_TRANSACTION").moTa("Tạo giao dịch nhà cung cấp").build(),
-                QuyenHanEntity.builder().ten("UPDATE_SUPPLIER_TRANSACTION").moTa("Cập nhật giao dịch nhà cung cấp").build(),
-                QuyenHanEntity.builder().ten("DELETE_SUPPLIER_TRANSACTION").moTa("Xóa giao dịch nhà cung cấp").build()
+	        // Customer transaction
+	        QuyenHanEntity.builder().ten("VIEW_CUSTOMER_TRANSACTION").moTa("Xem giao dịch khách hàng").build(),
+	        QuyenHanEntity.builder().ten("CREATE_CUSTOMER_TRANSACTION").moTa("Tạo giao dịch khách hàng").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_CUSTOMER_TRANSACTION").moTa("Cập nhật giao dịch khách hàng").build(),
+	        QuyenHanEntity.builder().ten("DELETE_CUSTOMER_TRANSACTION").moTa("Xóa giao dịch khách hàng").build(),
 
-        );
+	        // Supplier transaction
+	        QuyenHanEntity.builder().ten("VIEW_SUPPLIER_TRANSACTION").moTa("Xem giao dịch nhà cung cấp").build(),
+	        QuyenHanEntity.builder().ten("CREATE_SUPPLIER_TRANSACTION").moTa("Tạo giao dịch nhà cung cấp").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_SUPPLIER_TRANSACTION").moTa("Cập nhật giao dịch nhà cung cấp").build(),
+	        QuyenHanEntity.builder().ten("DELETE_SUPPLIER_TRANSACTION").moTa("Xóa giao dịch nhà cung cấp").build(),
 
-        // Chỉ insert quyền chưa tồn tại
-        List<QuyenHanEntity> newPermissions = permissions.stream()
-                .filter(p -> quyenHanRepository.findByTen(p.getTen()).isEmpty())
-                .toList();
+	        // **Normal user specific**
+	        QuyenHanEntity.builder().ten("VIEW_VACCINE").moTa("Xem danh sách vắc xin").build(),
+	        QuyenHanEntity.builder().ten("VIEW_SCHEDULE").moTa("Xem lịch tiêm phòng").build(),
+	        QuyenHanEntity.builder().ten("READ_PROFILE").moTa("Xem hồ sơ cá nhân").build(),
+	        QuyenHanEntity.builder().ten("UPDATE_PROFILE").moTa("Cập nhật hồ sơ cá nhân").build(),
+	        QuyenHanEntity.builder().ten("VIEW_EPIDEMIC").moTa("Xem tình hình dịch bệnh").build(),
+	        QuyenHanEntity.builder().ten("SUBMIT_FEEDBACK").moTa("Gửi phản hồi").build()
+	    );
 
-        if (!newPermissions.isEmpty()) {
-            quyenHanRepository.saveAll(newPermissions);
-            System.out.println(">>> Đã thêm " + newPermissions.size() + " quyền mới");
-        }
-    }
+	    // Chỉ insert quyền chưa tồn tại
+	    List<QuyenHanEntity> newPermissions = permissions.stream()
+	            .filter(p -> quyenHanRepository.findByTen(p.getTen()).isEmpty())
+	            .toList();
 
-   
-    private void initRolesWithDefaultPermissions() {
-        // Mapping role -> danh sách quyền
-        Map<String, List<String>> rolePermissions = Map.of(
-                "ADMIN", quyenHanRepository.findAll().stream().map(QuyenHanEntity::getTen).toList(), 
-                "WAREHOUSE", List.of("VIEW_WAREHOUSE", "CREATE_IMPORT_WAREHOUSE", "CREATE_EXPORT_WAREHOUSE"),
-                "DOCTER", List.of("READ_USER", "UPDATE_USER","CREATE_USER"),
-                "SUPPORTER", List.of("READ_CONSULTATION", "CREATE_CONSULTATION","UPDATE_CONSULTATION","DELETE_CONSULTATION","READ_FAQ","ANSWER_FAQ","READ_REMINDER","SEND_REMINDER"),
-                "NORMAL_USER", List.of("VIEW_VACCINE","VIEW_SCHEDULE","READ_PROFILE","UPDATE_PROFILE","VIEW_EPIDEMIC","SUBMIT_FEEDBACK","READ_FAQ", "CREATE_CONSULTATION"),
-                "FINANCE", List.of(
-                	    "VIEW_VACCINE_PRICE", "CREATE_VACCINE_PRICE", "UPDATE_VACCINE_PRICE", "DELETE_VACCINE_PRICE",
-                	    "VIEW_CUSTOMER_TRANSACTION", "CREATE_CUSTOMER_TRANSACTION", "UPDATE_CUSTOMER_TRANSACTION", "DELETE_CUSTOMER_TRANSACTION",
-                	    "VIEW_SUPPLIER_TRANSACTION", "CREATE_SUPPLIER_TRANSACTION", "UPDATE_SUPPLIER_TRANSACTION", "DELETE_SUPPLIER_TRANSACTION"
-                	)
+	    if (!newPermissions.isEmpty()) {
+	        quyenHanRepository.saveAll(newPermissions);
+	        System.out.println(">>> Đã thêm " + newPermissions.size() + " quyền mới");
+	    }
+	}
 
-        );
+	private void initRolesWithDefaultPermissions() {
+		// Mapping role -> danh sách quyền
+		Map<String, List<String>> rolePermissions = Map.of("ADMIN",
+				quyenHanRepository.findAll().stream().map(QuyenHanEntity::getTen).toList(), "WAREHOUSE",
+				List.of("VIEW_WAREHOUSE", "CREATE_IMPORT_WAREHOUSE", "CREATE_EXPORT_WAREHOUSE"), "DOCTER",
+				List.of("READ_USER", "UPDATE_USER", "CREATE_USER"), "SUPPORTER",
+				List.of("READ_CONSULTATION", "CREATE_CONSULTATION", "UPDATE_CONSULTATION", "DELETE_CONSULTATION",
+						"READ_FAQ", "ANSWER_FAQ", "READ_REMINDER", "SEND_REMINDER"),
+				"NORMAL_USER",
+				List.of("VIEW_VACCINE", "VIEW_SCHEDULE", "READ_PROFILE", "UPDATE_PROFILE", "VIEW_EPIDEMIC",
+						"SUBMIT_FEEDBACK", "READ_FAQ", "CREATE_CONSULTATION"),
+				"FINANCE",
+				List.of("VIEW_VACCINE_PRICE", "CREATE_VACCINE_PRICE", "UPDATE_VACCINE_PRICE", "DELETE_VACCINE_PRICE",
+						"VIEW_CUSTOMER_TRANSACTION", "CREATE_CUSTOMER_TRANSACTION", "UPDATE_CUSTOMER_TRANSACTION",
+						"DELETE_CUSTOMER_TRANSACTION", "VIEW_SUPPLIER_TRANSACTION", "CREATE_SUPPLIER_TRANSACTION",
+						"UPDATE_SUPPLIER_TRANSACTION", "DELETE_SUPPLIER_TRANSACTION")
 
-        rolePermissions.forEach((roleName, permNames) -> {
-            VaiTroEntity role = vaiTroRepository.findByTen(roleName)
-                    .orElseGet(() -> {
-                        VaiTroEntity r = new VaiTroEntity();
-                        r.setTen(roleName);
-                        r.setMoTa("Mặc định cho " + roleName);
-                        return vaiTroRepository.save(r);
-                    });
+		);
 
-            // Lấy quyền từ DB
-            Set<QuyenHanEntity> perms = new HashSet<>(quyenHanRepository.findAll().stream()
-                    .filter(p -> permNames.contains(p.getTen()))
-                    .toList());
+		rolePermissions.forEach((roleName, permNames) -> {
+			VaiTroEntity role = vaiTroRepository.findByTen(roleName).orElseGet(() -> {
+				VaiTroEntity r = new VaiTroEntity();
+				r.setTen(roleName);
+				r.setMoTa("Mặc định cho " + roleName);
+				return vaiTroRepository.save(r);
+			});
 
-            // ADMIN thì có full quyền
-            if ("ADMIN".equals(roleName)) {
-                perms = new HashSet<>(quyenHanRepository.findAll());
-            }
+			// Lấy quyền từ DB
+			Set<QuyenHanEntity> perms = new HashSet<>(
+					quyenHanRepository.findAll().stream().filter(p -> permNames.contains(p.getTen())).toList());
 
-            role.setQuyenHans(perms);
-            vaiTroRepository.save(role);
-        });
-    }
+			// ADMIN thì có full quyền
+			if ("ADMIN".equals(roleName)) {
+				perms = new HashSet<>(quyenHanRepository.findAll());
+			}
 
-    /**
-     * Khởi tạo tài khoản mặc định
-     */
-    private void initDefaultAccounts() {
-        createAccountIfNotExists("admin1", "admin123", "ADMIN", "admin@system.com", "Nguyễn Văn Admin");
-        createAccountIfNotExists("doctor1", "doctor123", "DOCTER", "doctor@system.com", "Bác sĩ A");
-        createAccountIfNotExists("support1", "support123", "SUPPORTER", "support@system.com", "Nhân viên hỗ trợ B");
-        createAccountIfNotExists("warehouse1", "warehouse123", "WAREHOUSE", "warehouse@system.com", "Nhân viên kho C");
-        createAccountIfNotExists("user1", "user123", "NORMAL_USER", "user@system.com", "Người dùng D");
-        createAccountIfNotExists("finance1", "finance123", "FINANCE", "finance@system.com", "Kế toán E");
-    }
+			role.setQuyenHans(perms);
+			vaiTroRepository.save(role);
+		});
+	}
 
-    private void createAccountIfNotExists(String username, String rawPassword, String roleName, String email, String hoTen) {
-        if (taiKhoanRepository.findByTenDangNhap(username).isEmpty()) {
-            VaiTroEntity role = vaiTroRepository.findByTen(roleName)
-                    .orElseThrow(() -> new RuntimeException("Role " + roleName + " chưa tồn tại"));
+	/**
+	 * Khởi tạo tài khoản mặc định
+	 */
+	private void initDefaultAccounts() {
+		createAccountIfNotExists("admin1", "admin123", "ADMIN", "admin@system.com", "Nguyễn Văn Admin");
+		createAccountIfNotExists("doctor1", "doctor123", "DOCTER", "doctor@system.com", "Bác sĩ A");
+		createAccountIfNotExists("support1", "support123", "SUPPORTER", "support@system.com", "Nhân viên hỗ trợ B");
+		createAccountIfNotExists("warehouse1", "warehouse123", "WAREHOUSE", "warehouse@system.com", "Nhân viên kho C");
+		createAccountIfNotExists("user1", "user123", "NORMAL_USER", "user@system.com", "Người dùng D");
+		createAccountIfNotExists("finance1", "finance123", "FINANCE", "finance@system.com", "Kế toán E");
+	}
 
-            TaiKhoanEntity account = TaiKhoanEntity.builder()
-                    .tenDangNhap(username)
-                    .matKhauHash(passwordEncoder.encode(rawPassword))
-                    .email(email)
-                    .vaiTro(role)
-                    .hoTen(hoTen)
-                    .isDeleted(false)
-                    .hoatDong(true)
-                    .ngayTao(java.time.LocalDateTime.now())
-                    .ngayCapNhat(java.time.LocalDateTime.now())
-                    .build();
+	private void createAccountIfNotExists(String username, String rawPassword, String roleName, String email,
+			String hoTen) {
+		if (taiKhoanRepository.findByTenDangNhap(username).isEmpty()) {
+			VaiTroEntity role = vaiTroRepository.findByTen(roleName)
+					.orElseThrow(() -> new RuntimeException("Role " + roleName + " chưa tồn tại"));
 
-            taiKhoanRepository.save(account);
-            System.out.println(">>> Đã tạo account mặc định: " + username + " (" + roleName + ")");
-        }
-    }
+			TaiKhoanEntity account = TaiKhoanEntity.builder().tenDangNhap(username)
+					.matKhauHash(passwordEncoder.encode(rawPassword)).email(email).vaiTro(role).hoTen(hoTen)
+					.isDeleted(false).hoatDong(true).ngayTao(java.time.LocalDateTime.now())
+					.ngayCapNhat(java.time.LocalDateTime.now()).build();
+
+			taiKhoanRepository.save(account);
+			System.out.println(">>> Đã tạo account mặc định: " + username + " (" + roleName + ")");
+		}
+	}
 }
