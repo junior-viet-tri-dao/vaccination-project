@@ -15,20 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class PhanHoiSauTiemRequest {
+    @NotBlank(message = "Phản hồi không được để trống")
+    @Size(min = 5, max = 200, message = "Phản hồi phải từ {min} đến {max} ký tự")
+    private String moTa; // Nội dung phản hồi/triệu chứng
 
-    @NotNull(message = "Vắc xin không được để trống")
-    private String vaccineId;
-
-    @NotNull(message = "Nhân viên phụ trách không được để trống")
-    private String nhanVienId;
-
-    @NotBlank(message = "Địa điểm tiêm không được để trống")
-    private String diaDiem;
-
-    @NotNull(message = "Thời gian tiêm không được để trống")
-    private LocalDateTime thoiGianTiem;
-
-    @NotBlank(message = "Kết quả không được để trống")
-    @Size(min = 5, max = 200, message = "Kết quả phải từ {min} đến {max} ký tự")
-    private String ketQua;
+    private String ketQuaTiemId;  // Liên kết đến kết quả tiêm
 }

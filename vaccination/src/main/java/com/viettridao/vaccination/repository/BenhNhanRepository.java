@@ -10,14 +10,17 @@ import com.viettridao.vaccination.model.BenhNhanEntity;
 
 @Repository
 public interface BenhNhanRepository extends JpaRepository<BenhNhanEntity, String> {
-	Optional<BenhNhanEntity> findByHoTen(String hoTen);
+    Optional<BenhNhanEntity> findByHoTen(String hoTen);
 
-	List<BenhNhanEntity> findAllByIsDeletedFalse();
+    List<BenhNhanEntity> findAllByIsDeletedFalse();
 
-	Optional<BenhNhanEntity> findById(String id);
+    Optional<BenhNhanEntity> findById(String id);
 
-	Optional<BenhNhanEntity> findByIdAndIsDeletedFalse(String id);
+    Optional<BenhNhanEntity> findByIdAndIsDeletedFalse(String id);
 
-	// Trong BenhNhanRepository
-	Optional<BenhNhanEntity> findByTaoBoiTaiKhoan_TenDangNhapAndIsDeletedFalse(String tenDangNhap);
+
+    Optional<BenhNhanEntity> findByTaiKhoan_TenDangNhapAndIsDeletedFalse(String tenDangNhap);
+
+    Optional<BenhNhanEntity> findByTaoBoiTaiKhoan_TenDangNhapAndIsDeletedFalse(String tenDangNhap);
+
 }

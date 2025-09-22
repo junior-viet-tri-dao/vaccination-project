@@ -14,12 +14,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class KetQuaTiemResponse {
-	private String maKq;
-	private String tenBenhNhan;
-	private String tenVacXin;
-	private LocalDateTime ngayTiem;
-	private String nguoiThucHien;
-	private String tinhTrang;
-	private String phanUngSauTiem;
-	private String ghiChu;
+    private String maKq;
+    private String tenBenhNhan;
+    private String tenVacXin;
+    private LocalDateTime ngayTiem;
+    private String nguoiThucHien;
+    private String tinhTrang;
+    private String phanUngSauTiem;
+    private String diaDiem;
+    private String ghiChu;
 }

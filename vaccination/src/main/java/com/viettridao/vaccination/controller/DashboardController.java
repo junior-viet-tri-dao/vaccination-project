@@ -8,33 +8,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping
 public class DashboardController {
 
-	@GetMapping("/admin/dashboard")
-	public String adminDashboard() {
-		return "adminPanel/dashboard"; 
-	}
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard() {
+        return "adminPanel/dashboard";
+    }
 
-	@GetMapping("/doctor/dashboard")
-	public String doctorDashboard() {
-		return "doctor/dashboard"; 
-	}
+    @GetMapping("/doctor/dashboard")
+    public String doctorDashboard() {
+        return "doctor/dashboard";
+    }
 
-	@GetMapping("/warehouse/dashboard")
-	public String warehouseDashboard() {
-		return "warehouse/dashboard"; 
-	}
+    @GetMapping("/warehouse/dashboard")
+    public String warehouseDashboard() {
+        return "warehouse/dashboard";
+    }
 
-	@GetMapping("/support/dashboard")
-	public String supportDashboard() {
-		return "support/dashboard"; 
-	}
+    @GetMapping("/support/dashboard")
+    public String supportDashboard() {
+        return "support/dashboard";
+    }
 
-	@GetMapping("/finance/dashboard")
-	public String financeDashboard() {
-		return "finance/dashboard";
-	}
+    @GetMapping("/finance/dashboard")
+    public String financeDashboard() {
+        return "finance/dashboard";
+    }
 
-	@GetMapping("/user/dashboard")
-	public String userDashboard() {
-		return "user/dashboard"; 
-	}
+    @GetMapping("/normalUser/dashboard")
+    public String userDashboard() {
+        return "normalUser/dashboard";
+    }
 }

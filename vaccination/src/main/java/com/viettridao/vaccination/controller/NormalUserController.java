@@ -2,6 +2,10 @@ package com.viettridao.vaccination.controller;
 
 import java.util.List;
 
+import com.viettridao.vaccination.dto.request.normalUser.PhanHoiSauTiemRequest;
+import com.viettridao.vaccination.dto.response.employee.KetQuaTiemResponse;
+import com.viettridao.vaccination.dto.response.normalUser.PhanHoiSauTiemResponse;
+import com.viettridao.vaccination.service.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -22,11 +26,6 @@ import com.viettridao.vaccination.dto.response.normalUser.ProfileDetailResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.dto.response.normalUser.VaccineScheduleResponse;
 import com.viettridao.vaccination.model.PhanHoiEntity;
-import com.viettridao.vaccination.service.DichBenhService;
-import com.viettridao.vaccination.service.PhanHoiCapCaoService;
-import com.viettridao.vaccination.service.ProfileService;
-import com.viettridao.vaccination.service.VaccineListService;
-import com.viettridao.vaccination.service.VaccineScheduleService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +39,8 @@ public class NormalUserController {
     private final ProfileService profileService;
     private final DichBenhService dichBenhService;
     private final PhanHoiCapCaoService phanHoiService;
-    
-    
+    private final PhanHoiSauTiemService phanHoiSauTiemService;
+    private final KetQuaTiemService ketQuaTiemService;
 
 
     // Hiển thị trang danh sách vắc xin
@@ -64,62 +63,37 @@ public class NormalUserController {
         return "normalUser/vaccine-list";
     }
 
-//    @GetMapping("/vaccine-schedule")
-//    public String showSchedule(Model model, Authentication authentication) {
-//        // Lấy userId từ authentication (giả sử username là userId hoặc bạn cần lấy từ principal)
-//        String userId = authentication.getName(); // hoặc lấy id trực tiếp từ principal nếu có
-//
-//        List<VaccineScheduleResponse> schedules = vaccineScheduleService.getVaccineSchedulesForUser(userId);
-//        model.addAttribute("schedules", schedules);
-//
-//        return "normalUser/vaccine-schedule";  // resources/templates/vaccine-schedule.html
-//    }
-
+    // Tra cứu lịch tiêm phòng cho user đang đăng nhập
     @GetMapping("/vaccine-schedule")
     public String showSchedule(Model model, Authentication authentication) {
-        String userId;
-        if (authentication == null) {
-            // Gán tạm mã bệnh nhân test (chỉnh theo data thật của bạn)
-            userId = "bn1-0000-0000-0000-000000000001";
-        } else {
-            userId = authentication.getName();
-        }
-
-        List<VaccineScheduleResponse> schedules = vaccineScheduleService.getVaccineSchedulesForUser(userId);
+        String tenDangNhap = authentication.getName();
+        // Giả sử vaccineScheduleService nhận vào benhNhanId, bạn cần lấy benhNhanId từ ProfileService
+        String benhNhanId = profileService
+                .getProfileDetailByUsername(tenDangNhap)
+                .getId(); // Đảm bảo ProfileDetailResponse có getId()
+        List<VaccineScheduleResponse> schedules = vaccineScheduleService.getVaccineSchedulesForUser(benhNhanId);
         model.addAttribute("schedules", schedules);
 
         return "normalUser/vaccine-schedule";
     }
 
-
-    // Xem hồ sơ cá nhân
+    // Xem hồ sơ cá nhân của user đang đăng nhập
     @GetMapping("/view-profile")
     public String viewHistory(Model model, Authentication authentication) {
-        String benhNhanId = getBenhNhanIdFromAuth(authentication);
+        String tenDangNhap = authentication.getName();
+        ProfileDetailResponse profile = profileService.getProfileDetailByUsername(tenDangNhap);
 
-        ProfileDetailResponse profile = profileService.getProfileDetail(benhNhanId);
-
-        model.addAttribute("pageTitle", "Hồ sơ tiêm phòng");
+        model.addAttribute("pageTitle", "Hồ sơ thông tin cá nhân");
         model.addAttribute("profile", profile);
 
         return "normalUser/view-profile";
     }
 
-    // Helper để lấy benhNhanId từ Authentication
-    private String getBenhNhanIdFromAuth(Authentication authentication) {
-        if (authentication == null) {
-            // Gán tạm mã bệnh nhân test (chỉnh theo data thật của bạn)
-            return "bn1-0000-0000-0000-000000000001";
-        }
-        return authentication.getName();
-    }
-
     // Sửa thông tin cá nhân - Hiển thị form với thông tin cũ
     @GetMapping("/edit-profile")
     public String editProfile(Model model, Authentication authentication) {
-        String benhNhanId = getBenhNhanIdFromAuth(authentication);
-
-        EditProfileRequest editProfileRequest = profileService.getEditProfileRequest(benhNhanId);
+        String tenDangNhap = authentication.getName();
+        EditProfileRequest editProfileRequest = profileService.getEditProfileRequestByUsername(tenDangNhap);
         model.addAttribute("pageTitle", "Sửa đổi thông tin cá nhân");
         model.addAttribute("editProfileRequest", editProfileRequest);
         return "normalUser/edit-profile";
@@ -134,24 +108,19 @@ public class NormalUserController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        String benhNhanId = getBenhNhanIdFromAuth(authentication);
+        String tenDangNhap = authentication.getName();
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageTitle", "Sửa đổi thông tin cá nhân");
             return "normalUser/edit-profile";
         }
-        profileService.updateProfile(benhNhanId, editProfileRequest);
+        profileService.updateProfileByUsername(tenDangNhap, editProfileRequest);
         redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin cá nhân thành công!");
         return "redirect:/normalUser/view-profile";
     }
 
     /**
      * Hiển thị danh sách tình hình dịch bệnh có phân trang.
-     *
-     * @param model model để truyền dữ liệu sang view
-     * @param page  số trang hiện tại (default = 0)
-     * @param size  số bản ghi mỗi trang (default = 10)
-     * @return tên file Thymeleaf view
      */
     @GetMapping("/epidemic")
     public String showDiseaseReport(
@@ -190,7 +159,8 @@ public class NormalUserController {
             @ModelAttribute("phanHoiCapCaoRequest") @Valid PhanHoiCapCaoRequest request,
             BindingResult bindingResult,
             Model model,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Authentication authentication
     ) {
         model.addAttribute("pageTitle", "Phản hồi cấp cao");
         model.addAttribute("dsLoaiPhanHoi", PhanHoiEntity.LoaiPhanHoi.values());
@@ -199,6 +169,7 @@ public class NormalUserController {
             return "normalUser/feedback-highlevel";
         }
         try {
+            // Nếu cần gắn tài khoản vào feedback, hãy set ở đây từ authentication.getName()
             phanHoiService.guiPhanHoiCapCao(request);
             redirectAttributes.addFlashAttribute("successMessage", "Gửi phản hồi thành công!");
             return "redirect:/normalUser/view-profile";
@@ -207,6 +178,87 @@ public class NormalUserController {
             model.addAttribute("errorMessage", e.getMessage());
             return "normalUser/feedback-highlevel";
         }
+    }
+
+    @GetMapping("/feedback")
+    public String showFeedbackForm(
+            @RequestParam(name = "ketQuaTiemId") String ketQuaTiemId,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        // Lấy danh sách các mũi tiêm cần phản hồi của người dùng hiện tại
+        List<PhanHoiSauTiemResponse> danhSachCanPhanHoi =
+                phanHoiSauTiemService.getKetQuaTiemCanPhanHoiByCurrentUser();
+
+        // Tìm mũi tiêm hiện tại theo ketQuaTiemId
+        PhanHoiSauTiemResponse kq = danhSachCanPhanHoi.stream()
+                .filter(p -> p.getKetQuaTiemId().equals(ketQuaTiemId))
+                .findFirst()
+                .orElse(null);
+
+        if (kq == null) {
+            redirectAttributes.addFlashAttribute("hasError", true);
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy mũi tiêm cần phản hồi hoặc đã phản hồi.");
+            return "redirect:/normalUser/completed-vaccines";
+        }
+
+        model.addAttribute("kq", kq);
+
+        // Chuẩn bị object request để binding với form
+        PhanHoiSauTiemRequest request = new PhanHoiSauTiemRequest();
+        request.setKetQuaTiemId(ketQuaTiemId);
+        model.addAttribute("phanHoiSauTiemRequest", request);
+
+        model.addAttribute("pageTitle", "Gửi phản hồi sau tiêm phòng");
+
+        // Bổ sung dòng này:
+        boolean canPhanHoi = !kq.getTrangThaiPhanHoi().equals("DA_PHAN_HOI");
+        model.addAttribute("canPhanHoi", canPhanHoi);
+        return "normalUser/feedback-form";
+    }
+
+    @PostMapping("/feedback")
+    public String submitFeedback(
+            @ModelAttribute("phanHoiSauTiemRequest") @Valid PhanHoiSauTiemRequest request,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        model.addAttribute("pageTitle", "Gửi phản hồi sau tiêm phòng");
+
+        if (bindingResult.hasErrors()) {
+            // Lấy lại kq để điền vào form khi có lỗi
+            PhanHoiSauTiemResponse kq = phanHoiSauTiemService.getByKetQuaTiemId(request.getKetQuaTiemId());
+            model.addAttribute("kq", kq);
+            model.addAttribute("hasError", true);
+            return "normalUser/feedback-form";
+        }
+
+        try {
+            phanHoiSauTiemService.taoPhanHoiSauTiem(request);
+            redirectAttributes.addFlashAttribute("success", "Gửi phản hồi sau tiêm thành công!");
+            return "redirect:/normalUser/completed-vaccines";
+        } catch (Exception e) {
+            // Nếu lỗi khi lưu DB, cũng cần nạp lại kq để form không bị trống
+            PhanHoiSauTiemResponse kq = phanHoiSauTiemService.getByKetQuaTiemId(request.getKetQuaTiemId());
+            model.addAttribute("kq", kq);
+            model.addAttribute("hasError", true);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "normalUser/feedback-form";
+        }
+    }
+
+    /**
+     * Hiển thị danh sách các mũi tiêm đã hoàn thành cần phản hồi
+     */
+    @GetMapping("/completed-vaccines")
+    public String showCompletedVaccines(Model model) {
+        List<PhanHoiSauTiemResponse> danhSachCanPhanHoi =
+                phanHoiSauTiemService.getKetQuaTiemCanPhanHoiByCurrentUser();
+
+        model.addAttribute("completedList", danhSachCanPhanHoi);
+        model.addAttribute("pageTitle", "Danh sách mũi tiêm cần phản hồi");
+        return "normalUser/completed-vaccine-list";
     }
 
 }
