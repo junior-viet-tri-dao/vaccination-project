@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách mũi tiêm cần phản hồi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen py-10">
+<div class="container mx-auto max-w-6xl bg-white shadow-2xl p-10 rounded-2xl">
+    <h2 class="text-3xl font-bold text-center text-blue-800 mb-10">
+        Danh sách mũi tiêm cần phản hồi
+    </h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border rounded-lg">
+            <thead>
+            <tr class="bg-blue-200 text-lg">
+                <th class="py-4 px-6 font-semibold text-black text-center">Tên vắc xin</th>
+                <th class="py-4 px-6 font-semibold text-black text-center">Địa điểm</th>
+                <th class="py-4 px-6 font-semibold text-black text-center">Thời gian tiêm</th>
+                <th class="py-4 px-6 font-semibold text-black text-center">Nhân viên phụ trách</th>
+                <th class="py-4 px-6 font-semibold text-black text-center">Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="kq : ${completedList}"
+                class="border-t text-center hover:bg-blue-50 transition">
+                <td class="py-3 px-6" th:text="${kq.tenVacXin}"></td>
+                <td class="py-3 px-6" th:text="${kq.diaDiem != null ? kq.diaDiem : 'Không có'}"></td>
+                <td class="py-3 px-6"
+                    th:text="${kq.thoiGian != null ? #temporals.format(kq.thoiGian, 'dd/MM/yyyy HH:mm') : 'Không có'}"></td>
+                <td class="py-3 px-6" th:text="${kq.nhanVienPhuTrach}"></td>
+                <td class="py-3 px-6">
+                    <a th:href="@{/normalUser/feedback(ketQuaTiemId=${kq.ketQuaTiemId})}"
+                       class="bg-blue-500 hover:bg-blue-600 transition text-white font-bold py-2 px-6 rounded shadow">
+                        Gửi phản hồi
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -24,14 +24,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProfileDetailResponse getProfileDetail(String benhNhanId) {
-        // Lấy thông tin bệnh nhân, chỉ lấy bản ghi chưa xóa
-        BenhNhanEntity benhNhan = benhNhanRepository.findByIdAndIsDeletedFalse(benhNhanId)
+    public ProfileDetailResponse getProfileDetailByUsername(String tenDangNhap) {
+        // Lấy bệnh nhân theo tài khoản (OneToOne)
+        BenhNhanEntity benhNhan = benhNhanRepository.findByTaiKhoan_TenDangNhapAndIsDeletedFalse(tenDangNhap)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin bệnh nhân"));
 
         // Lấy lịch sử tiêm (chỉ lấy các kết quả chưa bị xóa)
         List<KetQuaTiemEntity> ketQuaTiemList = ketQuaTiemRepository
-                .findByBenhNhan_IdAndIsDeletedFalseOrderByNgayTiemAsc(benhNhanId);
+                .findByBenhNhan_IdAndIsDeletedFalseOrderByNgayTiemAsc(benhNhan.getId());
 
         // Map sang DTO
         ProfileDetailResponse response = profileMapper.toProfileDetail(benhNhan);
@@ -42,8 +42,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updateProfile(String benhNhanId, EditProfileRequest request) {
-        BenhNhanEntity benhNhan = benhNhanRepository.findById(benhNhanId)
+    public void updateProfileByUsername(String tenDangNhap, EditProfileRequest request) {
+        BenhNhanEntity benhNhan = benhNhanRepository.findByTaiKhoan_TenDangNhapAndIsDeletedFalse(tenDangNhap)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bệnh nhân"));
 
         // Cập nhật các trường thông tin cá nhân
@@ -60,8 +60,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public EditProfileRequest getEditProfileRequest(String benhNhanId) {
-        BenhNhanEntity benhNhan = benhNhanRepository.findById(benhNhanId)
+    public EditProfileRequest getEditProfileRequestByUsername(String tenDangNhap) {
+        BenhNhanEntity benhNhan = benhNhanRepository.findByTaiKhoan_TenDangNhapAndIsDeletedFalse(tenDangNhap)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bệnh nhân"));
 
         return EditProfileRequest.builder()

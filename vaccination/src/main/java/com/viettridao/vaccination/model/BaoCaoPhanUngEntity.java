@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,36 +27,50 @@ import lombok.Setter;
 @Table(name = "bao_cao_phan_ung")
 public class BaoCaoPhanUngEntity {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "ma_bc", columnDefinition = "CHAR(36)")
-	private String id;
+    @Column(name = "ma_bc", columnDefinition = "CHAR(36)")
+    private String id;
 
-	@ManyToOne
-	@JoinColumn(name = "ma_benh_nhan")
-	private BenhNhanEntity benhNhan;
+    @ManyToOne
+    @JoinColumn(name = "ma_benh_nhan")
+    private BenhNhanEntity benhNhan;
 
-	@ManyToOne
-	@JoinColumn(name = "ma_vac_xin")
-	private VacXinEntity vacXin;
+    @ManyToOne
+    @JoinColumn(name = "ma_vac_xin")
+    private VacXinEntity vacXin;
 
-	@Column(name = "thoi_gian")
-	private LocalDateTime thoiGian;
+    @ManyToOne
+    @JoinColumn(name = "ma_kq")
+    private KetQuaTiemEntity ketQuaTiem;
 
-	@Column(name = "mo_ta", columnDefinition = "TEXT")
-	private String moTa;
+    @Column(name = "thoi_gian")
+    private LocalDateTime thoiGian;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "kenh_bao_cao")
-	private KenhBaoCao kenhBaoCao = KenhBaoCao.NGUOI_DUNG;
+    @Column(name = "mo_ta", columnDefinition = "TEXT")
+    private String moTa;
 
-	@ManyToOne
-	@JoinColumn(name = "tao_boi")
-	private TaiKhoanEntity taoBoi;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kenh_bao_cao", length = 20)
+    private KenhBaoCao kenhBaoCao = KenhBaoCao.BENH_NHAN;
 
-	private Boolean isDeleted = Boolean.FALSE;
+    @ManyToOne
+    @JoinColumn(name = "tao_boi")
+    private TaiKhoanEntity taoBoi;
 
-	public enum KenhBaoCao {
-		NGUOI_DUNG, NHAN_VIEN
-	}
+    private Boolean isDeleted = Boolean.FALSE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trang_thai_phan_hoi")
+    private TrangThaiPhanHoi trangThaiPhanHoi = TrangThaiPhanHoi.CHUA_PHAN_HOI;
+
+    public enum KenhBaoCao {
+        BENH_NHAN, NHAN_VIEN
+    }
+
+    public enum TrangThaiPhanHoi {
+        CHUA_PHAN_HOI,    // Chưa gửi phản hồi
+        DA_PHAN_HOI,      // Đã gửi phản hồi
+        DA_XU_LY          // Đã xử lý phản hồi (do nhân viên y tế cập nhật)
+    }
 }
