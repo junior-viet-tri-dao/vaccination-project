@@ -1,17 +1,19 @@
 package com.viettridao.vaccination.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.viettridao.vaccination.dto.response.normalUser.VaccineListResponse;
 import com.viettridao.vaccination.mapper.VaccineListMapper;
 import com.viettridao.vaccination.model.BangGiaVacXinEntity;
-import com.viettridao.vaccination.model.VacXinEntity;
 import com.viettridao.vaccination.repository.BangGiaVacXinRepository;
-import com.viettridao.vaccination.repository.VacXinRepository;
 import com.viettridao.vaccination.service.VaccineListService;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class VaccineListServiceImpl implements VaccineListService {

@@ -2,10 +2,12 @@ package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
@@ -112,10 +114,23 @@ public class TaiKhoanEntity implements UserDetails {
 	@OneToMany(mappedBy = "taiKhoan")
 	private Set<DichBenhEntity> dichBenhs;
 
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		return List.of();
+//	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of();
+	    Set<GrantedAuthority> authorities = new HashSet<>();
+	    if (vaiTro != null) {
+	        authorities.add(new SimpleGrantedAuthority("ROLE_" + vaiTro.getTen().toUpperCase()));
+	        if (vaiTro.getQuyenHans() != null) {
+	            vaiTro.getQuyenHans().forEach(q -> authorities.add(new SimpleGrantedAuthority(q.getTen().toUpperCase())));
+	        }
+	    }
+	    return authorities;
 	}
+
 
 	@Override
 	public String getPassword() {
@@ -129,21 +144,22 @@ public class TaiKhoanEntity implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return UserDetails.super.isAccountNonExpired();
+		return true; // luôn còn hạn
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return UserDetails.super.isAccountNonLocked();
+		return true; // không bị khóa
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return UserDetails.super.isCredentialsNonExpired();
+		return true; // mật khẩu chưa hết hạn
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return UserDetails.super.isEnabled();
+		return hoatDong != null && hoatDong;
 	}
+
 }

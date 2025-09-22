@@ -12,14 +12,15 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex flex-col">
-<!-- Header -->
+
 <header class="bg-white shadow-md py-4 px-6 text-center">
     <h1 class="text-2xl md:text-3xl font-bold text-blue-700" th:text="${pageTitle}"></h1>
 </header>
 
-<!-- Main -->
 <main class="flex-1 p-4 md:p-8">
-    <form th:action="@{/schedule}" method="post" class="mx-auto w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Form tạo/chỉnh sửa lịch -->
+    <form th:action="@{/adminpanel/schedule}" th:object="${lichTiemRequest}" method="post"
+          class="mx-auto w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- LEFT: Calendar + Notes -->
         <section class="lg:col-span-1 space-y-6">
@@ -28,115 +29,103 @@
                 <h2 class="font-semibold text-gray-700 mb-3">Lịch</h2>
                 <div id="inlineCalendar"></div>
                 <p class="mt-2 text-sm text-gray-600">Hôm nay: <span id="todayText"></span></p>
-                <input type="hidden" name="date" id="dateInput"/>
-                <p class="mt-3 text-sm text-gray-500">Ngày chọn: <span id="selectedDate"></span></p>
             </div>
 
             <!-- Notes -->
             <div class="bg-white rounded-2xl shadow-xl p-4">
-                <label for="notes" class="block font-semibold text-gray-700 mb-2">Ghi chú</label>
-                <textarea name="notes" id="notes" maxlength="255"
+                <label for="moTa" class="block font-semibold text-gray-700 mb-2">Ghi chú</label>
+                <textarea th:field="*{moTa}" id="moTa"
+                          maxlength="500"
                           class="w-full border rounded-lg px-3 py-2 h-32 resize-none focus:ring-2 focus:ring-green-500"
-                          placeholder="Nhập ghi chú (tối đa 255 ký tự)"></textarea>
+                          placeholder="Nhập ghi chú (tối đa 500 ký tự)"></textarea>
             </div>
         </section>
 
-        <!-- RIGHT: Form + Table -->
+        <!-- RIGHT: Form fields -->
         <section class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-2xl shadow-xl p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                <!-- Ngày/Tháng/Năm/Thời gian -->
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Ngày</label>
-                    <input id="dayInput" type="number" placeholder="Ngày"
+                <!-- Ngày giờ -->
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 font-medium mb-2">Ngày giờ</label>
+                    <input type="datetime-local" th:field="*{ngayGio}" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Tháng</label>
-                    <input id="monthInput" type="number" placeholder="Tháng"
-                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Năm</label>
-                    <input id="yearInput" type="number" placeholder="Năm"
-                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Thời gian</label>
-                    <input id="timeInput" type="time"
-                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"/>
                 </div>
 
                 <!-- Loại vắc xin -->
-                <div>
-                    <label class="block text-gray-700 font-medium mb-2">Loại vắc xin</label>
-                    <select name="vaccineType" required
-                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-                        <option value="">-- Chọn vắc xin --</option>
-                        <option value="BCG">BCG</option>
-                        <option value="Viêm gan B">Viêm gan B</option>
-                        <option value="DPT">DPT</option>
-                        <option value="Sởi">Sởi</option>
-                        <option value="Covid-19">Covid-19</option>
-                    </select>
-                </div>
+				<div>
+				    <label class="block text-gray-700 font-medium mb-2">Tên vắc xin</label>
+				    <select th:field="*{maVacXin}" id="vacXinSelect"
+				            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+				            onchange="this.form.submit()">
+				        <option value="">-- Chọn vắc xin --</option>
+				        <option th:each="vx : ${tatCaLoaiVacXin}" 
+				                th:value="${vx}" 
+				                th:text="${vx}" 
+				                th:selected="${vx == lichTiemRequest.maVacXin}">
+				        </option>
+				    </select>
+				</div>
+
 
                 <!-- Số lượng -->
                 <div>
                     <label class="block text-gray-700 font-medium mb-2">Số lượng</label>
-                    <input type="number" name="quantity" min="1" max="1000" required
+                    <input type="number" th:field="*{soLuong}" min="1" max="1000" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"/>
                 </div>
 
                 <!-- Độ tuổi -->
                 <div>
                     <label class="block text-gray-700 font-medium mb-2">Độ tuổi</label>
-                    <input type="number" name="ageRange" min="0" max="100" required
+                    <input type="text" th:field="*{doTuoi}" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"/>
                 </div>
 
                 <!-- Địa điểm -->
                 <div class="md:col-span-2">
                     <label class="block text-gray-700 font-medium mb-2">Địa điểm</label>
-                    <input type="text" name="location" minlength="5" maxlength="30" required
+                    <input type="text" th:field="*{diaDiem}" minlength="5" maxlength="255" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
                 </div>
 
-                <!-- Bác sĩ -->
+                <!-- Bác sĩ tham gia -->
                 <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-medium mb-2">Bác sĩ</label>
-                    <input type="text" name="doctor" minlength="5" maxlength="255" required
-                           class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
+                    <label class="block text-gray-700 font-medium mb-2">Bác sĩ tham gia</label>
+                    <textarea th:field="*{taoBoi}" minlength="5" maxlength="500" required
+                              class="w-full border rounded-lg px-3 py-2 h-32 resize-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Nhập tên bác sĩ hoặc người tạo lịch"></textarea>
                 </div>
             </div>
-
-            <!-- Danh sách -->
-            <div class="bg-white rounded-2xl shadow-xl p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Danh sách người đăng ký</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full border border-gray-300 rounded-lg">
-                        <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white">
-                        <tr>
-                            <th class="px-4 py-2 text-left">Tên</th>
-                            <th class="px-4 py-2 text-left">Tuổi</th>
-                            <th class="px-4 py-2 text-left">Thông tin liên lạc</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="border-b">
-                            <td class="px-4 py-2">Nguyễn Văn A</td>
-                            <td class="px-4 py-2">5</td>
-                            <td class="px-4 py-2">0901234567</td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="px-4 py-2">Trần Thị B</td>
-                            <td class="px-4 py-2">12</td>
-                            <td class="px-4 py-2">email@example.com</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+			<!-- Bảng danh sách bệnh nhân theo lịch -->
+			<div class="bg-white rounded-2xl shadow-xl p-6 mt-6" th:each="lich : ${lichTiemList}">
+			    <h3 class="font-semibold text-gray-700 mb-3">
+			        Danh sách bệnh nhân - Lịch <span th:text="${lich.maLich}"></span>
+			    </h3>
+			    <div class="overflow-x-auto">
+			        <table class="min-w-full border border-gray-300 rounded-lg">
+			            <thead class="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+			            <tr>
+			                <th class="px-4 py-2">Tên bệnh nhân</th>
+			                <th class="px-4 py-2">Độ tuổi</th>
+			                <th class="px-4 py-2">Số điện thoại</th>
+			                <th class="px-4 py-2">Hẹn tiêm lại</th>
+			                <th class="px-4 py-2">Tên vắc xin</th>
+			            </tr>
+			            </thead>
+			            <tbody>
+			            <tr th:each="don : ${lich.danhSachDonThuoc}" 
+			                th:if="${lichTiemRequest.maVacXin == null or lichTiemRequest.maVacXin == '' or don.tenVacXin == lichTiemRequest.maVacXin}">
+			                <td class="px-4 py-2" th:text="${don.tenBenhNhan}"></td>
+			                <td class="px-4 py-2" th:text="${don.doTuoi}"></td>
+			                <td class="px-4 py-2" th:text="${don.soDienThoai}"></td>
+			                <td class="px-4 py-2" th:text="${#dates.format(don.henTiemLai,'dd/MM/yyyy')}"></td>
+			                <td class="px-4 py-2" th:text="${don.tenVacXin}"></td>
+			            </tr>
+			            </tbody>
+			        </table>
+			    </div>
+			</div>
 
             <!-- Actions -->
             <div class="flex justify-end gap-4">
@@ -159,48 +148,20 @@
 </main>
 
 <script>
-    // --- Flatpickr (inline MonthCalendar) ---
     const today = new Date();
     const todayText = document.getElementById('todayText');
-    const fp = flatpickr("#inlineCalendar", {
-      inline: true,
-      defaultDate: today,
-      dateFormat: "Y-m-d",
-      onChange: function(selectedDates) {
-        if (!selectedDates.length) return;
-        const d = selectedDates[0];
-        updateDateInputs(d);
-      }
+    flatpickr("#inlineCalendar", {
+        inline: true,
+        defaultDate: today,
+        dateFormat: "Y-m-d",
+        onChange: function (selectedDates) {
+            if (!selectedDates.length) return;
+            const d = selectedDates[0];
+            document.querySelector("[name='ngayGio']").value =
+                d.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+        }
     });
     todayText.textContent = today.toLocaleDateString('vi-VN');
-
-     // --- Đồng bộ lịch <-> Ngày/Tháng/Năm ---
-    const dayInput   = document.getElementById('dayInput');
-    const monthInput = document.getElementById('monthInput');
-    const yearInput  = document.getElementById('yearInput');
-    const timeInput  = document.getElementById('timeInput');
-
-    // Khi chọn trên lịch -> cập nhật các ô Day/Month/Year
-    function updateDateInputs(date) {
-      dayInput.value   = String(date.getDate());
-      monthInput.value = String(date.getMonth() + 1);
-      yearInput.value  = String(date.getFullYear());
-    }
-    updateDateInputs(today);
-
-    // Khi người dùng nhập Day/Month/Year -> cập nhật lại lịch (nếu hợp lệ)
-    [dayInput, monthInput, yearInput].forEach(el => {
-      el.addEventListener('change', () => {
-        const d = parseInt(dayInput.value, 10);
-        const m = parseInt(monthInput.value, 10) - 1; // 0-based
-        const y = parseInt(yearInput.value, 10);
-        if (Number.isFinite(d) && Number.isFinite(m) && Number.isFinite(y)) {
-          const newDate = new Date(y, m, d);
-          if (!isNaN(newDate)) fp.setDate(newDate, true);
-        }
-      });
-    });
-
 </script>
 </body>
 </html>

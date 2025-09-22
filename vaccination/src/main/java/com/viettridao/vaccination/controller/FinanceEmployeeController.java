@@ -1,14 +1,8 @@
 package com.viettridao.vaccination.controller;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,10 +20,6 @@ import com.viettridao.vaccination.dto.request.finance.QuanLyGiaVacXinUpdateReque
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichNhaCungCapResponse;
 import com.viettridao.vaccination.dto.response.finance.QuanLyGiaVacXinResponse;
-import com.viettridao.vaccination.model.BangGiaVacXinEntity;
-import com.viettridao.vaccination.model.LoVacXinEntity;
-import com.viettridao.vaccination.model.VacXinEntity;
-import com.viettridao.vaccination.service.BangGiaVacXinService;
 import com.viettridao.vaccination.service.BenhNhanService;
 import com.viettridao.vaccination.service.GiaoDichKhachHangService;
 import com.viettridao.vaccination.service.GiaoDichNccService;
@@ -49,12 +39,10 @@ public class FinanceEmployeeController {
 	private final QuanLyGiaVacXinService quanLyGiaVacXinService;
 	private final GiaoDichKhachHangService giaoDichKhachHangService;
 	private final GiaoDichNccService giaoDichNccService;
-	private final BangGiaVacXinService bangGiaVacXinService;
-	
-
 
 	// --- Vaccine Price ---
 	@GetMapping("/vaccine-price")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('VIEW_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String showVaccinePriceManagement(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, Model model) {
 
@@ -70,33 +58,19 @@ public class FinanceEmployeeController {
 	}
 
 	@GetMapping("/vaccine-price/create")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String showCreateVaccinePriceForm(Model model) {
-		QuanLyGiaVacXinUpdateRequest createRequest = new QuanLyGiaVacXinUpdateRequest();
-		model.addAttribute("createRequest", createRequest);
-
-		List<VacXinEntity> vaccines = vacXinService.getAllActiveVaccines();
-		model.addAttribute("vaccines", vaccines);
-
-		List<Map<String, Object>> vaccineDataForJs = vaccines.stream().map(vx -> {
-			LoVacXinEntity lo = vx.getLoVacXins().stream().findFirst().orElse(null);
-			Integer gia = bangGiaVacXinService.findByVacXinIdOrderByHieuLucTuDesc(vx.getId()).stream().findFirst()
-					.map(BangGiaVacXinEntity::getGia).orElse(0);
-
-			Map<String, Object> map = new HashMap<>();
-			map.put("maCode", vx.getMaCode());
-			map.put("donVi", lo != null ? lo.getDonVi() : "");
-			map.put("namSX", lo != null ? lo.getNgaySanXuat() : null);
-			map.put("gia", gia);
-			return map;
-		}).collect(Collectors.toList());
-
-		model.addAttribute("vaccineDataForJs", vaccineDataForJs);
+		model.addAttribute("createRequest", new QuanLyGiaVacXinUpdateRequest());
+		model.addAttribute("vaccines", vacXinService.getAllActiveVaccines());
+		model.addAttribute("vaccineDataForJs", quanLyGiaVacXinService.buildVaccineDataForJs());
 		return "financeEmployee/create-vaccine-price";
 	}
 
 	@PostMapping("/vaccine-price/create")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String createVaccinePrice(@Valid @ModelAttribute("createRequest") QuanLyGiaVacXinUpdateRequest request,
 			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
+
 		if (bindingResult.hasErrors()) {
 			return "financeEmployee/create-vaccine-price";
 		}
@@ -108,23 +82,20 @@ public class FinanceEmployeeController {
 			redirectAttrs.addFlashAttribute("error", "Thêm thất bại: " + e.getMessage());
 			return "redirect:/finance/vaccine-price/create";
 		}
-
 		return "redirect:/finance/vaccine-price";
 	}
 
 	@GetMapping("/vaccine-price/edit")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String showEditForm(@RequestParam("maCode") String maCode, Model model) {
-		QuanLyGiaVacXinResponse response = quanLyGiaVacXinService.getByMaCode(maCode);
-
-		model.addAttribute("updateRequest", new QuanLyGiaVacXinUpdateRequest(response.getMaCode(), response.getNamSX(),
-				response.getDonVi(), response.getGia()));
-
+		model.addAttribute("updateRequest", quanLyGiaVacXinService.buildUpdateRequest(maCode));
 		return "financeEmployee/edit-vaccine-price";
 	}
 
 	@PostMapping("/vaccine-price/edit")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String updateVaccinePrice(@Valid @ModelAttribute("updateRequest") QuanLyGiaVacXinUpdateRequest request,
-			BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+			BindingResult bindingResult, RedirectAttributes redirectAttrs) {
 
 		if (bindingResult.hasErrors()) {
 			return "financeEmployee/edit-vaccine-price";
@@ -132,16 +103,16 @@ public class FinanceEmployeeController {
 
 		try {
 			quanLyGiaVacXinService.updateGiaVacXin(request);
-			redirectAttributes.addFlashAttribute("success", "Cập nhật giá vắc xin thành công!");
+			redirectAttrs.addFlashAttribute("success", "Cập nhật giá vắc xin thành công!");
 		} catch (Exception e) {
-			redirectAttributes.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+			redirectAttrs.addFlashAttribute("error", "Cập nhật thất bại: " + e.getMessage());
 			return "redirect:/finance/vaccine-price/edit?maCode=" + request.getMaCode();
 		}
-
 		return "redirect:/finance/vaccine-price";
 	}
 
 	@PostMapping("/vaccine-price/delete")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('DELETE_VACCINE_PRICE')) or hasRole('ADMIN')")
 	public String deleteVaccinePrice(@RequestParam String maCode, RedirectAttributes redirectAttrs) {
 		try {
 			quanLyGiaVacXinService.deleteByMaCode(maCode);
@@ -152,8 +123,9 @@ public class FinanceEmployeeController {
 		return "redirect:/finance/vaccine-price";
 	}
 
-	// Hiển thị danh sách giao dịch
+	// --- Customer Transactions ---
 	@GetMapping("/transactions-customer")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('VIEW_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
 	public String showCustomerTransactions(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size, Model model) {
 
@@ -168,32 +140,17 @@ public class FinanceEmployeeController {
 	}
 
 	@GetMapping("/transactions-customer/create")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
 	public String showCreateForm(@RequestParam(required = false) String maVacXin, Model model) {
-		GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
-		dto.setNgayHD(LocalDateTime.now());
-
-		// Lấy danh sách vắc xin
-		List<VacXinEntity> vaccines = vacXinService.getAllVaccines();
-		model.addAttribute("vaccines", vaccines);
-
-		// Map mã vắc xin -> giá
-		Map<String, Integer> vaccinePriceMap = vaccines.stream().collect(Collectors.toMap(VacXinEntity::getMaCode,
-				v -> giaoDichKhachHangService.getGiaTheoMaVacXin(v.getMaCode())));
-		model.addAttribute("vaccinePriceMap", vaccinePriceMap);
-
-		// Nếu có mã vắc xin truyền vào, set giá
-		if (maVacXin != null && !maVacXin.isEmpty()) {
-			dto.setMaVacXin(maVacXin);
-			dto.setGia(vaccinePriceMap.getOrDefault(maVacXin, 0));
-		}
-
-		model.addAttribute("transactionRequest", dto);
+		model.addAttribute("transactionRequest", giaoDichKhachHangService.buildCreateRequest(maVacXin));
+		model.addAttribute("vaccines", vacXinService.getAllVaccines());
 		model.addAttribute("patients", benhNhanService.getAllPatients());
-
+		model.addAttribute("vaccinePriceMap", giaoDichKhachHangService.getVaccinePriceMap());
 		return "financeEmployee/create-transaction-customer";
 	}
 
 	@PostMapping("/transactions-customer/create")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
 	public String createTransaction(@Valid @ModelAttribute("transactionRequest") GiaoDichKhachHangRequest request,
 			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
@@ -207,50 +164,24 @@ public class FinanceEmployeeController {
 			giaoDichKhachHangService.create(request);
 			redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
 			return "redirect:/finance/transactions-customer";
-		} catch (IllegalArgumentException e) {
-			// Phân loại lỗi theo field
-			String msg = e.getMessage();
-			if (msg.contains("MaLo")) {
-				model.addAttribute("maLoError", msg);
-			} else if (msg.contains("SoHoaDon")) {
-				model.addAttribute("soHoaDonError", msg);
-			} else {
-				model.addAttribute("globalError", msg);
-			}
-
-			model.addAttribute("transactionRequest", request);
-			model.addAttribute("vaccines", vacXinService.getAllVaccines());
-			model.addAttribute("patients", benhNhanService.getAllPatients());
+		} catch (Exception e) {
+			giaoDichKhachHangService.handleCreateError(e, model, request);
 			return "financeEmployee/create-transaction-customer";
 		}
 	}
 
 	@GetMapping("/transactions-customer/update/{soHoaDon}")
-	public String showEditTransaction(@PathVariable("soHoaDon") String soHoaDon, Model model) {
-		GiaoDichKhachHangResponse transaction = giaoDichKhachHangService.getByMaHoaDon(soHoaDon);
-
-		GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
-		request.setNgayHD(transaction.getNgayHD());
-		request.setSoHoaDon(transaction.getSoHoaDon());
-		request.setMaVacXin(transaction.getMaVacXin());
-		request.setSoLuong(transaction.getSoLuong());
-		request.setTenKhachHang(transaction.getTenKhachHang());
-		request.setGia(transaction.getGia() != null ? transaction.getGia() : 0);
-
-		model.addAttribute("transactionRequest", request);
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
+	public String showEditTransaction(@PathVariable String soHoaDon, Model model) {
+		model.addAttribute("transactionRequest", giaoDichKhachHangService.buildUpdateRequest(soHoaDon));
 		model.addAttribute("vaccines", vacXinService.getAllVaccines());
 		model.addAttribute("patients", benhNhanService.getAllPatients());
-
-		// ⚡ Add vaccinePriceMap
-		Map<String, Integer> vaccinePriceMap = vacXinService.getAllVaccines().stream().collect(Collectors
-				.toMap(VacXinEntity::getMaCode, v -> giaoDichKhachHangService.getGiaTheoMaVacXin(v.getMaCode())));
-		model.addAttribute("vaccinePriceMap", vaccinePriceMap);
-
+		model.addAttribute("vaccinePriceMap", giaoDichKhachHangService.getVaccinePriceMap());
 		return "financeEmployee/edit-transaction-customer";
 	}
 
-	// Xử lý update giao dịch
 	@PostMapping("/transactions-customer/update")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
 	public String updateTransaction(@Valid @ModelAttribute("transactionRequest") GiaoDichKhachHangRequest request,
 			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
@@ -264,17 +195,17 @@ public class FinanceEmployeeController {
 			giaoDichKhachHangService.update(request);
 			redirectAttrs.addFlashAttribute("success", "Cập nhật giao dịch thành công!");
 		} catch (Exception e) {
+			model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
 			model.addAttribute("transactionRequest", request);
 			model.addAttribute("vaccines", vacXinService.getAllVaccines());
 			model.addAttribute("patients", benhNhanService.getAllPatients());
-			model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
 			return "financeEmployee/edit-transaction-customer";
 		}
-
 		return "redirect:/finance/transactions-customer";
 	}
 
 	@PostMapping("/transactions-customer/delete")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('DELETE_CUSTOMER_TRANSACTION')) or hasRole('ADMIN')")
 	public String deleteTransaction(@RequestParam String maHoaDon, RedirectAttributes redirectAttrs) {
 		try {
 			giaoDichKhachHangService.deleteByMaHoaDon(maHoaDon);
@@ -285,12 +216,13 @@ public class FinanceEmployeeController {
 		return "redirect:/finance/transactions-customer";
 	}
 
+	// --- Supplier Transactions ---
 	@GetMapping("/transactions-supplier")
-	public String transactionsSupplier(Model model, @RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size) {
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('VIEW_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
+	public String transactionsSupplier(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, Model model) {
 
-		Pageable pageable = PageRequest.of(page, size);
-		Page<GiaoDichNhaCungCapResponse> pageResult = giaoDichNccService.getAll(pageable);
+		Page<GiaoDichNhaCungCapResponse> pageResult = giaoDichNccService.getAll(PageRequest.of(page, size));
 
 		model.addAttribute("transactions", pageResult.getContent());
 		model.addAttribute("currentPage", pageResult.getNumber());
@@ -301,13 +233,15 @@ public class FinanceEmployeeController {
 	}
 
 	@GetMapping("/transactions-supplier/create")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
 	public String showCreateTransactionForm(Model model) {
 		model.addAttribute("giaoDichRequest", new GiaoDichNhaCungCapRequest());
 		return "financeEmployee/create-transaction-supplier";
 	}
 
 	@PostMapping("/transactions-supplier/create")
-	public String createTransaction(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('CREATE_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
+	public String createTransactionSupplier(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
 			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
 		if (bindingResult.hasErrors()) {
@@ -315,36 +249,25 @@ public class FinanceEmployeeController {
 		}
 
 		try {
-			giaoDichNccService.create(request); // Service sẽ xử lý map và lưu entity
+			giaoDichNccService.create(request);
 			redirectAttrs.addFlashAttribute("success", "Tạo giao dịch thành công!");
 		} catch (Exception e) {
 			model.addAttribute("error", "Tạo giao dịch thất bại: " + e.getMessage());
 			return "financeEmployee/create-transaction-supplier";
 		}
-
 		return "redirect:/finance/transactions-supplier";
 	}
 
 	@GetMapping("/transactions-supplier/edit/{soHoaDon}")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
 	public String showEditTransactionForm(@PathVariable String soHoaDon, Model model) {
-		GiaoDichNhaCungCapResponse transaction = giaoDichNccService.getBySoHoaDon(soHoaDon);
-
-		GiaoDichNhaCungCapRequest request = new GiaoDichNhaCungCapRequest();
-		request.setSoHoaDon(transaction.getSoHoaDon());
-		request.setNgay(transaction.getNgay());
-		request.setMaLo(transaction.getMaLo());
-		request.setMaVacXin(transaction.getMaVacXin());
-		request.setTenVacXin(transaction.getTenVacXin());
-		request.setSoLuong(transaction.getSoLuong());
-		request.setGia(transaction.getGia());
-		request.setTenNhaCungCap(transaction.getNhaCungCap());
-
-		model.addAttribute("giaoDichRequest", request);
+		model.addAttribute("giaoDichRequest", giaoDichNccService.buildUpdateRequest(soHoaDon));
 		return "financeEmployee/edit-transaction-supplier";
 	}
 
 	@PostMapping("/transactions-supplier/update")
-	public String updateTransaction(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('UPDATE_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
+	public String updateTransactionSupplier(@Valid @ModelAttribute("giaoDichRequest") GiaoDichNhaCungCapRequest request,
 			BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
 
 		if (bindingResult.hasErrors()) {
@@ -358,11 +281,11 @@ public class FinanceEmployeeController {
 			model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
 			return "financeEmployee/edit-transaction-supplier";
 		}
-
 		return "redirect:/finance/transactions-supplier";
 	}
 
 	@PostMapping("/transactions-supplier/delete")
+	@PreAuthorize("(hasRole('FINANCE') and hasAuthority('DELETE_SUPPLIER_TRANSACTION')) or hasRole('ADMIN')")
 	public String deleteSupplierTransaction(@RequestParam String soHoaDon, RedirectAttributes redirectAttrs) {
 		try {
 			giaoDichNccService.softDeleteBySoHoaDon(soHoaDon);
@@ -372,5 +295,4 @@ public class FinanceEmployeeController {
 		}
 		return "redirect:/finance/transactions-supplier";
 	}
-
 }

@@ -21,4 +21,6 @@ public interface GiaoDichNccService {
     
     GiaoDichNhaCungCapResponse getBySoHoaDon(String soHoaDon);
 
+    GiaoDichNhaCungCapRequest buildUpdateRequest(String soHoaDon);
+
 }

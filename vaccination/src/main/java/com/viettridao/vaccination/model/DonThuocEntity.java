@@ -38,6 +38,10 @@ public class DonThuocEntity {
 	@JoinColumn(name = "ke_boi")
 	private TaiKhoanEntity keBoi;
 
+	@ManyToOne
+	@JoinColumn(name = "ma_lich")
+	private LichTiemEntity lichTiem;
+
 	@Column(name = "ngay_ke")
 	private LocalDateTime ngayKe;
 
