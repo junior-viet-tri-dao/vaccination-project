@@ -5,17 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +23,7 @@ public class BenhNhanEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "ma_benh_nhan",columnDefinition = "CHAR(36)")
+    @Column(name = "ma_benh_nhan", columnDefinition = "CHAR(36)")
     private String id;
 
     @Column(name = "ho_ten", nullable = false)
@@ -85,10 +75,13 @@ public class BenhNhanEntity {
 
     @OneToMany(mappedBy = "benhNhan")
     private Set<PhanHoiEntity> phanHois;
-    
+
     @OneToMany(mappedBy = "benhNhan")
     private List<KetQuaTiemEntity> ketQuaTiems;
 
+    @OneToOne
+    @JoinColumn(name = "ma_tai_khoan", referencedColumnName = "ma_tai_khoan", unique = true)
+    private TaiKhoanEntity taiKhoan;
 
     public enum GioiTinh {
         NAM, NU

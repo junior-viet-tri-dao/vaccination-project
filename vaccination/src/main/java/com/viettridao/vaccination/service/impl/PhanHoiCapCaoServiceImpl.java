@@ -28,22 +28,20 @@ public class PhanHoiCapCaoServiceImpl implements PhanHoiCapCaoService {
     @Override
     @Transactional
     public void guiPhanHoiCapCao(PhanHoiCapCaoRequest request) {
-        // Lấy username hiện tại từ security context (giả sử đã đăng nhập)
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Lấy thông tin bệnh nhân tương ứng với tài khoản đăng nhập và chưa xóa mềm
-        BenhNhanEntity benhNhan = benhNhanRepository.findByTaoBoiTaiKhoan_TenDangNhapAndIsDeletedFalse(username)
+        // Tìm bệnh nhân theo tài khoản đăng nhập
+        BenhNhanEntity benhNhan = benhNhanRepository.findByTaiKhoan_TenDangNhapAndIsDeletedFalse(username)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy bệnh nhân hoặc đã bị xóa"));
 
-        // Lấy tài khoản admin đã tạo bệnh nhân này
-        TaiKhoanEntity taiKhoanAdminTao = benhNhan.getTaoBoiTaiKhoan();
+        TaiKhoanEntity taiKhoanBenhNhan = benhNhan.getTaiKhoan();
 
         PhanHoiEntity phanHoi = phanHoiMapper.toEntity(request);
         phanHoi.setIsDeleted(false);
         phanHoi.setNgayTao(LocalDateTime.now());
         phanHoi.setTrangThai(PhanHoiEntity.TrangThai.MOI);
         phanHoi.setBenhNhan(benhNhan);
-        phanHoi.setTaoBoi(taiKhoanAdminTao); // Đặt creator là admin tạo bệnh nhân
+        phanHoi.setTaoBoi(taiKhoanBenhNhan);
 
         phanHoiRepository.save(phanHoi);
     }

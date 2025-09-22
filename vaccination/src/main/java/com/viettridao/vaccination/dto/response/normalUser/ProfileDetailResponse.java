@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class ProfileDetailResponse {
     // Thông tin cá nhân
+    private String id;
     private String ten;
     private LocalDate ngaySinh;
     private String gioiTinh;

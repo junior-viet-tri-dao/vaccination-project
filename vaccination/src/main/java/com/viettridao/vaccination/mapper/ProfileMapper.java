@@ -14,11 +14,13 @@ import java.util.stream.IntStream;
 public interface ProfileMapper {
 
     // Map thông tin cá nhân (BenhNhanEntity sang ProfileDetailResponse, không bao gồm lịch sử tiêm)
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "ten", source = "hoTen")
     @Mapping(target = "gioiTinh", source = "gioiTinh", qualifiedByName = "gioiTinhToString")
     @Mapping(target = "diaChi", source = "diaChi")
     @Mapping(target = "ngaySinh", source = "ngaySinh")
-    @Mapping(target = "lichSuTiem", ignore = true) // sẽ set sau
+    @Mapping(target = "lichSuTiem", ignore = true)
+    // sẽ set sau
     ProfileDetailResponse toProfileDetail(BenhNhanEntity entity);
 
     // Map danh sách KetQuaTiemEntity sang danh sách LichSuTiemResponse, tự động thêm STT
@@ -39,7 +41,8 @@ public interface ProfileMapper {
     @Mapping(target = "nguoiTiem", source = "nguoiThucHien.hoTen")
     @Mapping(target = "ketQua", source = "phanUngSauTiem") // Lấy kết quả từ phản ứng sau tiêm
     @Mapping(target = "ghiChu", source = "ghiChu")
-    @Mapping(target = "stt", ignore = true) // sẽ set ở trên
+    @Mapping(target = "stt", ignore = true)
+    // sẽ set ở trên
     LichSuTiemResponse toLichSuTiemResponse(KetQuaTiemEntity entity);
 
     // Map enum giới tính sang string
@@ -52,7 +55,8 @@ public interface ProfileMapper {
     public interface BenhNhanMapper {
         EditProfileRequest toEditProfileRequest(BenhNhanEntity entity);
 
-        @Mapping(target = "id", ignore = true) // Không cho sửa id qua request
+        @Mapping(target = "id", ignore = true)
+            // Không cho sửa id qua request
         void updateBenhNhanFromRequest(EditProfileRequest request, @MappingTarget BenhNhanEntity entity);
     }
 }

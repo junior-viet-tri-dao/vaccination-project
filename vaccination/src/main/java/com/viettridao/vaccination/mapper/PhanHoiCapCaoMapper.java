@@ -20,6 +20,6 @@ public interface PhanHoiCapCaoMapper {
     @Mapping(target = "ngayTao", ignore = true)
     @Mapping(target = "isDeleted", ignore = true)
     @Mapping(target = "trangThai", ignore = true)
-    @Mapping(target = "tieuDe", ignore = true) // Nếu không nhập từ form
+    @Mapping(target = "tieuDe", ignore = true)
     PhanHoiEntity toEntity(PhanHoiCapCaoRequest request);
 }
