@@ -1,7 +1,9 @@
 package com.viettridao.vaccination.service.impl;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,8 @@ import com.viettridao.vaccination.mapper.QuanLyGiaVacXinMapper;
 import com.viettridao.vaccination.model.BangGiaVacXinEntity;
 import com.viettridao.vaccination.model.LoVacXinEntity;
 import com.viettridao.vaccination.model.VacXinEntity;
+import com.viettridao.vaccination.repository.BangGiaVacXinRepository;
+import com.viettridao.vaccination.repository.VacXinRepository;
 import com.viettridao.vaccination.service.BangGiaVacXinService;
 import com.viettridao.vaccination.service.BienDongKhoService;
 import com.viettridao.vaccination.service.ChiTietHdNccService;
@@ -38,6 +42,39 @@ public class QuanLyGiaVacXinServiceImpl implements QuanLyGiaVacXinService {
 	private final ChiTietHdNccService chiTietHdNccService;
 	private final GiaoDichKhachHangService giaoDichKhachHangService;
 	private final VacXinService vacXinService;
+    private final VacXinRepository vacXinRepository;
+    private final BangGiaVacXinRepository bangGiaVacXinRepository;
+
+
+	
+	
+	 public List<Map<String, Object>> buildVaccineDataForJs() {
+		 List<VacXinEntity> vaccines = vacXinRepository.findByIsDeletedFalse();
+	        return vaccines.stream().map(vx -> {
+	            LoVacXinEntity lo = vx.getLoVacXins().stream().findFirst().orElse(null);
+	            Integer gia = bangGiaVacXinRepository.findByVacXinIdOrderByHieuLucTuDesc(vx.getId())
+	                    .stream().findFirst().map(BangGiaVacXinEntity::getGia).orElse(0);
+
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("maCode", vx.getMaCode());
+	            map.put("donVi", lo != null ? lo.getDonVi() : "");
+	            map.put("namSX", lo != null ? lo.getNgaySanXuat() : null);
+	            map.put("gia", gia);
+	            return map;
+	        }).collect(Collectors.toList());
+	    }
+
+	    // Tạo update request từ maCode
+	    public QuanLyGiaVacXinUpdateRequest buildUpdateRequest(String maCode) {
+	        QuanLyGiaVacXinResponse response = getByMaCode(maCode);
+	        return new QuanLyGiaVacXinUpdateRequest(
+	                response.getMaCode(),
+	                response.getNamSX(),
+	                response.getDonVi(),
+	                response.getGia()
+	        );
+	    }
+
 
 	
 	

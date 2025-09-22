@@ -36,6 +36,24 @@ public class GiaoDichNccServiceImpl implements GiaoDichNccService {
 	private final VacXinRepository vacXinRepository;
 	private final LoVacXinRepository loVacXinRepository;
 	private final NhaCungCapRepository nhaCungCapRepository;
+	
+	
+	 public GiaoDichNhaCungCapRequest buildUpdateRequest(String soHoaDon) {
+	        GiaoDichNhaCungCapResponse transaction = getBySoHoaDon(soHoaDon);
+
+	        GiaoDichNhaCungCapRequest request = new GiaoDichNhaCungCapRequest();
+	        request.setSoHoaDon(transaction.getSoHoaDon());
+	        request.setNgay(transaction.getNgay());
+	        request.setMaLo(transaction.getMaLo());
+	        request.setMaVacXin(transaction.getMaVacXin());
+	        request.setTenVacXin(transaction.getTenVacXin());
+	        request.setSoLuong(transaction.getSoLuong());
+	        request.setGia(transaction.getGia());
+	        request.setTenNhaCungCap(transaction.getNhaCungCap());
+
+	        return request;
+	    }
+
 
 	// Lấy tất cả giao dịch chưa xóa theo trang
 	@Override

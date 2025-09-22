@@ -14,12 +14,17 @@ import java.util.List;
 @Repository
 public interface DonThuocRepository extends JpaRepository<DonThuocEntity, String> {
 
-    /**
-     * Lấy tất cả đơn thuốc của một bệnh nhân (theo id bệnh nhân).
-     * @param benhNhanId id của bệnh nhân
-     * @return danh sách đơn thuốc
-     */
-    @Query("SELECT d FROM DonThuocEntity d WHERE d.benhNhan.id = :benhNhanId AND (d.isDeleted = false OR d.isDeleted IS NULL)")
-    List<DonThuocEntity> findByBenhNhanId(@Param("benhNhanId") String benhNhanId);
+	/**
+	 * Lấy tất cả đơn thuốc của một bệnh nhân (theo id bệnh nhân).
+	 * 
+	 * @param benhNhanId id của bệnh nhân
+	 * @return danh sách đơn thuốc
+	 */
+	@Query("SELECT d FROM DonThuocEntity d WHERE d.benhNhan.id = :benhNhanId AND (d.isDeleted = false OR d.isDeleted IS NULL)")
+	List<DonThuocEntity> findByBenhNhanId(@Param("benhNhanId") String benhNhanId);
+
+	List<DonThuocEntity> findByLichTiem_Id(String maLich);
+
+	List<DonThuocEntity> findByLichTiem_IdAndVacXin_Ten(String maLich, String tenVacXin);
 
 }

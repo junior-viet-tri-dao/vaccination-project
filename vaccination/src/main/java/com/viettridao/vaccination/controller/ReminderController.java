@@ -2,6 +2,7 @@ package com.viettridao.vaccination.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +26,7 @@ public class ReminderController {
 	private final NhacNhoTiemService nhacNhoTiemService;
 
 	@GetMapping("")
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_REMINDER')) or hasRole('ADMIN')")
 	public String showReminderList(Model model) {
 		// Lấy danh sách tất cả bệnh nhân có lịch sử/dự kiến tiêm
 		List<NhacNhoTiemResponse> allReminders = nhacNhoTiemService.getAllReminders();
@@ -38,6 +40,7 @@ public class ReminderController {
 
 	// Hiển thị form nhắc nhở tiêm chủng
 	@GetMapping("/{maBenhNhan}")
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_REMINDER')) or hasRole('ADMIN')")
 	public String showReminderForm(@PathVariable String maBenhNhan, Model model) {
 		List<NhacNhoTiemResponse> lichSuVaDuKien = nhacNhoTiemService.getLichSuVaDuKien(maBenhNhan);
 
@@ -57,6 +60,7 @@ public class ReminderController {
 	}
 
 	@PostMapping("/send")
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('SEND_REMINDER')) or hasRole('ADMIN')")
 	public String sendReminderEmail(@Validated @ModelAttribute("nhacNhoRequest") NhacNhoTiemRequest request,
 			Model model) {
 		try {

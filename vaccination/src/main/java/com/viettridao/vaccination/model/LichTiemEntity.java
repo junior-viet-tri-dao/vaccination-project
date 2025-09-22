@@ -66,5 +66,8 @@ public class LichTiemEntity {
     
     @OneToMany(mappedBy = "lichTiem")
     private List<KetQuaTiemEntity> ketQuaTiems;
+    
+    @OneToMany(mappedBy = "lichTiem")
+    private List<DonThuocEntity> danhSachDonThuoc;
 
 }

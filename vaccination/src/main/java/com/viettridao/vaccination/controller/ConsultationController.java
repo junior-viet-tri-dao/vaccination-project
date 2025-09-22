@@ -1,5 +1,6 @@
 package com.viettridao.vaccination.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ public class ConsultationController {
 	private final CauHoiTiemChungService cauHoiService;
 
 	@GetMapping
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_CONSULTATION')) or hasRole('ADMIN')")
 	public String showConsultationForm(Model model) {
 		model.addAttribute("pageTitle", "Tư vấn tiêm chủng");
 		model.addAttribute("cauHois", cauHoiService.getAllCauHoi());
@@ -30,28 +32,33 @@ public class ConsultationController {
 
 	@GetMapping("/{maCauHoi}")
 	@ResponseBody
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_CONSULTATION')) or hasRole('ADMIN')")
 	public CauHoiTiemChungResponse getCauHoiDetail(@PathVariable String maCauHoi) {
 		return cauHoiService.getCauHoiById(maCauHoi);
 	}
 
 	@PostMapping("/create")
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('CREATE_CONSULTATION')) or hasRole('ADMIN')")
 	public String createCauHoi(@RequestParam String tieuDe, @RequestParam String noiDung) {
 		cauHoiService.createCauHoi(tieuDe, noiDung);
 		return "redirect:/consultation";
 	}
 	
 	@GetMapping("/create-form")
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('CREATE_CONSULTATION')) or hasRole('ADMIN')")
 	public String showCreateForm() {
 	    return "supportEmployee/create-consultation-form";
 	}
 
 	@GetMapping("/edit-form/{maCauHoi}")
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('UPDATE_CONSULTATION')) or hasRole('ADMIN')")
 	public String showEditForm(@PathVariable String maCauHoi, Model model) {
 	    model.addAttribute("cauHoi", cauHoiService.getCauHoiById(maCauHoi));
 	    return "supportEmployee/edit-consultation-form";
 	}
 
 	@PostMapping("/update/{maCauHoi}")
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('UPDATE_CONSULTATION')) or hasRole('ADMIN')")
 	public String updateCauHoi(@PathVariable String maCauHoi, @RequestParam String tieuDe,
 			@RequestParam String noiDung) {
 		cauHoiService.updateCauHoi(maCauHoi, tieuDe, noiDung);
@@ -59,6 +66,7 @@ public class ConsultationController {
 	}
 
 	@PostMapping("/delete/{maCauHoi}")
+    @PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('DELETE_CONSULTATION')) or hasRole('ADMIN')")
 	public String deleteCauHoi(@PathVariable String maCauHoi) {
 		cauHoiService.deleteCauHoi(maCauHoi);
 		return "redirect:/consultation";

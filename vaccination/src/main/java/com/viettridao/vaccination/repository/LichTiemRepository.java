@@ -26,4 +26,10 @@ public interface LichTiemRepository extends JpaRepository<LichTiemEntity, String
 
 	// Lấy lịch tiêm sớm nhất của một loại vắc xin
 	LichTiemEntity findTopByVacXinOrderByNgayGioAsc(VacXinEntity vacXin);
+	
+    List<LichTiemEntity> findByIsDeletedFalse();
+    
+    @Query("SELECT DISTINCT l.vacXin.ten FROM LichTiemEntity l WHERE l.isDeleted = false")
+    List<String> findDistinctLoaiVacXin();
+
 }

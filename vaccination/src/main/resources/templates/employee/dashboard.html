@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex flex-col">
+
+<!-- Navbar -->
+<nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
+    <div class="flex space-x-6 text-gray-700 font-medium">
+        <a href="#" class="hover:text-blue-600 transition">Account</a>
+        <a href="#" class="hover:text-blue-600 transition">Moderator</a>
+        <a href="#" class="hover:text-blue-600 transition">Báo cáo</a>
+        <a href="#" class="hover:text-blue-600 transition">About</a>
+    </div>
+</nav>
+
+<!-- Main content -->
+<main class="flex-1 flex justify-center items-center p-6 sm:p-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl">
+
+        <!-- Tài chính -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-coins text-yellow-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Tài Chính</h3>
+        </div>
+
+        <!-- Kho bãi -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-warehouse text-green-600 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Kho Bãi</h3>
+        </div>
+
+        <!-- Nhân viên y tế -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-user-doctor text-red-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Nhân viên y tế</h3>
+        </div>
+
+        <!-- Chăm sóc khách hàng -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-headset text-blue-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Chăm sóc khách hàng</h3>
+        </div>
+
+        <!-- Admin -->
+        <div class="bg-gradient-to-r from-blue-600 to-green-600 shadow-lg rounded-2xl p-6 text-center hover:scale-105 transition transform">
+            <h3 class="text-2xl font-bold text-white">Admin</h3>
+        </div>
+
+        <!-- Lịch tiêm chủng -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-calendar-days text-purple-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Lịch tiêm chủng</h3>
+        </div>
+
+        <!-- Feedback khách hàng -->
+        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+            <i class="fa-solid fa-comments text-pink-500 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Feedback từ khách hàng</h3>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

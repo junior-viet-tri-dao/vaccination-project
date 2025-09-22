@@ -1,5 +1,6 @@
 package com.viettridao.vaccination.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +27,7 @@ public class FaqController {
 
 
 	@GetMapping
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_FAQ')) or hasRole('ADMIN')")
 	public String listFaq(Model model) {
 		var danhSach = giaiDapThacMacService.getAll();
 		model.addAttribute("pageTitle", "Danh sách thắc mắc");
@@ -34,6 +36,7 @@ public class FaqController {
 	}
 
 	@GetMapping("/{maPh}")
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('READ_FAQ')) or hasRole('ADMIN')")
 	public String showFaqForm(@PathVariable String maPh, Model model) {
 		GiaiDapThacMacResponse faqResponse = giaiDapThacMacService.getByMaPh(maPh);
 
@@ -48,6 +51,7 @@ public class FaqController {
 	}
 
 	@PostMapping("/tra-loi")
+	@PreAuthorize("(hasRole('SUPPORTER') and hasAuthority('ANSWER_FAQ')) or hasRole('ADMIN')")
 	public String traLoi(@Valid @ModelAttribute("faqRequest") GiaiDapThacMacRequest request, BindingResult result,
 			Model model, RedirectAttributes redirectAttrs) {
 

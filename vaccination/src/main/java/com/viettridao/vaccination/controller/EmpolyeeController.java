@@ -2,6 +2,7 @@ package com.viettridao.vaccination.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,17 +37,17 @@ public class EmpolyeeController {
 	private final BenhNhanService benhNhanService;
 	private final KeDonService keDonService;
 	private final KetQuaTiemService ketQuaTiemService;
-	private final VacXinService vacXinService; 
-	
-	
+	private final VacXinService vacXinService;
 
 	@GetMapping("/view")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('READ_USER')) or hasRole('ADMIN')")
 	public String showEmployeeView(Model model) {
 		model.addAttribute("tab", "view");
 		return "employee/view";
 	}
 
 	@PostMapping("/view")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('READ_USER')) or hasRole('ADMIN')")
 	public String searchHoSoBenhAn(@RequestParam("maBenhNhan") String maBenhNhan, Model model) {
 		try {
 			HoSoBenhAnResponse hoSo = hoSoBenhAnService.getHoSoBenhAnById(maBenhNhan);
@@ -60,6 +61,7 @@ public class EmpolyeeController {
 	}
 
 	@GetMapping("/update")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('UPDATE_USER')) or hasRole('ADMIN')")
 	public String showUpdateForm(@RequestParam(required = false) String maBenhNhan, Model model) {
 		List<UpdateBenhNhanResponse> allPatients = benhNhanService.getAllBenhNhan();
 		model.addAttribute("allPatients", allPatients);
@@ -82,6 +84,7 @@ public class EmpolyeeController {
 
 	// Xử lý POST cập nhật
 	@PostMapping("/update")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('UPDATE_USER')) or hasRole('ADMIN')")
 	public String updateBenhNhan(@ModelAttribute("benhNhan") UpdateBenhNhanRequest request, Model model) {
 		try {
 			UpdateBenhNhanResponse response = benhNhanService.updateBenhNhan(request);
@@ -105,6 +108,7 @@ public class EmpolyeeController {
 	}
 
 	@GetMapping("/prescripe")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('CREATE_USER')) or hasRole('ADMIN')")
 	public String prescripeEmpoyee(Model model) {
 		model.addAttribute("tab", "prescripe");
 		model.addAttribute("keDonRequest", new KeDonRequest());
@@ -116,6 +120,7 @@ public class EmpolyeeController {
 	}
 
 	@PostMapping("/prescripe")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('CREATE_USER')) or hasRole('ADMIN')")
 	public String keDon(@ModelAttribute("keDonRequest") KeDonRequest request, Model model) {
 		try {
 			KeDonResponse response = keDonService.keDon(request, "userLoginFake");
@@ -132,57 +137,59 @@ public class EmpolyeeController {
 	}
 
 	@GetMapping("/list")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('READ_USER')) or hasRole('ADMIN')")
 	public String listKetQuaTiem(Model model) {
 		List<KetQuaTiemResponse> ketQuaTiems = ketQuaTiemService.getAllKetQuaTiem();
 		model.addAttribute("ketQuaTiems", ketQuaTiems);
 		return "employee/immunization-result-list";
 	}
-	
+
 	@GetMapping("/add")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('CREATE_USER')) or hasRole('ADMIN')")
 	public String showAddKetQuaForm(Model model) {
-	    KetQuaTiemRequest request = new KetQuaTiemRequest();
+		KetQuaTiemRequest request = new KetQuaTiemRequest();
 
-	    model.addAttribute("ketQuaTiemRequest", request);
+		model.addAttribute("ketQuaTiemRequest", request);
 
-	    model.addAttribute("benhNhanList", ketQuaTiemService.getAllKetQuaTiem()
-	            .stream().map(KetQuaTiemResponse::getTenBenhNhan).distinct().toList());
-	    model.addAttribute("vacXinList", vacXinService.getAllVaccines()
-	            .stream().map(VacXinEntity::getTen).toList());
-	    model.addAttribute("nguoiThucHienList", ketQuaTiemService.getAllKetQuaTiem()
-	            .stream().map(KetQuaTiemResponse::getNguoiThucHien).distinct().toList());
+		model.addAttribute("benhNhanList", ketQuaTiemService.getAllKetQuaTiem().stream()
+				.map(KetQuaTiemResponse::getTenBenhNhan).distinct().toList());
+		model.addAttribute("vacXinList", vacXinService.getAllVaccines().stream().map(VacXinEntity::getTen).toList());
+		model.addAttribute("nguoiThucHienList", ketQuaTiemService.getAllKetQuaTiem().stream()
+				.map(KetQuaTiemResponse::getNguoiThucHien).distinct().toList());
 
-	    return "employee/immunization-result-add";
+		return "employee/immunization-result-add";
 	}
-	
+
 	@GetMapping("/benh-nhan-info")
 	@ResponseBody
 	public KetQuaTiemResponse getBenhNhanInfo(@RequestParam String tenBenhNhan) {
-	    // Lấy thông tin đầy đủ từ KetQuaTiemService nếu đã tiêm, hoặc từ BenhNhanService nếu chưa
-	    KetQuaTiemResponse response = ketQuaTiemService.getKetQuaTiemByTenBenhNhan(tenBenhNhan);
-	    if(response == null) {
-	        // Nếu bệnh nhân chưa có kết quả tiêm, chỉ trả tên bệnh nhân
-	        response = new KetQuaTiemResponse();
-	        response.setTenBenhNhan(tenBenhNhan);
-	    }
-	    return response;
+		// Lấy thông tin đầy đủ từ KetQuaTiemService nếu đã tiêm, hoặc từ
+		// BenhNhanService nếu chưa
+		KetQuaTiemResponse response = ketQuaTiemService.getKetQuaTiemByTenBenhNhan(tenBenhNhan);
+		if (response == null) {
+			// Nếu bệnh nhân chưa có kết quả tiêm, chỉ trả tên bệnh nhân
+			response = new KetQuaTiemResponse();
+			response.setTenBenhNhan(tenBenhNhan);
+		}
+		return response;
 	}
 
-
 	@PostMapping("/add")
+	@PreAuthorize("(hasRole('DOCTER') and hasAuthority('CREATE_USER')) or hasRole('ADMIN')")
 	public String addKetQua(@ModelAttribute("ketQuaTiemRequest") KetQuaTiemRequest request, Model model) {
-	    try {
-	        ketQuaTiemService.createKetQuaTiem(request);
-	        model.addAttribute("success", "Thêm kết quả tiêm thành công!");
-	    } catch (Exception e) {
-	        model.addAttribute("error", "Có lỗi khi thêm kết quả tiêm: " + e.getMessage());
-	    }
+		try {
+			ketQuaTiemService.createKetQuaTiem(request);
+			model.addAttribute("success", "Thêm kết quả tiêm thành công!");
+		} catch (Exception e) {
+			model.addAttribute("error", "Có lỗi khi thêm kết quả tiêm: " + e.getMessage());
+		}
 
-	    // Load lại list để hiển thị
-	    List<KetQuaTiemResponse> ketQuaTiems = ketQuaTiemService.getAllKetQuaTiem();
-	    model.addAttribute("ketQuaTiems", ketQuaTiems);
+		// Load lại list để hiển thị
+		List<KetQuaTiemResponse> ketQuaTiems = ketQuaTiemService.getAllKetQuaTiem();
+		model.addAttribute("ketQuaTiems", ketQuaTiems);
 
-	    model.addAttribute("tab", "addKetQua");
-	    return "employee/immunization-result-list";
+		model.addAttribute("tab", "addKetQua");
+		return "employee/immunization-result-list";
 	}
 
 }

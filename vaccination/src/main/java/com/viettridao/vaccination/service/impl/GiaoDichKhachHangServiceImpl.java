@@ -3,12 +3,15 @@ package com.viettridao.vaccination.service.impl;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import com.viettridao.vaccination.dto.request.finance.GiaoDichKhachHangRequest;
 import com.viettridao.vaccination.dto.response.finance.GiaoDichKhachHangResponse;
@@ -43,6 +46,59 @@ public class GiaoDichKhachHangServiceImpl implements GiaoDichKhachHangService {
 	private final LoVacXinRepository loVacXinRepository;
 	private final BienDongKhoRepository bienDongKhoRepository;
 	private final BangGiaVacXinRepository bangGiaVacXinRepository;
+	
+	
+	 public Map<String, Integer> getVaccinePriceMap() {
+	        List<VacXinEntity> vaccines = vacXinRepository.findAll();
+	        return vaccines.stream()
+	                .collect(Collectors.toMap(
+	                        VacXinEntity::getMaCode,
+	                        v -> getGiaTheoMaVacXin(v.getMaCode())
+	                ));
+	    }
+
+	    // Build request mặc định khi create
+	    public GiaoDichKhachHangRequest buildCreateRequest(String maVacXin) {
+	        GiaoDichKhachHangRequest dto = new GiaoDichKhachHangRequest();
+	        dto.setNgayHD(LocalDateTime.now());
+
+	        if (maVacXin != null && !maVacXin.isEmpty()) {
+	            dto.setMaVacXin(maVacXin);
+	            dto.setGia(getGiaTheoMaVacXin(maVacXin));
+	        }
+	        return dto;
+	    }
+
+	    // Build request khi update
+	    public GiaoDichKhachHangRequest buildUpdateRequest(String soHoaDon) {
+	        GiaoDichKhachHangResponse transaction = getByMaHoaDon(soHoaDon);
+
+	        GiaoDichKhachHangRequest request = new GiaoDichKhachHangRequest();
+	        request.setNgayHD(transaction.getNgayHD());
+	        request.setSoHoaDon(transaction.getSoHoaDon());
+	        request.setMaVacXin(transaction.getMaVacXin());
+	        request.setSoLuong(transaction.getSoLuong());
+	        request.setTenKhachHang(transaction.getTenKhachHang());
+	        request.setGia(transaction.getGia() != null ? transaction.getGia() : 0);
+
+	        return request;
+	    }
+
+	    // Xử lý lỗi khi create
+	    public void handleCreateError(Exception e, Model model, GiaoDichKhachHangRequest request) {
+	        String msg = e.getMessage();
+	        if (msg.contains("MaLo")) {
+	            model.addAttribute("maLoError", msg);
+	        } else if (msg.contains("SoHoaDon")) {
+	            model.addAttribute("soHoaDonError", msg);
+	        } else {
+	            model.addAttribute("globalError", msg);
+	        }
+
+	        model.addAttribute("transactionRequest", request);
+	        model.addAttribute("vaccines", vacXinRepository.findAll());
+	        // ⚡ nếu muốn lấy patients thì inject BenhNhanService vào đây hoặc để controller set thêm
+	    }
 
 	@Override
 	public Page<GiaoDichKhachHangResponse> getAll(Pageable pageable) {
