@@ -20,6 +20,7 @@ public interface LichTiemMapper {
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "vacXin", ignore = true)
 	@Mapping(target = "taoBoi", ignore = true)
+    @Mapping(target = "bacSis", ignore = true) // map trong service
 	@Mapping(target = "dangKyTiems", ignore = true) // map trong service nếu cần
 	LichTiemEntity toEntity(LichTiemRequest request);
 
@@ -34,6 +35,7 @@ public interface LichTiemMapper {
 	@Mapping(target = "tenVacXin", source = "vacXin.ten")
 	@Mapping(target = "taoBoi", source = "taoBoi.hoTen")
 	@Mapping(target = "danhSachDonThuoc", source = "dangKyTiems")
+    @Mapping(target = "bacSiThamGia", expression = "java(entity.getBacSis().stream().map(TaiKhoanEntity::getHoTen).toList())")
 	LichTiemResponse toResponse(LichTiemEntity entity);
 
 	// DonThuocEntity -> DonThuocDTO

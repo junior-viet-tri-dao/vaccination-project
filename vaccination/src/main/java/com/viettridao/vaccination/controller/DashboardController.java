@@ -16,31 +16,31 @@ public class DashboardController {
 	}
 
 	@GetMapping("/employee/dashboard")
-	@PreAuthorize("hasRole('DOCTER')")
+	@PreAuthorize("hasAnyRole('DOCTER', 'ADMIN')")
 	public String doctorDashboard() {
 		return "employee/dashboard"; 
 	}
 
 	@GetMapping("/warehouse/dashboard")
-	@PreAuthorize("hasRole('WAREHOUSE')")
+	@PreAuthorize("hasAnyRole('WAREHOUSE', 'ADMIN')")
 	public String warehouseDashboard() {
 		return "warehouse/dashboard"; 
 	}
 
 	@GetMapping("/support/dashboard")
-	@PreAuthorize("hasRole('SUPPORTER')")
+	@PreAuthorize("hasAnyRole('SUPPORTER', 'ADMIN')")
 	public String supportDashboard() {
 		return "support/dashboard"; 
 	}
 
 	@GetMapping("/finance/dashboard")
-	@PreAuthorize("hasRole('FINANCE')")
+	@PreAuthorize("hasAnyRole('FINANCE', 'ADMIN')")
 	public String financeDashboard() {
 		return "finance/dashboard";
 	}
 
 	@GetMapping("/normalUser/dashboard")
-	@PreAuthorize("hasRole('NORMAL_USER')")
+	@PreAuthorize("hasAnyRole('NORMAL_USER', 'ADMIN')")
 	public String userDashboard() {
 		return "normalUser/dashboard"; 
 	}

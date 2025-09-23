@@ -52,5 +52,13 @@ public interface BaoCaoPhanUngRepository extends JpaRepository<BaoCaoPhanUngEnti
     List<BaoCaoPhanUngEntity> findAllByBenhNhan_IdAndTrangThaiPhanHoiNot(
             String benhNhanId,
             BaoCaoPhanUngEntity.TrangThaiPhanHoi trangThaiPhanHoi
+            
     );
+    
+ // Kiểm tra tồn tại báo cáo theo kết quả tiêm + trạng thái phản hồi
+    boolean existsByKetQuaTiemIdAndTrangThaiPhanHoi(
+            String ketQuaTiemId,
+            BaoCaoPhanUngEntity.TrangThaiPhanHoi trangThaiPhanHoi
+    );
+
 }

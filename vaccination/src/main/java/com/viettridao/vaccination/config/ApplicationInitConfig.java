@@ -144,13 +144,38 @@ public class ApplicationInitConfig implements ApplicationRunner {
 	 * Khởi tạo tài khoản mặc định
 	 */
 	private void initDefaultAccounts() {
-		createAccountIfNotExists("admin1", "admin123", "ADMIN", "admin@system.com", "Nguyễn Văn Admin");
-		createAccountIfNotExists("doctor1", "doctor123", "DOCTER", "doctor@system.com", "Bác sĩ A");
-		createAccountIfNotExists("support1", "support123", "SUPPORTER", "support@system.com", "Nhân viên hỗ trợ B");
-		createAccountIfNotExists("warehouse1", "warehouse123", "WAREHOUSE", "warehouse@system.com", "Nhân viên kho C");
-		createAccountIfNotExists("user1", "user123", "NORMAL_USER", "user@system.com", "Người dùng D");
-		createAccountIfNotExists("finance1", "finance123", "FINANCE", "finance@system.com", "Kế toán E");
+	    // Tạo 10 tài khoản ADMIN
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("admin" + i, "admin123", "ADMIN", "admin" + i + "@system.com", "Nguyễn Văn Admin " + i);
+	    }
+
+	 // Tạo 10 tài khoản DOCTER
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("doctor" + i, "doctor123", "DOCTER", "doctor" + i + "@system.com", "Bác sĩ " + i);
+	    }
+
+
+	    // Tạo 10 tài khoản SUPPORTER
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("support" + i, "support123", "SUPPORTER", "support" + i + "@system.com", "Nhân viên hỗ trợ " + i);
+	    }
+
+	    // Tạo 10 tài khoản WAREHOUSE
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("warehouse" + i, "warehouse123", "WAREHOUSE", "warehouse" + i + "@system.com", "Nhân viên kho " + i);
+	    }
+
+	    // Tạo 10 tài khoản NORMAL_USER
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("user" + i, "user123", "NORMAL_USER", "user" + i + "@system.com", "Người dùng " + i);
+	    }
+
+	    // Tạo 10 tài khoản FINANCE
+	    for (int i = 1; i <= 10; i++) {
+	        createAccountIfNotExists("finance" + i, "finance123", "FINANCE", "finance" + i + "@system.com", "Kế toán " + i);
+	    }
 	}
+
 
 	private void createAccountIfNotExists(String username, String rawPassword, String roleName, String email,
 			String hoTen) {

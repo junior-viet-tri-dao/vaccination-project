@@ -16,9 +16,13 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
 
 	private final TaiKhoanRepository taiKhoanRepository;
 
-	
-	 @Override
-	    public List<TaiKhoanEntity> getAll() {
-	        return taiKhoanRepository.findAll();
-	    }
+	@Override
+	public List<TaiKhoanEntity> getAll() {
+		return taiKhoanRepository.findAll();
+	}
+
+	@Override
+	public List<TaiKhoanEntity> getTatCaBacSiHoatDong() {
+	    return taiKhoanRepository.findByVaiTro_TenAndHoatDongTrue("DOCTER");
+	}
 }
