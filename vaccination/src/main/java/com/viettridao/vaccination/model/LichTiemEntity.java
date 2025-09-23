@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -69,5 +72,14 @@ public class LichTiemEntity {
     
     @OneToMany(mappedBy = "lichTiem")
     private List<DonThuocEntity> danhSachDonThuoc;
+    
+    @ManyToMany
+    @JoinTable(
+        name = "lich_tiem_bac_si",
+        joinColumns = @JoinColumn(name = "lich_tiem_id"),
+        inverseJoinColumns = @JoinColumn(name = "tai_khoan_id")
+    )
+    private Set<TaiKhoanEntity> bacSis = new HashSet<>();
+
 
 }

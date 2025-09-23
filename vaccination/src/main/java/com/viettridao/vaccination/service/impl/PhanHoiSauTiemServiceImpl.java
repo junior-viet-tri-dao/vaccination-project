@@ -21,58 +21,59 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PhanHoiSauTiemServiceImpl implements PhanHoiSauTiemService {
 
-    private final BaoCaoPhanUngRepository baoCaoPhanUngRepository;
-    private final KetQuaTiemRepository ketQuaTiemRepository;
-    private final TaiKhoanRepository taiKhoanRepository;
-    private final PhanHoiSauTiemMapper phanHoiSauTiemMapper;
+	private final BaoCaoPhanUngRepository baoCaoPhanUngRepository;
+	private final KetQuaTiemRepository ketQuaTiemRepository;
+	private final TaiKhoanRepository taiKhoanRepository;
+	private final PhanHoiSauTiemMapper phanHoiSauTiemMapper;
 
-    @Override
-    public List<PhanHoiSauTiemResponse> getKetQuaTiemCanPhanHoiByCurrentUser() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        TaiKhoanEntity taiKhoan = taiKhoanRepository.findByTenDangNhap(username)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
-        String benhNhanId = taiKhoan.getBenhNhan().getId();
+	@Override
+	public List<PhanHoiSauTiemResponse> getKetQuaTiemCanPhanHoiByCurrentUser() {
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		TaiKhoanEntity taiKhoan = taiKhoanRepository.findByTenDangNhap(username)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+		BenhNhanEntity benhNhan = taiKhoan.getBenhNhan();
 
-        // Chỉ lấy các bản ghi chưa phản hồi
-        List<BaoCaoPhanUngEntity> list = baoCaoPhanUngRepository
-                .findAllByBenhNhan_IdAndTrangThaiPhanHoiNot(benhNhanId, BaoCaoPhanUngEntity.TrangThaiPhanHoi.CHUA_PHAN_HOI);
+		List<KetQuaTiemEntity> ketQuaList = ketQuaTiemRepository.findAllByBenhNhanAndTinhTrang(benhNhan,
+				KetQuaTiemEntity.TinhTrangTinhTrang.HOAN_THANH);
 
-        return list.stream()
-                .map(phanHoiSauTiemMapper::toResponse)
-                .toList();
-    }
+		return ketQuaList.stream()
+				.filter(kq -> !baoCaoPhanUngRepository.existsByKetQuaTiemIdAndTrangThaiPhanHoi(kq.getId(),
+						BaoCaoPhanUngEntity.TrangThaiPhanHoi.DA_PHAN_HOI))
+				.map(phanHoiSauTiemMapper::toResponse).toList();
 
-    @Override
-    public PhanHoiSauTiemResponse getByKetQuaTiemId(String ketQuaTiemId) {
-        // Giả sử bạn lấy từ KetQuaTiem hoặc từ BaoCaoPhanUng
-        KetQuaTiemEntity ketQuaTiem = ketQuaTiemRepository.findById(ketQuaTiemId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả tiêm"));
-        return phanHoiSauTiemMapper.toResponse(ketQuaTiem);
-    }
+	}
 
-    @Override
-    public void taoPhanHoiSauTiem(PhanHoiSauTiemRequest request) {
-        // 1. Lấy user đang đăng nhập
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        TaiKhoanEntity taiKhoan = taiKhoanRepository.findByTenDangNhap(username)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+	@Override
+	public PhanHoiSauTiemResponse getByKetQuaTiemId(String ketQuaTiemId) {
+		// Giả sử bạn lấy từ KetQuaTiem hoặc từ BaoCaoPhanUng
+		KetQuaTiemEntity ketQuaTiem = ketQuaTiemRepository.findById(ketQuaTiemId)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả tiêm"));
+		return phanHoiSauTiemMapper.toResponse(ketQuaTiem);
+	}
 
-        BenhNhanEntity benhNhan = taiKhoan.getBenhNhan();
+	@Override
+	public void taoPhanHoiSauTiem(PhanHoiSauTiemRequest request) {
+		// 1. Lấy user đang đăng nhập
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		TaiKhoanEntity taiKhoan = taiKhoanRepository.findByTenDangNhap(username)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
-        // 2. Lấy thông tin kết quả tiêm
-        KetQuaTiemEntity ketQuaTiem = ketQuaTiemRepository.findById(request.getKetQuaTiemId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả tiêm"));
+		BenhNhanEntity benhNhan = taiKhoan.getBenhNhan();
 
-        // 3. Map từ request -> entity
-        BaoCaoPhanUngEntity entity = phanHoiSauTiemMapper.toEntity(request);
-        entity.setBenhNhan(benhNhan);
-        entity.setVacXin(ketQuaTiem.getLichTiem().getVacXin());
-        entity.setKetQuaTiem(ketQuaTiem);
-        entity.setTaoBoi(taiKhoan);
-        entity.setTrangThaiPhanHoi(BaoCaoPhanUngEntity.TrangThaiPhanHoi.DA_PHAN_HOI);
-        entity.setKenhBaoCao(BaoCaoPhanUngEntity.KenhBaoCao.BENH_NHAN);
+		// 2. Lấy thông tin kết quả tiêm
+		KetQuaTiemEntity ketQuaTiem = ketQuaTiemRepository.findById(request.getKetQuaTiemId())
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy kết quả tiêm"));
 
-        // 4. Lưu vào DB
-        baoCaoPhanUngRepository.save(entity); 
-    }
+		// 3. Map từ request -> entity
+		BaoCaoPhanUngEntity entity = phanHoiSauTiemMapper.toEntity(request);
+		entity.setBenhNhan(benhNhan);
+		entity.setVacXin(ketQuaTiem.getLichTiem().getVacXin());
+		entity.setKetQuaTiem(ketQuaTiem);
+		entity.setTaoBoi(taiKhoan);
+		entity.setTrangThaiPhanHoi(BaoCaoPhanUngEntity.TrangThaiPhanHoi.DA_PHAN_HOI);
+		entity.setKenhBaoCao(BaoCaoPhanUngEntity.KenhBaoCao.BENH_NHAN);
+
+		// 4. Lưu vào DB
+		baoCaoPhanUngRepository.save(entity);
+	}
 }

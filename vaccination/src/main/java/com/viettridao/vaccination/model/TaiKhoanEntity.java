@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,6 +76,9 @@ public class TaiKhoanEntity implements UserDetails {
 	@Column(name = "ngay_cap_nhat")
 	private LocalDateTime ngayCapNhat;
 
+	@OneToOne(mappedBy = "taiKhoan")
+	private BenhNhanEntity benhNhan;
+
 	@OneToMany(mappedBy = "taoBoiTaiKhoan")
 	private Set<BenhNhanEntity> benhNhans;
 
@@ -121,17 +125,15 @@ public class TaiKhoanEntity implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-	    Set<GrantedAuthority> authorities = new HashSet<>();
-	    if (vaiTro != null) {
-	        authorities.add(new SimpleGrantedAuthority("ROLE_" + vaiTro.getTen()));
-	        if (vaiTro.getQuyenHans() != null) {
-	            vaiTro.getQuyenHans().forEach(q -> authorities.add(new SimpleGrantedAuthority(q.getTen())));
-	        }
-	    }
-	    return authorities;
+		Set<GrantedAuthority> authorities = new HashSet<>();
+		if (vaiTro != null) {
+			authorities.add(new SimpleGrantedAuthority("ROLE_" + vaiTro.getTen()));
+			if (vaiTro.getQuyenHans() != null) {
+				vaiTro.getQuyenHans().forEach(q -> authorities.add(new SimpleGrantedAuthority(q.getTen())));
+			}
+		}
+		return authorities;
 	}
-
-
 
 	@Override
 	public String getPassword() {

@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.dto.request.adminPanel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -55,4 +56,7 @@ public class LichTiemRequest {
 
 	@Min(value = 0, message = "Độ tuổi phải lớn hơn hoặc bằng 0")
 	private String doTuoi;
+	
+    private List<String> bacSiIds;
+
 }

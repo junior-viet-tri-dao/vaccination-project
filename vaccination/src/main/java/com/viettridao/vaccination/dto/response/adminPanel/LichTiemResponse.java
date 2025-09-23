@@ -28,6 +28,8 @@ public class LichTiemResponse {
 	private String taoBoi;
 
 	private List<DonThuocDTO> danhSachDonThuoc;
+    private List<String> bacSiThamGia;
+
 
 	@Getter
 	@Setter

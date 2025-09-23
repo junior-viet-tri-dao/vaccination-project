@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.viettridao.vaccination.dto.request.adminPanel.LichTiemRequest;
 import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse;
+import com.viettridao.vaccination.model.TaiKhoanEntity;
 import com.viettridao.vaccination.service.LichTiemService;
+import com.viettridao.vaccination.service.TaiKhoanService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,25 +27,38 @@ import lombok.RequiredArgsConstructor;
 public class AdminPanelController {
 
 	private final LichTiemService lichTiemService;
+	private final TaiKhoanService taiKhoanService;
+
 
 	@GetMapping("/schedule")
 	public String viewSchedule(Model model, @RequestParam(required = false) String maVacXin) {
-		List<LichTiemResponse> lichTiemList = lichTiemService.getDanhSachLichTiem();
 
-		// Với mỗi lịch, set danh sách bệnh nhân từ DB
-		for (LichTiemResponse lich : lichTiemList) {
-			List<LichTiemResponse.DonThuocDTO> danhSachBN = lichTiemService
-					.getDanhSachBenhNhanTheoLich(lich.getMaLich(), maVacXin);
-			lich.setDanhSachDonThuoc(danhSachBN);
-		}
+	    List<LichTiemResponse> lichTiemList = lichTiemService.getDanhSachLichTiem();
 
-		model.addAttribute("lichTiemList", lichTiemList);
-		model.addAttribute("tatCaLoaiVacXin", lichTiemService.getTatCaLoaiVacXin());
-		model.addAttribute("lichTiemRequest", new LichTiemRequest());
-		model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
+	    for (LichTiemResponse lich : lichTiemList) {
+	        List<LichTiemResponse.DonThuocDTO> danhSachBN =
+	                lichTiemService.getDanhSachBenhNhanTheoLich(lich.getMaLich(), maVacXin);
+	        lich.setDanhSachDonThuoc(danhSachBN);
+	    }
 
-		return "/adminpanel/schedule";
+	    // Danh sách bác sĩ
+	    model.addAttribute("tatCaBacSi", taiKhoanService.getTatCaBacSiHoatDong());
+
+	    // Form tạo mới → bacSiIds rỗng
+	    LichTiemRequest newRequest = new LichTiemRequest();
+	    newRequest.setBacSiIds(List.of()); // đảm bảo rỗng
+	    model.addAttribute("lichTiemRequest", newRequest);
+
+	    model.addAttribute("lichTiemList", lichTiemList);
+	    model.addAttribute("tatCaLoaiVacXin", lichTiemService.getTatCaLoaiVacXin());
+	    model.addAttribute("maVacXin", maVacXin); 
+	    model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
+
+	    return "/adminpanel/schedule";
 	}
+
+
+
 
 	// Xử lý lưu lịch mới
 	@PostMapping("/schedule")
@@ -58,11 +73,12 @@ public class AdminPanelController {
 
 	@GetMapping("/schedule/edit/{maLich}")
 	public String editScheduleForm(@PathVariable String maLich, Model model) {
-		LichTiemRequest request = lichTiemService.getLichTiemRequestById(maLich);
-		model.addAttribute("lichTiemRequest", request);
-		model.addAttribute("maLich", maLich);
-		return "schedule";
+	    LichTiemRequest request = lichTiemService.getLichTiemRequestById(maLich);
+	    model.addAttribute("lichTiemRequest", request);
+	    model.addAttribute("tatCaBacSi", taiKhoanService.getTatCaBacSiHoatDong());
+	    return "/adminpanel/schedule";
 	}
+
 
 	@PostMapping("/schedule/edit/{maLich}")
 	public String updateSchedule(@PathVariable String maLich,
