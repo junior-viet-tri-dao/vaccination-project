@@ -1,21 +1,19 @@
 package com.viettridao.vaccination.service.impl;
 
-import com.viettridao.vaccination.dto.request.LoginRequest;
-import com.viettridao.vaccination.model.TaiKhoanEntity;
-import com.viettridao.vaccination.repository.TaiKhoanRepository;
-import com.viettridao.vaccination.service.LoginService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import com.viettridao.vaccination.service.LoginService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service

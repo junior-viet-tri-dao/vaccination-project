@@ -1,25 +1,27 @@
 package com.viettridao.vaccination.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
 import com.viettridao.vaccination.dto.request.adminPanel.TaiKhoanCreateRequest;
 import com.viettridao.vaccination.model.VaiTroEntity;
 import com.viettridao.vaccination.repository.VaiTroRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.viettridao.vaccination.dto.request.adminPanel.LichTiemRequest;
 import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse;
+import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse.DonThuocDto;
 import com.viettridao.vaccination.model.TaiKhoanEntity;
+import com.viettridao.vaccination.model.VacXinEntity;
 import com.viettridao.vaccination.service.LichTiemService;
 import com.viettridao.vaccination.service.TaiKhoanService;
+import com.viettridao.vaccination.service.VacXinService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class AdminPanelController {
     private final LichTiemService lichTiemService;
     private final TaiKhoanService taiKhoanService;
     private final VaiTroRepository vaiTroRepository;
+    private final VacXinService vacXinService;
 
     // Hiển thị form đăng ký tài khoản
     @GetMapping("/register")
@@ -50,7 +53,6 @@ public class AdminPanelController {
         model.addAttribute("danhSachVaiTro", vaiTroRepository.findAllByIsDeletedFalse());
 
         if (bindingResult.hasErrors()) {
-            // Trả lại dữ liệu đã nhập và danh sách vai trò cho FE
             return "adminPanel/register";
         }
         try {
@@ -64,71 +66,62 @@ public class AdminPanelController {
 
     // Hàm lấy danh sách vai trò, bạn có thể tuỳ chỉnh dùng service hoặc repo
     private List<VaiTroEntity> getDanhSachVaiTro() {
-        return vaiTroRepository.findAllByIsDeletedFalse(); // hoặc findAll() nếu không có soft-delete
+        return vaiTroRepository.findAllByIsDeletedFalse();
     }
 
+    // ------------------- Lịch tiêm -------------------
     @GetMapping("/schedule")
-    public String viewSchedule(Model model, @RequestParam(required = false) String maVacXin) {
+    public String getSchedulePage(Model model) {
+        List<LichTiemResponse> lichs = lichTiemService.getAllLichTiemDangHoatDong();
+        model.addAttribute("lichList", lichs);
 
-        List<LichTiemResponse> lichTiemList = lichTiemService.getDanhSachLichTiem();
+        List<TaiKhoanEntity> bacSiList = taiKhoanService.getAllDoctors();
+        model.addAttribute("bacSiList", bacSiList);
 
-        for (LichTiemResponse lich : lichTiemList) {
-            List<LichTiemResponse.DonThuocDTO> danhSachBN =
-                    lichTiemService.getDanhSachBenhNhanTheoLich(lich.getMaLich(), maVacXin);
-            lich.setDanhSachDonThuoc(danhSachBN);
-        }
+        List<VacXinEntity> vacXinList = vacXinService.getAllActiveVaccines();
+        model.addAttribute("vacXinList", vacXinList);
 
-        // Danh sách bác sĩ
-        model.addAttribute("tatCaBacSi", taiKhoanService.getTatCaBacSiHoatDong());
+        // Lấy tất cả bệnh nhân
+        List<DonThuocDto> allPatients = lichTiemService.getAllDonThuoc();
 
-        // Form tạo mới → bacSiIds rỗng
-        LichTiemRequest newRequest = new LichTiemRequest();
-        newRequest.setBacSiIds(List.of()); // đảm bảo rỗng
-        model.addAttribute("lichTiemRequest", newRequest);
+        // Lấy danh sách bệnh nhân chưa có lịch
+        List<DonThuocDto> patientsWithoutSchedule = allPatients.stream()
+                .filter(don -> lichs.stream().noneMatch(lich ->
+                        lich.getDanhSachDonThuoc().stream()
+                                .anyMatch(d -> d.getMaDon().equals(don.getMaDon()))
+                ))
+                .collect(Collectors.toList());
 
-        model.addAttribute("lichTiemList", lichTiemList);
-        model.addAttribute("tatCaLoaiVacXin", lichTiemService.getTatCaLoaiVacXin());
-        model.addAttribute("maVacXin", maVacXin);
+        model.addAttribute("patientsWithoutSchedule", patientsWithoutSchedule);
+
+        model.addAttribute("lichTiemRequest", new LichTiemRequest());
         model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
 
-        return "/adminpanel/schedule";
+        return "adminpanel/schedule";
     }
 
-    // Xử lý lưu lịch mới
+
     @PostMapping("/schedule")
-    public String saveSchedule(@Valid @ModelAttribute("lichTiemRequest") LichTiemRequest request,
-                               BindingResult bindingResult, Model model) {
+    public String saveSchedule(@ModelAttribute("lichTiemRequest") @Valid LichTiemRequest request,
+                               BindingResult bindingResult,
+                               @AuthenticationPrincipal UserDetails userDetails,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
+
         if (bindingResult.hasErrors()) {
-            return viewSchedule(model, request.getMaVacXin());
+            model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
+            return "adminpanel/schedule";
         }
-        lichTiemService.createLichTiem(request);
-        return "redirect:/adminpanel/schedule";
-    }
 
-    @GetMapping("/schedule/edit/{maLich}")
-    public String editScheduleForm(@PathVariable String maLich, Model model) {
-        LichTiemRequest request = lichTiemService.getLichTiemRequestById(maLich);
-        model.addAttribute("lichTiemRequest", request);
-        model.addAttribute("tatCaBacSi", taiKhoanService.getTatCaBacSiHoatDong());
-        return "/adminpanel/schedule";
-    }
-
-
-    @PostMapping("/schedule/edit/{maLich}")
-    public String updateSchedule(@PathVariable String maLich,
-                                 @Valid @ModelAttribute("lichTiemRequest") LichTiemRequest request, BindingResult bindingResult,
-                                 Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("maLich", maLich);
-            return "schedule";
+        try {
+            lichTiemService.create(request, userDetails.getUsername());
+            redirectAttributes.addFlashAttribute("success", "Thêm lịch thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Thêm lịch thất bại: " + e.getMessage());
         }
-        lichTiemService.createOrUpdateLichTiem(request, maLich);
-        return "redirect:/adminpanel/schedule";
-    }
 
-    @PostMapping("/schedule/delete/{maLich}")
-    public String deleteSchedule(@PathVariable String maLich) {
-        lichTiemService.deleteLichTiem(maLich);
+
         return "redirect:/adminpanel/schedule";
     }
 }

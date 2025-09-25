@@ -44,6 +44,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
 
     List<TaiKhoanEntity> findByVaiTro_TenAndHoatDongTrue(String tenVaiTro);
 
+    List<TaiKhoanEntity> findByVaiTro_TenAndVaiTroIsDeletedFalse(String tenVaiTro);
+
     List<TaiKhoanEntity> findAllByIsDeletedFalse();
 
     boolean existsByTenDangNhapAndIsDeletedFalse(String tenDangNhap);

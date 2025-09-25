@@ -11,4 +11,6 @@ public interface TaiKhoanService {
     List<TaiKhoanEntity> getTatCaBacSiHoatDong();
 
     TaiKhoanEntity createTaiKhoan(TaiKhoanCreateRequest request);
+
+    List<TaiKhoanEntity> getAllDoctors();
 }

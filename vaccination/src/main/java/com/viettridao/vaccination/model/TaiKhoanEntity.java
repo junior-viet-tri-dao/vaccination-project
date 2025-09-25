@@ -121,10 +121,6 @@ public class TaiKhoanEntity implements UserDetails {
     @OneToMany(mappedBy = "taiKhoan")
     private Set<DichBenhEntity> dichBenhs;
 
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		return List.of();
-//	}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

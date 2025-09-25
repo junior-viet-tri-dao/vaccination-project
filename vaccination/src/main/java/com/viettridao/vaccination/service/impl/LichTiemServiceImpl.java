@@ -1,5 +1,7 @@
 package com.viettridao.vaccination.service.impl;
 
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,11 +9,16 @@ import org.springframework.stereotype.Service;
 
 import com.viettridao.vaccination.dto.request.adminPanel.LichTiemRequest;
 import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse;
+import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse.DonThuocDto;
 import com.viettridao.vaccination.mapper.LichTiemMapper;
 import com.viettridao.vaccination.model.DonThuocEntity;
 import com.viettridao.vaccination.model.LichTiemEntity;
+import com.viettridao.vaccination.model.TaiKhoanEntity;
+import com.viettridao.vaccination.model.VacXinEntity;
 import com.viettridao.vaccination.repository.DonThuocRepository;
 import com.viettridao.vaccination.repository.LichTiemRepository;
+import com.viettridao.vaccination.repository.TaiKhoanRepository;
+import com.viettridao.vaccination.repository.VacXinRepository;
 import com.viettridao.vaccination.service.LichTiemService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,8 +28,11 @@ import lombok.RequiredArgsConstructor;
 public class LichTiemServiceImpl implements LichTiemService {
 
 	private final LichTiemRepository lichTiemRepository;
-	private final DonThuocRepository donThuocRepository;
+	private final TaiKhoanRepository taiKhoanRepository;
 	private final LichTiemMapper lichTiemMapper;
+	private final DonThuocRepository donThuocRepository;
+    private final VacXinRepository vacXinRepository; 
+
 
 	@Override
 	public List<LichTiemEntity> getAllLichTiem() {
@@ -33,108 +43,78 @@ public class LichTiemServiceImpl implements LichTiemService {
 	public List<LichTiemEntity> getAll() {
 		return lichTiemRepository.findAll();
 	}
-
+	
 	@Override
-	public LichTiemResponse createLichTiem(LichTiemRequest request) {
-		LichTiemEntity entity = lichTiemMapper.toEntity(request);
-		// TODO: set vacXin, taoBoi, other relations
-		LichTiemEntity saved = lichTiemRepository.save(entity);
-		return lichTiemMapper.toResponse(saved);
+	public LichTiemResponse create(LichTiemRequest request, String taoBoiTenDangNhap) {
+	    // Map từ request sang entity
+	    LichTiemEntity entity = lichTiemMapper.toEntity(request);
+
+	    // Lấy VacXin từ DB bằng ID
+	    VacXinEntity vacXin = vacXinRepository.findById(request.getMaVacXin())
+	            .orElseThrow(() -> new RuntimeException("Không tìm thấy vắc xin với id: " + request.getMaVacXin()));
+	    entity.setVacXin(vacXin);
+
+	    // Lấy người tạo lịch theo username (tenDangNhap)
+	    TaiKhoanEntity nguoiTao = taiKhoanRepository.findByTenDangNhap(taoBoiTenDangNhap)
+	            .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản tạo lịch với username: " + taoBoiTenDangNhap));
+	    entity.setTaoBoi(nguoiTao);
+
+	    // Thời gian tạo và cờ xóa
+	    entity.setNgayTao(LocalDateTime.now());
+	    entity.setIsDeleted(false);
+
+	    // Lưu và trả về response
+	    return lichTiemMapper.toResponse(lichTiemRepository.save(entity));
 	}
 
-	@Override
-	public LichTiemResponse getLichTiemById(String maLich) {
-		LichTiemEntity entity = lichTiemRepository.findById(maLich)
-				.orElseThrow(() -> new RuntimeException("Lịch tiêm không tồn tại"));
-		return lichTiemMapper.toResponse(entity);
-	}
+
 
 	@Override
-	public List<LichTiemResponse> getDanhSachLichTiem() {
-		List<LichTiemEntity> list = lichTiemRepository.findByIsDeletedFalse();
-		return list.stream().map(lichTiemMapper::toResponse).collect(Collectors.toList());
-	}
+	public LichTiemResponse update(String id, LichTiemRequest request) {
+		LichTiemEntity entity = lichTiemRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy lịch tiêm"));
 
-	@Override
-	public LichTiemResponse updateLichTiem(String maLich, LichTiemRequest request) {
-		LichTiemEntity entity = lichTiemRepository.findById(maLich)
-				.orElseThrow(() -> new RuntimeException("Lịch tiêm không tồn tại"));
-
-		// update các field
+		// cập nhật các trường
 		entity.setNgayGio(request.getNgayGio());
 		entity.setDiaDiem(request.getDiaDiem());
-		entity.setMoTa(request.getMoTa());
-		entity.setSucChua(request.getSucChua());
-		entity.setTieuDe(request.getTieuDe());
-		// TODO: cập nhật vacXin, taoBoi nếu cần
+		entity.setSucChua(request.getSoLuong());
 
-		LichTiemEntity updated = lichTiemRepository.save(entity);
-		return lichTiemMapper.toResponse(updated);
+		return lichTiemMapper.toResponse(lichTiemRepository.save(entity));
 	}
 
 	@Override
-	public void deleteLichTiem(String maLich) {
-		LichTiemEntity entity = lichTiemRepository.findById(maLich)
-				.orElseThrow(() -> new RuntimeException("Lịch tiêm không tồn tại"));
+	public void delete(String id) {
+		LichTiemEntity entity = lichTiemRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy lịch tiêm"));
 		entity.setIsDeleted(true);
 		lichTiemRepository.save(entity);
 	}
 
 	@Override
-	public List<LichTiemResponse> getDanhSachLichTiemWithDonThuoc(String loaiVacXin) {
-		List<LichTiemEntity> lichList = lichTiemRepository.findByIsDeletedFalse();
-		return lichList.stream().map(lich -> {
-			LichTiemResponse response = lichTiemMapper.toResponse(lich);
-			if (loaiVacXin != null) {
-				List<LichTiemResponse.DonThuocDTO> filtered = response.getDanhSachDonThuoc().stream()
-						.filter(d -> d.getTenVacXin().equalsIgnoreCase(loaiVacXin)).toList();
-				response.setDanhSachDonThuoc(filtered);
-			}
-			return response;
-		}).toList();
+	public LichTiemResponse getById(String id) {
+		LichTiemEntity entity = lichTiemRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Không tìm thấy lịch tiêm"));
+		return lichTiemMapper.toResponse(entity);
 	}
 
 	@Override
-	public LichTiemResponse createOrUpdateLichTiem(LichTiemRequest request, String maLich) {
-		LichTiemEntity entity;
-		if (maLich == null) { // create
-			entity = lichTiemMapper.toEntity(request);
-		} else { // update
-			entity = lichTiemRepository.findById(maLich)
-					.orElseThrow(() -> new RuntimeException("Lịch tiêm không tồn tại"));
-			entity.setNgayGio(request.getNgayGio());
-			entity.setDiaDiem(request.getDiaDiem());
-			entity.setMoTa(request.getMoTa());
-			entity.setSucChua(request.getSoLuong());
-			entity.setTieuDe(request.getTieuDe());
-			// TODO: set vacXin, taoBoi nếu cần
-		}
-		LichTiemEntity saved = lichTiemRepository.save(entity);
-		return lichTiemMapper.toResponse(saved);
+	public List<LichTiemResponse> getAllLichTiemDangHoatDong() {
+		return lichTiemMapper.toResponseList(lichTiemRepository.findAllByIsDeletedFalse());
 	}
 
 	@Override
-	public LichTiemRequest getLichTiemRequestById(String maLich) {
-		LichTiemResponse lich = lichTiemMapper.toResponse(
-				lichTiemRepository.findById(maLich).orElseThrow(() -> new RuntimeException("Lịch tiêm không tồn tại")));
-		return LichTiemRequest.builder().ngayGio(lich.getNgayGio()).diaDiem(lich.getDiaDiem()).moTa(lich.getMoTa())
-				.soLuong(lich.getSucChua()).tieuDe(lich.getTieuDe()).maVacXin(lich.getLoaiVacXin())
-				.loaiVacXin(lich.getLoaiVacXin()).build();
+	public List<DonThuocDto> getAllDonThuoc() {
+	    List<DonThuocEntity> entities = donThuocRepository.findAll();
+	    return entities.stream()
+	            .map(d -> DonThuocDto.builder()
+	                    .maDon(d.getId())
+	                    .tenBenhNhan(d.getBenhNhan().getHoTen())
+	                    .soDienThoai(d.getBenhNhan().getSoDienThoai())
+	                    .henTiemLai(d.getHenTiemLai() != null ? d.getHenTiemLai().toLocalDate() : null)
+	                    .tenVacXin(d.getVacXin().getTen())
+	                    .build())
+	            .collect(Collectors.toList());
 	}
+
 	
-	public List<String> getTatCaLoaiVacXin() {
-	    return lichTiemRepository.findDistinctLoaiVacXin(); 
-	}
-	
-	@Override
-    public List<LichTiemResponse.DonThuocDTO> getDanhSachBenhNhanTheoLich(String maLich, String tenVacXin) {
-        List<DonThuocEntity> donThuocs;
-        if (tenVacXin == null || tenVacXin.isEmpty()) {
-            donThuocs = donThuocRepository.findByLichTiem_Id(maLich);
-        } else {
-            donThuocs = donThuocRepository.findByLichTiem_IdAndVacXin_Ten(maLich, tenVacXin);
-        }
-        return lichTiemMapper.donThuocEntityListToDTOList(donThuocs);
-    }
-
 }

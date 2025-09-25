@@ -1,5 +1,6 @@
 package com.viettridao.vaccination.dto.response.adminPanel;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,31 +18,45 @@ import lombok.Setter;
 public class LichTiemResponse {
 
 	private String maLich;
+
 	private LocalDateTime ngayGio;
+
 	private String diaDiem;
-	private String moTa;
-	private Integer sucChua;
-	private String tieuDe;
 
-	private String loaiVacXin;
 	private String tenVacXin;
-	private String taoBoi;
 
-	private List<DonThuocDTO> danhSachDonThuoc;
-    private List<String> bacSiThamGia;
+	private Integer soLuong;
 
+	private String doTuoiKhuyenCao;
 
+	private String ghiChu;
+
+	private List<BacSiDto> danhSachBacSi;
+
+	private List<DonThuocDto> danhSachDonThuoc;
+
+	// Nested DTO cho bác sĩ
 	@Getter
 	@Setter
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	public static class DonThuocDTO {
+	public static class BacSiDto {
+		private String maBacSi;
+		private String hoTen;
+	}
+
+	// Nested DTO cho đơn thuốc
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public static class DonThuocDto {
 		private String maDon;
 		private String tenBenhNhan;
-		private Integer doTuoi;
 		private String soDienThoai;
-		private LocalDateTime henTiemLai;
+		private LocalDate henTiemLai;
 		private String tenVacXin;
 	}
 }

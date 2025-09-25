@@ -3,6 +3,7 @@ package com.viettridao.vaccination.dto.request.adminPanel;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,42 +22,26 @@ import lombok.Setter;
 public class LichTiemRequest {
 
 	@NotNull(message = "Ngày giờ tiêm không được để trống")
-	private LocalDateTime ngayGio; // Ngày giờ tiêm
+	@Future(message = "Ngày giờ tiêm phải lớn hơn thời điểm hiện tại")
+	private LocalDateTime ngayGio;
 
-	@NotBlank(message = "Địa điểm tiêm không được để trống")
-	@Size(max = 255, message = "Địa điểm tiêm không được quá 255 ký tự")
-	private String diaDiem; // Địa điểm tiêm
+	@NotBlank(message = "Địa điểm không được để trống")
+	@Size(max = 255, message = "Địa điểm tối đa 255 ký tự")
+	private String diaDiem;
 
-	@Size(max = 1000, message = "Mô tả không được quá 1000 ký tự")
-	private String moTa; // Ghi chú
+	@NotBlank(message = "Tên vắc xin không được để trống")
+	private String maVacXin;
 
-	@NotNull(message = "Sức chứa không được để trống")
-	@Min(value = 1, message = "Sức chứa phải lớn hơn 0")
-	private Integer sucChua; // Số lượng vắc-xin
-
-	@NotBlank(message = "Tiêu đề không được để trống")
-	@Size(max = 255, message = "Tiêu đề không được quá 255 ký tự")
-	private String tieuDe; // Tiêu đề
-
-	@NotBlank(message = "Loại vắc-xin không được để trống")
-	private String maVacXin; // Loại vắc-xin (ID)
-
-	@NotBlank(message = "Người tạo lịch không được để trống")
-	private String taoBoi; // ID bác sĩ hoặc nhân viên tạo lịch
-
-	// Thông tin bổ sung UI (có thể dùng nếu cần)
-	@Size(max = 1000, message = "Ghi chú không được quá 1000 ký tự")
-	private String ghiChu;
-
-	@Size(max = 255, message = "Loại vắc-xin không được quá 255 ký tự")
-	private String loaiVacXin;
-
-	@Min(value = 0, message = "Số lượng phải lớn hơn hoặc bằng 0")
+	@NotNull(message = "Số lượng vắc xin phải có")
+	@Min(value = 1, message = "Số lượng vắc xin phải lớn hơn 0")
 	private Integer soLuong;
 
-	@Min(value = 0, message = "Độ tuổi phải lớn hơn hoặc bằng 0")
-	private String doTuoi;
-	
-    private List<String> bacSiIds;
+	@NotBlank(message = "Độ tuổi khuyến cáo không được để trống")
+	private String doTuoiKhuyenCao;
 
+	@Size(max = 500, message = "Ghi chú tối đa 500 ký tự")
+	private String ghiChu;
+
+	@NotNull(message = "Phải chọn ít nhất 1 bác sĩ")
+    private List<String> danhSachBacSiIds;
 }
