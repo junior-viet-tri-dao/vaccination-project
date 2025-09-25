@@ -32,4 +32,6 @@ public interface LichTiemRepository extends JpaRepository<LichTiemEntity, String
     @Query("SELECT DISTINCT l.vacXin.ten FROM LichTiemEntity l WHERE l.isDeleted = false")
     List<String> findDistinctLoaiVacXin();
 
+    
+    List<LichTiemEntity> findByNgayGioBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
 }
