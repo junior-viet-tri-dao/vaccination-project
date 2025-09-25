@@ -14,60 +14,63 @@
 </head>
 <body class="bg-gradient-to-r from-blue-100 to-green-100 min-h-screen flex flex-col">
 
-<!-- Navbar -->
-<nav class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-    <div class="flex space-x-6 text-gray-700 font-medium">
-        <a href="#" class="hover:text-blue-600 transition">Account</a>
-        <a href="#" class="hover:text-blue-600 transition">Moderator</a>
-        <a href="#" class="hover:text-blue-600 transition">Báo cáo</a>
-        <a href="#" class="hover:text-blue-600 transition">About</a>
-    </div>
-</nav>
-
 <!-- Main content -->
 <main class="flex-1 flex justify-center items-center p-6 sm:p-10">
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-6xl">
 
         <!-- Tài chính -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/finance/dashboard"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-coins text-yellow-500 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Tài Chính</h3>
-        </div>
+        </a>
 
         <!-- Kho bãi -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/warehouse"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-warehouse text-green-600 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Kho Bãi</h3>
-        </div>
+        </a>
 
         <!-- Nhân viên y tế -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/employee/view"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-user-doctor text-red-500 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Nhân viên y tế</h3>
-        </div>
+        </a>
 
         <!-- Chăm sóc khách hàng -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/support/dashboard"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-headset text-blue-500 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Chăm sóc khách hàng</h3>
-        </div>
+        </a>
 
-        <!-- Admin -->
-        <div class="bg-gradient-to-r from-blue-600 to-green-600 shadow-lg rounded-2xl p-6 text-center hover:scale-105 transition transform">
+        <!-- Admin (NO EFFECT) -->
+        <div class="bg-gradient-to-r from-blue-600 to-green-600 shadow-lg rounded-2xl p-6 text-center">
             <h3 class="text-2xl font-bold text-white">Admin</h3>
         </div>
 
         <!-- Lịch tiêm chủng -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/adminpanel/schedule"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-calendar-days text-purple-500 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Lịch tiêm chủng</h3>
-        </div>
+        </a>
 
         <!-- Feedback khách hàng -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition">
+        <a href="/adminpanel/phanhoiAdmin"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
             <i class="fa-solid fa-comments text-pink-500 text-5xl mb-4"></i>
             <h3 class="text-lg font-semibold text-gray-700">Feedback từ khách hàng</h3>
-        </div>
+        </a>
+
+        <!-- Tạo tài khoản -->
+        <a href="/adminpanel/register"
+           class="bg-white shadow-lg rounded-2xl p-6 text-center hover:shadow-2xl transition flex flex-col items-center hover:scale-105 transform">
+            <i class="fa-solid fa-user-plus text-blue-600 text-5xl mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-700">Tạo tài khoản</h3>
+        </a>
 
     </div>
 </main>

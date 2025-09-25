@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import com.viettridao.vaccination.dto.request.adminPanel.TaiKhoanCreateRequest;
+import com.viettridao.vaccination.model.VaiTroEntity;
+import com.viettridao.vaccination.repository.VaiTroRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.viettridao.vaccination.dto.request.adminPanel.LichTiemRequest;
@@ -27,16 +27,49 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/adminpanel")
+@RequiredArgsConstructor
 public class AdminPanelController {
 
     private final LichTiemService lichTiemService;
-    private final VacXinService vacXinService;
     private final TaiKhoanService taiKhoanService;
+    private final VaiTroRepository vaiTroRepository;
+    private final VacXinService vacXinService;
 
+    // Hiển thị form đăng ký tài khoản
+    @GetMapping("/register")
+    public String showRegisterUserForm(Model model) {
+        model.addAttribute("taiKhoanCreateRequest", new TaiKhoanCreateRequest());
+        model.addAttribute("danhSachVaiTro", vaiTroRepository.findAllByIsDeletedFalse());
+        return "adminPanel/register";
+    }
 
+    @PostMapping("/register")
+    public String registerUser(
+            @Valid @ModelAttribute("taiKhoanCreateRequest") TaiKhoanCreateRequest request,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        model.addAttribute("danhSachVaiTro", vaiTroRepository.findAllByIsDeletedFalse());
 
+        if (bindingResult.hasErrors()) {
+            return "adminPanel/register";
+        }
+        try {
+            taiKhoanService.createTaiKhoan(request);
+        } catch (IllegalArgumentException e) {
+            bindingResult.rejectValue("tenDangNhap", "error.taiKhoanCreateRequest", e.getMessage());
+            return "adminPanel/register";
+        }
+        return "redirect:/adminpanel/dashboard";
+    }
+
+    // Hàm lấy danh sách vai trò, bạn có thể tuỳ chỉnh dùng service hoặc repo
+    private List<VaiTroEntity> getDanhSachVaiTro() {
+        return vaiTroRepository.findAllByIsDeletedFalse();
+    }
+
+    // ------------------- Lịch tiêm -------------------
     @GetMapping("/schedule")
     public String getSchedulePage(Model model) {
         List<LichTiemResponse> lichs = lichTiemService.getAllLichTiemDangHoatDong();
@@ -68,8 +101,6 @@ public class AdminPanelController {
     }
 
 
-
-
     @PostMapping("/schedule")
     public String saveSchedule(@ModelAttribute("lichTiemRequest") @Valid LichTiemRequest request,
                                BindingResult bindingResult,
@@ -86,7 +117,7 @@ public class AdminPanelController {
             lichTiemService.create(request, userDetails.getUsername());
             redirectAttributes.addFlashAttribute("success", "Thêm lịch thành công");
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Thêm lịch thất bại: " + e.getMessage());
         }
 
@@ -94,4 +125,3 @@ public class AdminPanelController {
         return "redirect:/adminpanel/schedule";
     }
 }
-
