@@ -1,6 +1,7 @@
 package com.viettridao.vaccination.service.impl;
 
 import com.viettridao.vaccination.dto.request.normalUser.PhanHoiCapCaoRequest;
+import com.viettridao.vaccination.dto.response.feedback.PhanHoiAdminResponse;
 import com.viettridao.vaccination.mapper.PhanHoiCapCaoMapper;
 import com.viettridao.vaccination.model.BenhNhanEntity;
 import com.viettridao.vaccination.model.PhanHoiEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +46,11 @@ public class PhanHoiCapCaoServiceImpl implements PhanHoiCapCaoService {
         phanHoi.setTaoBoi(taiKhoanBenhNhan);
 
         phanHoiRepository.save(phanHoi);
+    }
+
+    @Override
+    public List<PhanHoiAdminResponse> getAllForAdmin() {
+        List<PhanHoiEntity> entities = phanHoiRepository.findAllByIsDeletedFalseOrderByNgayTaoDesc();
+        return phanHoiMapper.toAdminResponseList(entities);
     }
 }

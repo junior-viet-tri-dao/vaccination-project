@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách phản hồi cấp cao</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome cho icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+<body class="bg-[#e3f0ff] min-h-screen flex flex-col items-center justify-center">
+
+<!-- Dòng chứa nút quay lại, căn trái thẳng với bảng -->
+<div class="w-full flex flex-col items-center">
+    <div class="w-full max-w-5xl flex items-center mb-3">
+        <a href="/adminpanel/dashboard"
+           class="flex items-center justify-center w-10 h-10 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
+           title="Quay về Dashboard">
+            <i class="fa-solid fa-arrow-left text-lg"></i>
+        </a>
+    </div>
+
+    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-blue-700 mb-8 text-center">Danh sách phản hồi của khách hàng</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-blue-200 text-sm">
+                <thead class="bg-blue-100">
+                <tr>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">#</th>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">Loại phản hồi</th>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">Ngày</th>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">Nội dung</th>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">Tên bệnh nhân</th>
+                    <th class="px-4 py-3 font-semibold text-left text-blue-800">Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="phanHoi, idx : ${phanHoiList}" class="hover:bg-blue-50">
+                    <td class="px-4 py-2" th:text="${idx.index + 1}">1</td>
+                    <!-- Loại phản hồi tiếng Việt, chỉ màu đen -->
+                    <td class="px-4 py-2">
+                        <span th:switch="${phanHoi.loaiPhanHoi}">
+                            <span th:case="'DONG_VIEN'" class="font-medium text-black">Động viên</span>
+                            <span th:case="'PHAN_NAN'" class="font-medium text-black">Phàn nàn</span>
+                            <span th:case="'GOP_Y'" class="font-medium text-black">Góp ý</span>
+                            <span th:case="'CAU_HOI'" class="font-medium text-black">Câu hỏi</span>
+                            <span th:case="*" class="font-medium text-black"
+                                  th:text="${phanHoi.loaiPhanHoi}">Khác</span>
+                        </span>
+                    </td>
+                    <td class="px-4 py-2" th:text="${#temporals.format(phanHoi.ngayTao, 'dd/MM/yyyy HH:mm')}">21/09/2025
+                        11:36
+                    </td>
+                    <td class="px-4 py-2" th:text="${phanHoi.noiDung}">Nội dung...</td>
+                    <td class="px-4 py-2" th:text="${phanHoi.tenBenhNhan}">Nguyễn Văn A</td>
+                    <td class="px-4 py-2">
+                        <span th:switch="${phanHoi.trangThai}">
+                            <span th:case="'MOI'" class="px-2 py-1 rounded bg-yellow-200 text-yellow-900">Mới</span>
+                            <span th:case="'DA_XEM'" class="px-2 py-1 rounded bg-blue-200 text-blue-900">Đã xem</span>
+                            <span th:case="'DA_XU_LY'"
+                                  class="px-2 py-1 rounded bg-green-200 text-green-900">Đã xử lý</span>
+                            <span th:case="*" class="px-2 py-1 rounded bg-gray-200 text-gray-800"
+                                  th:text="${phanHoi.trangThai}">Khác</span>
+                        </span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(phanHoiList)}">
+                    <td class="px-4 py-2 text-center text-gray-400" colspan="6">
+                        Không có phản hồi nào.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
