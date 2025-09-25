@@ -43,7 +43,6 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
     @Query("select a from TaiKhoanEntity a  left join fetch a.vaiTro v left join fetch v.quyenHans where a.tenDangNhap = :tenDangNhap")
     Optional<TaiKhoanEntity> findByTenDangNhapWithRoleAndPermission(String tenDangNhap);
     
-    List<TaiKhoanEntity> findByVaiTro_TenAndHoatDongTrue(String tenVaiTro);
+    List<TaiKhoanEntity> findByVaiTro_TenAndVaiTroIsDeletedFalse(String tenVaiTro);
 
-    
 }
