@@ -8,11 +8,10 @@ import com.viettridao.vaccination.dto.response.adminPanel.LichTiemResponse.DonTh
 import com.viettridao.vaccination.model.LichTiemEntity;
 
 public interface LichTiemService {
-	List<LichTiemEntity> getAllLichTiem();
-	
+    List<LichTiemEntity> getAllLichTiem();
+
     List<LichTiemEntity> getAll();
-    
-    
+
     LichTiemResponse create(LichTiemRequest request, String taoBoiId);
 
     LichTiemResponse update(String id, LichTiemRequest request);
@@ -22,8 +21,8 @@ public interface LichTiemService {
     LichTiemResponse getById(String id);
 
     List<LichTiemResponse> getAllLichTiemDangHoatDong();
-    
+
     List<DonThuocDto> getAllDonThuoc();
 
-    
+
 }

@@ -5,6 +5,8 @@ import com.viettridao.vaccination.model.PhanHoiEntity;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface PhanHoiCapCaoMapper {
 
@@ -22,4 +24,10 @@ public interface PhanHoiCapCaoMapper {
     @Mapping(target = "trangThai", ignore = true)
     @Mapping(target = "tieuDe", ignore = true)
     PhanHoiEntity toEntity(PhanHoiCapCaoRequest request);
+
+    // Map từ Entity → DTO cho admin dashboard
+    @Mapping(target = "tenBenhNhan", source = "benhNhan.hoTen")
+    com.viettridao.vaccination.dto.response.feedback.PhanHoiAdminResponse toAdminResponse(PhanHoiEntity entity);
+
+    List<com.viettridao.vaccination.dto.response.feedback.PhanHoiAdminResponse> toAdminResponseList(List<PhanHoiEntity> entities);
 }

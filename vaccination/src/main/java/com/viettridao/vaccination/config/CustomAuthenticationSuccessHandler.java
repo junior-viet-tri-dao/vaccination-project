@@ -23,14 +23,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         System.out.println("Authorities after login for user '" + authentication.getName() + "':");
         authorities.forEach(a -> System.out.println(" - " + a.getAuthority()));
 
-        String redirectUrl = "/access-denied"; 
+        String redirectUrl = "/access-denied";
 
         if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             redirectUrl = "/adminpanel/dashboard";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_DOCTER"))) {
-            redirectUrl = "/employee/dashboard";
+            redirectUrl = "/employee/view";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_WAREHOUSE"))) {
-            redirectUrl = "/warehouse/dashboard";
+            redirectUrl = "/warehouse";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_SUPPORTER"))) {
             redirectUrl = "/support/dashboard";
         } else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_FINANCE"))) {

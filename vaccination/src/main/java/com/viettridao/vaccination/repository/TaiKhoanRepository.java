@@ -28,11 +28,10 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
      */
     @Query("SELECT a FROM TaiKhoanEntity a WHERE a.tenDangNhap = :tenDangNhap AND a.isDeleted = FALSE")
     Optional<TaiKhoanEntity> findByTenDangNhapAndIsDeletedFalse(String tenDangNhap);
-    
+
     Optional<TaiKhoanEntity> findByHoTen(String hoTen);
-    
+
     List<TaiKhoanEntity> findAllByHoatDongTrue();
-    
 
 
     // Trong TaiKhoanRepository
@@ -42,7 +41,13 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, String
 
     @Query("select a from TaiKhoanEntity a  left join fetch a.vaiTro v left join fetch v.quyenHans where a.tenDangNhap = :tenDangNhap")
     Optional<TaiKhoanEntity> findByTenDangNhapWithRoleAndPermission(String tenDangNhap);
-    
+
+    List<TaiKhoanEntity> findByVaiTro_TenAndHoatDongTrue(String tenVaiTro);
+
     List<TaiKhoanEntity> findByVaiTro_TenAndVaiTroIsDeletedFalse(String tenVaiTro);
+
+    List<TaiKhoanEntity> findAllByIsDeletedFalse();
+
+    boolean existsByTenDangNhapAndIsDeletedFalse(String tenDangNhap);
 
 }
