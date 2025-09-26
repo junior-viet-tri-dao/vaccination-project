@@ -29,7 +29,7 @@ public class LichTiemResponse {
 
 	private String doTuoiKhuyenCao;
 
-	private String ghiChu;
+	private String moTa;
 
 	private List<BacSiDto> danhSachBacSi;
 

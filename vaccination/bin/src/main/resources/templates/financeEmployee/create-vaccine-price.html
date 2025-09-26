@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm mới giá vắc xin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-rose-100 min-h-screen p-4 md:p-6 flex items-start justify-center">
+
+<div class="bg-white shadow-xl rounded-lg w-full max-w-3xl p-6">
+
+    <!-- Tiêu đề -->
+    <h2 class="text-2xl font-bold text-rose-700 text-center mb-6">
+        Thêm mới giá vắc xin
+    </h2>
+
+    <form th:action="@{/finance/vaccine-price/create}" th:object="${createRequest}" method="post" class="space-y-4">
+
+        <!-- Mã Vắc xin -->
+        <div>
+            <label class="block text-gray-700 mb-1">Mã Vắc xin</label>
+            <select th:field="*{maCode}" id="maCodeSelect" class="w-full border px-3 py-2 rounded-md">
+                <option value="">-- Chọn vắc xin --</option>
+                <option th:each="vx : ${vaccines}" th:value="${vx.maCode}" th:text="${vx.ten}"></option>
+            </select>
+            <p th:if="${#fields.hasErrors('maCode')}" th:errors="*{maCode}" class="text-red-500 text-sm mt-1"></p>
+        </div>
+
+        <!-- Đơn vị -->
+        <div>
+            <label class="block text-gray-700 mb-1">Đơn vị</label>
+            <input type="text" th:field="*{donVi}" id="donVi" readonly class="w-full border px-3 py-2 rounded-md"/>
+        </div>
+
+        <!-- Năm sản xuất -->
+        <div>
+            <label class="block text-gray-700 mb-1">Năm sản xuất</label>
+            <input type="date" th:field="*{namSX}" id="namSX" readonly class="w-full border px-3 py-2 rounded-md"/>
+        </div>
+
+        <!-- Giá -->
+        <div>
+            <label class="block text-gray-700 mb-1">Giá</label>
+            <input type="number" th:field="*{gia}" id="giaInput" placeholder="Nhập giá vắc xin" class="w-full border px-3 py-2 rounded-md"/>
+            <p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}" class="text-red-500 text-sm mt-1"></p>
+        </div>
+
+        <div class="flex justify-end gap-2">
+            <a th:href="@{/finance/vaccine-price}" class="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500">Hủy</a>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Lưu</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+const vaccineMap = /*[[${vaccineDataForJs}]]*/ [];
+const maCodeSelect = document.getElementById('maCodeSelect');
+const donViInput = document.getElementById('donVi');
+const namSXInput = document.getElementById('namSX');
+const giaInput = document.getElementById('gia'); // Thêm input giá
+
+maCodeSelect.addEventListener('change', function() {
+    const selectedCode = this.value;
+    const vx = vaccineMap.find(v => v.maCode === selectedCode);
+    if (vx) {
+        donViInput.value = vx.donVi || '';
+        namSXInput.value = vx.namSX || '';
+        giaInput.value = vx.gia || 0; // tự động điền giá
+    } else {
+        donViInput.value = '';
+        namSXInput.value = '';
+        giaInput.value = '';
+    }
+});
+/*]]>*/
+</script>
+
+
+<script th:src="@{/js/global.js}"></script>
+<div th:replace="~{alert :: alerts}"></div>
+</body>
+</html>

@@ -21,17 +21,18 @@ import com.viettridao.vaccination.model.VacXinEntity;
 public interface LichTiemMapper {
 
 	// ===== Request → Entity =====
-	@Mapping(target = "id", ignore = true) // id sẽ auto-gen
+	@Mapping(target = "id", ignore = true) 
 	@Mapping(target = "vacXin", source = "maVacXin", qualifiedByName = "mapVacXin")
 	@Mapping(target = "bacSis", source = "danhSachBacSiIds", qualifiedByName = "mapBacSiSet")
-	@Mapping(target = "danhSachDonThuoc", ignore = true) // đơn thuốc tạo sau
+	@Mapping(target = "danhSachDonThuoc", ignore = true) 
 	@Mapping(target = "dangKyTiems", ignore = true)
 	@Mapping(target = "ketQuaTiems", ignore = true)
-	@Mapping(target = "taoBoi", ignore = true) // set trong service
-	@Mapping(target = "ngayTao", ignore = true) // set trong service
+	@Mapping(target = "taoBoi", ignore = true) 
+	@Mapping(target = "ngayTao", ignore = true) 
+	@Mapping(target = "ngayGio", source = "ngayGio")
 	@Mapping(target = "isDeleted", ignore = true)
 	@Mapping(target = "tieuDe", ignore = true)
-	@Mapping(target = "moTa", ignore = true)
+	@Mapping(target = "moTa", source = "moTa")
 	@Mapping(target = "sucChua", source = "soLuong")
 	LichTiemEntity toEntity(LichTiemRequest request);
 

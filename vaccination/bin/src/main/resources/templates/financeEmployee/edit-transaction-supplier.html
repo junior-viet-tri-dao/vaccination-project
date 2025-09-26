@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Sửa giao dịch nhà cung cấp</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body
+	class="bg-rose-100 min-h-screen p-6 flex items-center justify-center">
+
+	<div class="bg-white shadow-xl rounded-2xl w-full max-w-2xl p-8">
+
+		<h2 class="text-2xl font-bold text-rose-700 text-center mb-6">
+			Sửa giao dịch nhà cung cấp</h2>
+
+		<form th:action="@{/finance/transactions-supplier/update}"
+			th:object="${giaoDichRequest}" method="post" class="space-y-4">
+
+			<!-- Ngày hóa đơn -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Ngày
+					hóa đơn</label> <input type="date" th:field="*{ngay}"
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2" />
+				<p th:if="${#fields.hasErrors('ngay')}" th:errors="*{ngay}"
+					class="text-red-600 text-sm mt-1"></p>
+			</div>
+
+			<!-- Mã Hóa Đơn -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Mã
+					Hóa Đơn</label> <input type="text" th:field="*{soHoaDon}" readonly
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2 bg-gray-100" />
+			</div>
+
+
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Tên
+					Vắc Xin</label> <input type="text" th:field="*{tenVacXin}"
+					placeholder="Nhập tên vắc xin"
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2" />
+				<p th:if="${#fields.hasErrors('tenVacXin')}"
+					th:errors="*{tenVacXin}" class="text-red-600 text-sm mt-1"></p>
+			</div>
+
+			<!-- Mã lô -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Mã
+					lô vắc xin</label> <input type="text" th:field="*{maLo}" readonly
+					class="w-full border-gray-300 rounded-lg shadow-sm p-2 bg-gray-100 text-gray-600" />
+			</div>
+
+			<!-- Mã vắc xin -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Mã
+					vắc xin</label> <input type="text" th:field="*{maVacXin}" readonly
+					class="w-full border-gray-300 rounded-lg shadow-sm p-2 bg-gray-100 text-gray-600" />
+			</div>
+
+			<!-- Số lượng -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Số
+					lượng nhập</label> <input type="number" th:field="*{soLuong}" min="1"
+					placeholder="Nhập số lượng"
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2" />
+				<p th:if="${#fields.hasErrors('soLuong')}" th:errors="*{soLuong}"
+					class="text-red-600 text-sm mt-1"></p>
+			</div>
+
+			<!-- Đơn giá -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Đơn
+					giá (VND)</label> <input type="number" th:field="*{gia}" min="100"
+					step="100" placeholder="Nhập đơn giá"
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2" />
+				<p th:if="${#fields.hasErrors('gia')}" th:errors="*{gia}"
+					class="text-red-600 text-sm mt-1"></p>
+			</div>
+
+			<!-- Nhà cung cấp -->
+			<div>
+				<label class="block text-sm font-medium text-gray-700 mb-1">Nhà
+					cung cấp</label> <input type="text" th:field="*{tenNhaCungCap}"
+					placeholder="Nhập nhà cung cấp"
+					class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 p-2" />
+				<p th:if="${#fields.hasErrors('tenNhaCungCap')}"
+					th:errors="*{tenNhaCungCap}" class="text-red-600 text-sm mt-1"></p>
+			</div>
+
+			<!-- Nút -->
+			<div class="flex justify-end space-x-3 mt-6">
+				<a th:href="@{/finance/transactions-supplier}"
+					class="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400">Hủy</a>
+				<button type="submit"
+					class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Cập
+					nhật</button>
+			</div>
+
+		</form>
+
+	</div>
+
+	<script th:src="@{/js/global.js}"></script>
+	<div th:replace="~{alert :: alerts}"></div>
+</body>
+</html>
