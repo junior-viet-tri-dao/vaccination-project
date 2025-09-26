@@ -1,4 +1,4 @@
-package com.viettridao.vaccination.dto.response.feedback;
+package com.viettridao.vaccination.dto.response;
 
 import java.time.LocalDateTime;
 

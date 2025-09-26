@@ -15,7 +15,13 @@
     <h2 class="text-3xl font-bold text-rose-700 text-center mb-6">
         Quản lý giá vắc xin
     </h2>
-
+    
+<div class="flex justify-end mb-4">
+        <a th:href="@{/finance/vaccine-price/create}"
+           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
+            ➕ Thêm mới
+        </a>
+    </div>
     <!-- Bảng -->
     <div class="overflow-x-auto w-full">
         <table class="min-w-full border border-gray-300 text-center">
@@ -30,39 +36,41 @@
             </tr>
             </thead>
             <tbody>
+            <!-- Lặp qua danh sách vaccinePrices -->
             <tr th:each="vp, iterStat : ${vaccinePrices}" class="bg-white hover:bg-rose-50">
                 <td class="border px-4 py-2"
                     th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
-                <td class="border px-4 py-2" th:text="${vp.vaccineCode}"></td>
-                <td class="border px-4 py-2" th:text="${vp.unit}"></td>
-                <td class="border px-4 py-2" th:text="${vp.productionYear}"></td>
+                <td class="border px-4 py-2" th:text="${vp.maCode}"></td>
+                <td class="border px-4 py-2" th:text="${vp.donVi}"></td>
+				<td class="border px-4 py-2" 
+				    th:text="${vp.namSX != null} ? ${#temporals.format(vp.namSX, 'dd/MM/yyyy')} : '-'"></td>
                 <td class="border px-4 py-2"
-                    th:text="${#numbers.formatInteger(vp.unitPrice, 3, 'POINT')}"></td>
+                    th:text="${#numbers.formatInteger(vp.gia, 3, 'POINT')}"></td>
 
-                <!-- Thao tác -->
-                <td class="border px-4 py-2">
-                    <div class="flex items-center justify-center gap-2">
-                        <!-- Nút sửa -->
-                         <a th:href="@{/finance/vaccine-price/edit(batchId=${vp.batchId})}"
-                           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
-                           Sửa
-                        </a>
-
-                        <!-- Nút xóa -->
-                        <form th:id="'deleteForm-' + ${vp.batchId}"
-                              th:action="@{/finance/vaccine-price/delete}" method="post"
-                              class="inline-block">
-                            <input type="hidden" name="batchId" th:value="${vp.batchId}">
-                            <button type="button"
-                                    class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
-                                    th:data-id="${vp.batchId}"
-                                    th:data-name="${vp.vaccineCode}">
-                                Xóa
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
+			              <!-- Thao tác -->
+					<td class="border px-4 py-2">
+					    <div class="flex items-center justify-center gap-2">
+					        <!-- Nút Sửa -->
+					        <a th:href="@{/finance/vaccine-price/edit(maCode=${vp.maCode})}"
+					           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+					            Sửa
+					        </a>
+					        
+					         <form th:id="'deleteForm-' + ${vp.maCode}"
+	                              th:action="@{/finance/vaccine-price/delete}" method="post"
+	                              class="inline-block">
+	                            <input type="hidden" name="maCode" th:value="${vp.maCode}">
+	                            <button type="button"
+	                                    class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+        								
+        								th:data-id="${vp.maCode}"
+	                                    th:data-name="${vp.maCode}">
+	                                Xóa
+	                            </button>
+	                        </form>										        
+					    </div>
+					</td>
+		         </tr>
             </tbody>
         </table>
 
@@ -99,10 +107,7 @@
     </div>
 
 </div>
-
-<!-- Modal sửa đặt ngoài bảng, chỉ có 1 cái -->
-
-
+<!-- Script JS -->
 <script th:src="@{/js/global.js}"></script>
 <div th:replace="~{alert :: alerts}"></div>
 </body>

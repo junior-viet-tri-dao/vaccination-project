@@ -1,15 +1,17 @@
-package com.viettridao.vaccination.controller.admin;
+package com.viettridao.vaccination.controller;
 
-import com.viettridao.vaccination.dto.response.feedback.PhanHoiAdminResponse;
-import com.viettridao.vaccination.service.PhanHoiCapCaoService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
+import com.viettridao.vaccination.dto.response.PhanHoiAdminResponse;
+import com.viettridao.vaccination.service.PhanHoiCapCaoService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor

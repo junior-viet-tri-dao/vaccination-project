@@ -60,6 +60,7 @@ public class LichTiemServiceImpl implements LichTiemService {
 	    entity.setTaoBoi(nguoiTao);
 
 	    // Thời gian tạo và cờ xóa
+	    entity.setNgayGio(request.getNgayGio());
 	    entity.setNgayTao(LocalDateTime.now());
 	    entity.setIsDeleted(false);
 
