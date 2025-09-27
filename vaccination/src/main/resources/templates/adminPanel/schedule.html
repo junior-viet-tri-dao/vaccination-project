@@ -17,9 +17,9 @@
     <h1 class="text-2xl md:text-3xl font-bold text-blue-700" th:text="${pageTitle}"></h1>
 </header>
 
-<main class="flex-1 p-4 md:p-8">
+<main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
     <form th:action="@{/adminpanel/schedule}" th:object="${lichTiemRequest}" method="post"
-          class="mx-auto w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6">
+          class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- LEFT: Calendar + Notes -->
         <section class="lg:col-span-1 space-y-6">
@@ -33,7 +33,7 @@
             <!-- Notes -->
             <div class="bg-white rounded-2xl shadow-xl p-4">
                 <label for="moTa" class="block font-semibold text-gray-700 mb-2">Ghi chú</label>
-                <textarea th:field="*{ghiChu}" id="ghiChu"
+                <textarea th:field="*{moTa}" id="moTa"
                           maxlength="500"
                           class="w-full border rounded-lg px-3 py-2 h-32 resize-none focus:ring-2 focus:ring-green-500"
                           placeholder="Nhập ghi chú (tối đa 500 ký tự)"></textarea>
@@ -42,18 +42,20 @@
         
         <!-- RIGHT: Form + Table -->
         <section class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-2xl shadow-xl p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-                <input type="number" id="dayInput" placeholder="Ngày"/>
-                <input type="number" id="monthInput" placeholder="Tháng"/>
-                <input type="number" id="yearInput" placeholder="Năm"/>
-                <input type="time" id="timeInput"/>
-                <input type="hidden" id="dateInput" th:field="*{ngayGio}"/>
+            <div class="bg-white rounded-2xl shadow-xl p-6 grid grid-cols-1 md:grid-cols-2 gap-5">           
+             	<input type="number" id="dayInput" placeholder="Ngày" required />
+				<input type="number" id="monthInput" placeholder="Tháng" required />
+				<input type="number" id="yearInput" placeholder="Năm" required />
+				<input type="time" id="timeInput" th:value="${lichTiemRequest.gioString}" required
+				       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
+				<input type="hidden" id="dateInput" th:field="*{ngayGio}" />
 
                 <!-- Loại vắc xin -->
                 <div class="mb-4">
-                    <label class="block text-gray-700 font-medium mb-2">Tên vắc xin</label>
+                    <label class="block text-gray-700 font-medium mb-2">Tên vắc xin<span class="text-red-500">*</span></label>
                     <select th:field="*{maVacXin}" 
                             id="vacXinSelect"
+                            required
                             class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
                         <option value="">-- Chọn tất cả vắc xin --</option>
                         <option th:each="vacXin : ${vacXinList}" 
@@ -62,63 +64,88 @@
                                 th:attr="data-tenvacxin=${vacXin.ten}">
                         </option>
                     </select>
+                   <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('maVacXin')}" th:errors="*{maVacXin}"></p>                    
                 </div>
 
                 <!-- Số lượng -->
                 <div>
-                    <label class="block text-gray-700 font-medium mb-2">Số lượng</label>
-                    <input type="number" th:field="*{soLuong}" min="1" max="1000" required
+                    <label class="block text-gray-700 font-medium mb-2">Số lượng<span class="text-red-500">*</span></label>
+                    <input type="number" th:field="*{soLuong}" min="1" maxlength="1000" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"/>
+                   <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('soLuong')}" th:errors="*{soLuong}"></p>                           
                 </div>
 
                 <!-- Độ tuổi -->
                 <div>
-                    <label class="block text-gray-700 font-medium mb-2">Độ tuổi</label>
-                    <input type="text" th:field="*{doTuoiKhuyenCao}" required
+                    <label class="block text-gray-700 font-medium mb-2">Độ tuổi<span class="text-red-500">*</span></label>
+                    <input type="number" th:field="*{doTuoiKhuyenCao}"  min="1" maxlength="100" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"/>
+                   <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('doTuoiKhuyenCao')}" th:errors="*{doTuoiKhuyenCao}"></p>                          
                 </div>
 
                 <!-- Địa điểm -->
                 <div class="md:col-span-2">
-                    <label class="block text-gray-700 font-medium mb-2">Địa điểm</label>
-                    <input type="text" th:field="*{diaDiem}" minlength="5" maxlength="30" required
+                    <label class="block text-gray-700 font-medium mb-2">Địa điểm<span class="text-red-500">*</span></label>
+                    <input type="text" th:field="*{diaDiem}" min="5" maxlength="30" required
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"/>
+                  <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('diaDiem')}" th:errors="*{diaDiem}"></p>                          
                 </div>
 
                 <!-- Bác sĩ (chọn nhiều) -->
                 <div class="md:col-span-2 space-y-2">
-                    <label class="block text-gray-700 font-medium mb-2">Bác sĩ</label>
-                    <select id="doctorSelect" th:field="*{danhSachBacSiIds}" multiple
-                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
-                        <option th:each="bs : ${bacSiList}" 
-                                th:value="${bs.id}" 
-                                th:text="${bs.hoTen}">
-                        </option>
-                    </select>
-                    <input type="text" id="doctorNameInput"
+                    <label class="block text-gray-700 font-medium mb-2">
+                        Bác sĩ <span class="text-red-500">*</span>
+                    </label>
+                    <div class="space-y-2">
+                        <div th:each="bs : ${bacSiList}" class="flex items-center space-x-2">
+                            <input type="checkbox" 
+                                   th:field="*{danhSachBacSiIds}" 
+                                   th:value="${bs.id}" 
+                                   th:attr="data-name=${bs.hoTen}"
+                                   id="bs_${bs.id}"
+                                   class="doctorCheckbox h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                            <label th:for="'bs_' + ${bs.id}" 
+                                   th:text="${bs.hoTen}" 
+                                   class="text-gray-700"></label>
+                        </div>			        
+                    </div>
+                    <input type="text" id="doctorNameInput" 
                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 mt-2"
                            placeholder="Tên bác sĩ sẽ tự điền sau khi chọn" readonly />
-                    <p class="text-sm text-gray-500 mt-1">Bạn có thể chọn nhiều bác sĩ (giữ Ctrl/Command để chọn nhiều)</p>
+                    <p class="text-red-500 text-sm mt-1" th:if="${#fields.hasErrors('danhSachBacSiIds')}" th:errors="*{danhSachBacSiIds}"></p>			           
                 </div>
-            </div>
 
-            <!-- Danh sách người bệnh nhân -->
-            <div class="bg-white rounded-2xl shadow-xl p-6 overflow-x-auto">
-                <h3 class="text-xl font-bold text-gray-700 mb-4">Danh sách bệnh nhân</h3>
-                <table class="min-w-full border border-gray-300 rounded-lg">
-                    <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white sticky top-0">
-                        <tr>
-                            <th class="px-4 py-2 text-left">Tên bệnh nhân</th>
-                            <th class="px-4 py-2 text-left">Số điện thoại</th>
-                            <th class="px-4 py-2 text-left">Hẹn tiêm lại</th>
-                            <th class="px-4 py-2 text-left">Vắc xin</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patientTableBody">
-                        <th:block th:each="lich : ${lichList}">
-                            <tr class="bg-gray-100 font-semibold schedule-header" th:data-vacxin="${lich.tenVacXin}" style="display:none"></tr>
-                            <tr th:each="don : ${lich.danhSachDonThuoc}" class="patient-row" 
-                                th:data-vacxin="${don.tenVacXin}" 
+                <!-- Danh sách người bệnh nhân -->
+                <div class="bg-white rounded-2xl shadow-xl p-6 overflow-x-auto md:col-span-2">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Danh sách bệnh nhân</h3>
+                    <table class="min-w-full border border-gray-300 rounded-lg">
+                        <thead class="bg-gradient-to-r from-blue-500 to-green-500 text-white sticky top-0">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Tên bệnh nhân</th>
+                                <th class="px-4 py-2 text-left">Số điện thoại</th>
+                                <th class="px-4 py-2 text-left">Hẹn tiêm lại</th>
+                                <th class="px-4 py-2 text-left">Vắc xin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <th:block th:each="lich : ${lichList}">
+                                <tr class="bg-gray-100 font-semibold schedule-header" th:data-vacxin="${lich.tenVacXin}" style="display:none"></tr>
+                                <tr th:each="don : ${lich.danhSachDonThuoc}" class="patient-row" 
+                                    th:data-vacxin="${don.tenVacXin}" 
+                                    th:data-hentiemlai="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"
+                                    style="display:none">
+                                    <td th:text="${don.tenBenhNhan}"></td>
+                                    <td th:text="${don.soDienThoai}"></td>
+                                    <td th:text="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"></td>
+                                    <td th:text="${don.tenVacXin}"></td>
+                                </tr>
+                            </th:block>
+
+                            <tr class="bg-yellow-100 font-semibold no-schedule-header" th:if="${!#lists.isEmpty(patientsWithoutSchedule)}" style="display:none">
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr th:each="don : ${patientsWithoutSchedule}" class="patient-row" 
+                                th:data-vacxin="${don.tenVacXin}"   
                                 th:data-hentiemlai="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"
                                 style="display:none">
                                 <td th:text="${don.tenBenhNhan}"></td>
@@ -126,46 +153,28 @@
                                 <td th:text="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"></td>
                                 <td th:text="${don.tenVacXin}"></td>
                             </tr>
-                        </th:block>
+                        </tbody>
+                    </table>
+                </div>
 
-                        <tr class="bg-yellow-100 font-semibold no-schedule-header" th:if="${!#lists.isEmpty(patientsWithoutSchedule)}" style="display:none">
-                            <td colspan="4"></td>
-                        </tr>
-                        <tr th:each="don : ${patientsWithoutSchedule}" class="patient-row" 
-                            th:data-vacxin="${don.tenVacXin}"   
-                            th:data-hentiemlai="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"
-                            style="display:none">
-                            <td th:text="${don.tenBenhNhan}"></td>
-                            <td th:text="${don.soDienThoai}"></td>
-                            <td th:text="${#temporals.format(don.henTiemLai,'yyyy-MM-dd')}"></td>
-                            <td th:text="${don.tenVacXin}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Actions -->
-            <div class="flex justify-end gap-4">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition">Save</button>
-                <button type="reset" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg shadow transition">Cancel</button>
+                <!-- Actions -->
+                <div class="flex space-x-4 mt-6 md:col-span-2">
+                    <button type="submit" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow transition">
+                        Lưu
+                    </button>
+                    <a href="/adminpanel/dashboard" 
+                       class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg shadow transition inline-block text-center">
+                       Thoát
+                    </a>
+                </div>
             </div>
         </section>
     </form>
-
-    <div th:if="${success}" 
-         class="p-3 mb-4 text-green-700 bg-green-100 rounded-lg border border-green-300">
-        ✅ <span th:text="${success}"></span>
-    </div>
-
-    <div th:if="${error}" 
-         class="p-3 mb-4 text-red-700 bg-red-100 rounded-lg border border-red-300">
-        ❌ <span th:text="${error}"></span>
-    </div>
-
+</main>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
     const today = new Date();
     document.getElementById('todayText').textContent = today.toLocaleDateString('vi-VN');
 
@@ -180,15 +189,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const noScheduleHeader = document.querySelector('.no-schedule-header');
 
     function updateDateInputs(date) {
-        const hh = timeInput.value ? parseInt(timeInput.value.split(':')[0],10) : 0;
-        const mm = timeInput.value ? parseInt(timeInput.value.split(':')[1],10) : 0;
+        const hh = timeInput.value ? parseInt(timeInput.value.split(':')[0], 10) : 0;
+        const mm = timeInput.value ? parseInt(timeInput.value.split(':')[1], 10) : 0;
 
         dayInput.value = date.getDate();
-        monthInput.value = date.getMonth()+1;
+        monthInput.value = date.getMonth() + 1;
         yearInput.value = date.getFullYear();
 
         const dateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hh, mm);
-        dateInput.value = dateTime.toISOString().slice(0,16);
+        const y = dateTime.getFullYear();
+        const m = String(dateTime.getMonth() + 1).padStart(2, '0');
+        const d = String(dateTime.getDate()).padStart(2, '0');
+        const H = String(dateTime.getHours()).padStart(2, '0');
+        const M = String(dateTime.getMinutes()).padStart(2, '0');
+
+        dateInput.value = `${y}-${m}-${d}T${H}:${M}`;
     }
 
     function formatDateLocal(date) {
@@ -200,7 +215,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function filterPatients() {
         const selectedOption = vacXinSelect.selectedOptions[0];
-        const selectedVacXinName = selectedOption ? selectedOption.dataset.tenvacxin.trim() : '';
+        const selectedVacXinName = (selectedOption && selectedOption.dataset.tenvacxin) 
+            ? selectedOption.dataset.tenvacxin.trim() 
+            : '';
 
         const d = parseInt(dayInput.value,10);
         const m = parseInt(monthInput.value,10)-1;
@@ -211,16 +228,18 @@ document.addEventListener('DOMContentLoaded', function() {
             : '';
 
         patientRows.forEach(row => {
-            const vacXin = row.dataset.vacxin?.trim() || '';
-            const henTiem = row.dataset.hentiemlai?.trim() || '';
+            const vacXin = (row.dataset.vacxin || '').trim();
+            const henTiem = (row.dataset.hentiemlai || '').trim();
+
             const show = (!selectedVacXinName || vacXin === selectedVacXinName) 
                         && (!selectedDate || henTiem === selectedDate);
+
             row.style.display = show ? '' : 'none';
         });
 
         scheduleHeaders.forEach(header => {
-            const vacXinName = header.dataset.vacxin?.trim() || '';
-            const anyVisible = patientRows.some(r => r.dataset.vacxin.trim() === vacXinName && r.style.display !== 'none');
+            const vacXinName = (header.dataset.vacxin || '').trim();
+            const anyVisible = patientRows.some(r => (r.dataset.vacxin || '').trim() === vacXinName && r.style.display !== 'none');
             header.style.display = anyVisible ? '' : 'none';
         });
 
@@ -230,10 +249,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    flatpickr("#inlineCalendar", {
+    let calendar = flatpickr("#inlineCalendar", {
         inline: true,
         defaultDate: today,
         dateFormat: "Y-m-d",
+        minDate: "today", 
         onChange: function(selectedDates) {
             if (!selectedDates.length) return;
             updateDateInputs(selectedDates[0]);
@@ -244,13 +264,14 @@ document.addEventListener('DOMContentLoaded', function() {
     [dayInput, monthInput, yearInput, timeInput].forEach(el => {
         el.addEventListener('change', () => {
             const d = parseInt(dayInput.value, 10);
-            const m = parseInt(monthInput.value, 10)-1;
+            const m = parseInt(monthInput.value, 10) - 1;
             const y = parseInt(yearInput.value, 10);
             if(Number.isFinite(d) && Number.isFinite(m) && Number.isFinite(y)) {
-                const newDate = new Date(y,m,d);
+                const newDate = new Date(y, m, d);
                 if(!isNaN(newDate)) {
                     updateDateInputs(newDate);
                     filterPatients();
+                    calendar.setDate(newDate, false);
                 }
             }
         });
@@ -260,18 +281,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateDateInputs(today);
     filterPatients();
-});
 
-document.addEventListener("DOMContentLoaded", function() {
-    const doctorSelect = document.getElementById("doctorSelect");
+    const checkboxes = document.querySelectorAll(".doctorCheckbox");
     const doctorNameInput = document.getElementById("doctorNameInput");
 
-    doctorSelect.addEventListener("change", function() {
-        const selectedNames = Array.from(this.selectedOptions).map(opt => opt.text);
-        doctorNameInput.value = selectedNames.join(", ");
+    function updateDoctorName() {
+        let checkedLabels = Array.from(checkboxes)
+            .filter(c => c.checked)
+            .map(c => c.dataset.name);
+        doctorNameInput.value = checkedLabels.join(", ");
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", updateDoctorName);
+    });
+
+    updateDoctorName();
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+        if(!anyChecked) {
+            e.preventDefault();
+            alert("Bạn phải chọn ít nhất 1 bác sĩ!");
+        }
     });
 });
 </script>
-
 </body>
 </html>

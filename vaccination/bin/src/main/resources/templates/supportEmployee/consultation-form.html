@@ -5,57 +5,98 @@
     <title>Tư vấn tiêm chủng</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-r from-cyan-100 to-green-100 min-h-screen flex items-center justify-center px-4">
-<div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-3xl">
-    <h2 class="text-center text-2xl md:text-3xl font-bold text-blue-800 mb-6">
+<body class="bg-gradient-to-r from-cyan-100 to-green-100 min-h-screen flex flex-col items-center justify-start px-6 py-8">
+<div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-6xl"> <!-- tăng max-w -->
+    <h2 class="text-center text-3xl md:text-4xl font-bold text-blue-800 mb-6">
         Tư vấn tiêm chủng
     </h2>
 
-    <form>
-        <!-- Bảng câu hỏi -->
-        <div class="mb-6">
-            <h3 class="font-semibold text-gray-800 mb-2">Câu hỏi thường gặp</h3>
-            <div class="overflow-x-auto border border-gray-300 rounded-lg">
-                <table class="min-w-full text-sm text-center">
-                    <thead class="bg-blue-100 font-semibold text-gray-800">
-                    <tr>
-                        <th class="px-4 py-2 border">STT</th>
-                        <th class="px-4 py-2 border">Nội dung</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="hover:bg-blue-50 cursor-pointer">
-                        <td class="px-4 py-2 border">1</td>
-                        <td class="px-4 py-2 border text-left">Tôi có cần tiêm vắc xin cúm hàng năm không?</td>
-                    </tr>
-                    <tr class="hover:bg-blue-50 cursor-pointer">
-                        <td class="px-4 py-2 border">2</td>
-                        <td class="px-4 py-2 border text-left">Vắc xin Covid-19 có cần tiêm nhắc lại không?</td>
-                    </tr>
-                    <!-- Thêm dòng nếu cần -->
-                    </tbody>
-                </table>
-            </div>
+    <!-- Bảng câu hỏi -->
+    <div class="mb-6">
+        <h3 class="font-semibold text-gray-800 mb-2">Câu hỏi thường gặp</h3>
+        <div class="overflow-x-auto border border-gray-300 rounded-lg">
+            <table class="min-w-full text-sm text-center">
+                <thead class="bg-blue-100 font-semibold text-gray-800">
+                <tr>
+                    <th class="px-4 py-2 border">STT</th>
+                    <th class="px-4 py-2 border text-left">Nội dung</th>
+                    <th class="px-4 py-2 border">Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="cauHoi, stat : ${cauHois}" 
+                    class="hover:bg-blue-50 cursor-pointer"
+                    th:data-id="${cauHoi.maCauHoi}">
+                    <td class="px-4 py-2 border" th:text="${stat.count}">1</td>
+                    <td class="px-4 py-2 border text-left" th:text="${cauHoi.noiDungCauHoi}">
+                        Nội dung câu hỏi
+                    </td>
+                    <td class="px-4 py-2 border flex gap-2 justify-center">
+                        <a th:href="@{/consultation/edit-form/{id}(id=${cauHoi.maCauHoi})}" 
+                           class="text-green-600 hover:underline">Sửa</a>
+                        <form th:action="@{/consultation/delete/{id}(id=${cauHoi.maCauHoi})}" 
+                              method="post" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
+                            <button type="submit" class="text-red-600 hover:underline">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
+    </div>
 
-        <!-- Khu vực trả lời -->
-        <div class="mb-6">
-            <label class="block text-gray-700 font-medium mb-1">Trả lời</label>
-            <textarea rows="5"
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300"
-                      placeholder="Nhập nội dung trả lời tại đây..."></textarea>
-        </div>
+    <!-- Khu vực trả lời -->
+    <div class="mb-6">
+        <label class="block text-gray-700 font-medium mb-1">Trả lời</label>
+        <textarea id="answerBox" rows="5"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-300"
+                  placeholder="Chọn câu hỏi để xem trả lời..." readonly></textarea>
+    </div>
 
-        <!-- Nút -->
-        <div class="flex justify-center gap-4">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
-                Gửi
-            </button>
-            <button type="reset" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg">
-                Hủy bỏ
-            </button>
-        </div>
-    </form>
+    <!-- Nút hành động -->
+    <div class="flex justify-center gap-4">
+        <a href="/consultation/create-form"
+           class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
+            Thêm câu hỏi
+        </a>
+    </div>
 </div>
+
+<!-- JS load trả lời theo click và highlight -->
+<script>
+    let selectedRow = null;
+
+    async function showAnswer(maCauHoi, row) {
+        try {
+            // Highlight row
+            if (selectedRow) selectedRow.classList.remove('bg-blue-200');
+            selectedRow = row;
+            selectedRow.classList.add('bg-blue-200');
+
+            // Fetch dữ liệu trả lời
+            const response = await fetch(`/consultation/${maCauHoi}`);
+            if (!response.ok) throw new Error('Không lấy được dữ liệu');
+            const data = await response.json();
+
+            // Hiển thị trả lời
+            document.getElementById('answerBox').value = data.noiDungTraLoi;
+
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi khi lấy câu trả lời');
+        }
+    }
+
+    // Gắn sự kiện click cho từng row khi load page
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('tbody tr[data-id]').forEach(row => {
+            row.addEventListener('click', () => {
+                const maCauHoi = row.getAttribute('data-id');
+                showAnswer(maCauHoi, row);
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

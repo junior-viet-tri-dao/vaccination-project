@@ -4,33 +4,27 @@
     <meta charset="UTF-8">
     <title>Quản lý giao dịch với nhà cung cấp</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/js/alert-utils.js}"></script>
 </head>
 <body class="bg-rose-100 min-h-screen p-4 md:p-6 flex items-start justify-center">
 
 <div class="bg-white shadow-xl rounded-lg w-full max-w-7xl p-6">
 
-    <!-- Tiêu đề ở giữa -->
+    <!-- Tiêu đề -->
     <h2 class="text-3xl font-bold text-rose-700 text-center mb-6">
         Quản lý giao dịch với nhà cung cấp
     </h2>
 
-    <!-- Khu vực nút ở trên bảng -->
-    <div class="flex flex-wrap justify-end gap-2 mb-4">
-        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
-            ➕ New
-        </button>
-        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
-            🗑️ Delete
-        </button>
-        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
-            ✏️ Edit
-        </button>
-        <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-1">
-            💾 Save
-        </button>
+    <!-- Nút thêm -->
+    <div class="flex justify-end mb-4">
+        <a th:href="@{/finance/transactions-supplier/create}"
+           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center gap-1">
+            ➕ Thêm mới
+        </a>
     </div>
 
-    <!-- Bảng dữ liệu -->
+    <!-- Bảng -->
     <div class="overflow-x-auto w-full">
         <table class="min-w-full border border-gray-300 text-center">
             <thead class="bg-gray-200 text-gray-700">
@@ -38,28 +32,103 @@
                 <th class="border px-4 py-2">STT</th>
                 <th class="border px-4 py-2">Ngày</th>
                 <th class="border px-4 py-2">Mã Hóa Đơn</th>
-                <th class="border px-4 py-2">Mã Vắc xin</th>
+                <th class="border px-4 py-2">Tên Vắc Xin</th>             
+                <th class="border px-4 py-2">Mã Vắc Xin</th>
+                <th class="border px-4 py-2">Mã Lô Vắc Xin</th>
                 <th class="border px-4 py-2">Số Lượng</th>
                 <th class="border px-4 py-2">Nhà Cung Cấp</th>
-                <th class="border px-4 py-2">Giá</th>
+                <th class="border px-4 py-2">Giá (VND)</th>
+                <th class="px-4 py-3 text-center">Thao tác</th>
             </tr>
             </thead>
             <tbody>
-            <tr class="bg-white hover:bg-rose-50">
-                <td class="border px-4 py-2">1</td>
-                <td class="border px-4 py-2">04/09/2025</td>
-                <td class="border px-4 py-2">NCC001</td>
-                <td class="border px-4 py-2">VX002</td>
-                <td class="border px-4 py-2">5</td>
-                <td class="border px-4 py-2">Công ty ABC</td>
-                <td class="border px-4 py-2">2.500.000</td>
+            <tr th:each="ts, iterStat : ${transactions}" class="bg-white hover:bg-rose-50">
+                <!-- STT -->
+                <td class="border px-4 py-2" th:text="${iterStat.index + 1 + (currentPage * pageSize)}"></td>
+
+                <!-- Ngày -->
+                <td class="border px-4 py-2"
+                    th:text="${ts.ngay != null ? #temporals.format(ts.ngay, 'dd/MM/yyyy') : ''}"></td>
+
+                <!-- Mã hóa đơn -->
+                <td class="border px-4 py-2" th:text="${ts.soHoaDon}"></td>
+                
+                <td class="border px-4 py-2" th:text="${ts.tenVacXin}"></td>
+                
+                <!-- Mã vắc xin -->
+                <td class="border px-4 py-2" th:text="${ts.maVacXin}"></td>
+                
+                <td class="border px-4 py-2" th:text="${ts.maLo}"></td>
+
+                <!-- Số lượng -->
+                <td class="border px-4 py-2" th:text="${ts.soLuong}"></td>
+
+                <!-- Nhà cung cấp -->
+                <td class="border px-4 py-2" th:text="${ts.nhaCungCap}"></td>
+
+                <!-- Giá -->
+                <td class="border px-4 py-2" th:text="${#numbers.formatInteger(ts.gia, 3, 'POINT')}"></td>
+
+                <!-- Thao tác -->
+                <td class="border px-4 py-2">
+                    <div class="flex items-center justify-center gap-2">
+                        <!-- Nút sửa -->
+                        <a th:href="@{/finance/transactions-supplier/edit/{soHoaDon}(soHoaDon=${ts.soHoaDon})}"
+                           class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+                            Sửa
+                        </a>
+
+                        <!-- Nút xóa -->
+                        <form th:id="'deleteForm-' + ${ts.soHoaDon}" 
+                              th:action="@{/finance/transactions-supplier/delete}" method="post" class="inline-block">
+                            <input type="hidden" name="soHoaDon" th:value="${ts.soHoaDon}">
+                            <button type="button"
+                                    class="btn-delete bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md"
+                                    th:data-id="${ts.soHoaDon}" 
+                                    th:data-name="${ts.soHoaDon}">
+                                Xóa
+                            </button>
+                        </form>
+                    </div>
+                </td>
             </tr>
-            <!-- Thêm dòng khác nếu cần -->
             </tbody>
         </table>
+
+        <!-- Phân trang -->
+        <div class="flex justify-center items-center mt-6 space-x-2">
+            <div th:if="${totalPages > 0}" class="inline-flex items-center gap-2">
+
+                <!-- Nút Trước -->
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/finance/transactions-supplier(page=${currentPage - 1}, size=${pageSize})}"
+                   class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">Trước</a>
+                <span th:if="${currentPage == 0}"
+                      class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">Trước</span>
+
+                <!-- Số trang -->
+                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:href="@{/finance/transactions-supplier(page=${i - 1}, size=${pageSize})}"
+                       th:text="${i}"
+                       th:classappend="${i - 1 == currentPage} ?
+                         'bg-blue-600 text-white' :
+                         'bg-gray-200 text-gray-700 hover:bg-blue-400 hover:text-white'"
+                       class="px-3 py-1 rounded-lg mx-1 transition"></a>
+                </span>
+
+                <!-- Nút Sau -->
+                <a th:if="${currentPage < totalPages - 1}"
+                   th:href="@{/finance/transactions-supplier(page=${currentPage + 1}, size=${pageSize})}"
+                   class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">Sau</a>
+                <span th:if="${currentPage == totalPages - 1}"
+                      class="px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed">Sau</span>
+            </div>
+        </div>
     </div>
 
 </div>
 
+<script th:src="@{/js/global.js}"></script>
+<div th:replace="~{alert :: alerts}"></div>
 </body>
 </html>

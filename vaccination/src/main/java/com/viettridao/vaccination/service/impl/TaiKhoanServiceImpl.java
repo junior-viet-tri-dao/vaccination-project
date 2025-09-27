@@ -3,22 +3,22 @@ package com.viettridao.vaccination.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.viettridao.vaccination.dto.request.adminPanel.TaiKhoanCreateRequest;
-import com.viettridao.vaccination.mapper.BenhNhanMapper;
-import com.viettridao.vaccination.mapper.TaiKhoanMapper;
-import com.viettridao.vaccination.model.BenhNhanEntity;
-import com.viettridao.vaccination.model.VaiTroEntity;
-import com.viettridao.vaccination.repository.BenhNhanRepository;
-import com.viettridao.vaccination.repository.VaiTroRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.viettridao.vaccination.dto.request.adminPanel.TaiKhoanCreateRequest;
+import com.viettridao.vaccination.mapper.BenhNhanMapper;
+import com.viettridao.vaccination.mapper.TaiKhoanMapper;
+import com.viettridao.vaccination.model.BenhNhanEntity;
 import com.viettridao.vaccination.model.TaiKhoanEntity;
+import com.viettridao.vaccination.model.VaiTroEntity;
+import com.viettridao.vaccination.repository.BenhNhanRepository;
 import com.viettridao.vaccination.repository.TaiKhoanRepository;
+import com.viettridao.vaccination.repository.VaiTroRepository;
 import com.viettridao.vaccination.service.TaiKhoanService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -82,10 +82,6 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         return savedTaiKhoan;
     }
 
-    @Override
-    public List<TaiKhoanEntity> getAll() {
-        return taiKhoanRepository.findAll();
-    }
 
     @Override
     public List<TaiKhoanEntity> getTatCaBacSiHoatDong() {

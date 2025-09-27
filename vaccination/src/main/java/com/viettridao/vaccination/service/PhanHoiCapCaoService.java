@@ -12,6 +12,6 @@ public interface PhanHoiCapCaoService {
      */
     void guiPhanHoiCapCao(PhanHoiCapCaoRequest request);
 
-    List<com.viettridao.vaccination.dto.response.feedback.PhanHoiAdminResponse> getAllForAdmin();
+    List<com.viettridao.vaccination.dto.response.PhanHoiAdminResponse> getAllForAdmin();
 
 }

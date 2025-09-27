@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chỉnh sửa câu hỏi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-cyan-50 min-h-screen flex items-center justify-center p-4">
+<div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-center mb-4">Chỉnh sửa câu hỏi</h2>
+    <form th:action="@{/consultation/update/{maCauHoi}(maCauHoi=${cauHoi.maCauHoi})}" method="post" class="flex flex-col gap-4">
+        <label class="font-medium">Nội dung câu hỏi</label>
+        <input type="text" name="tieuDe" th:value="${cauHoi.noiDungCauHoi}" required class="border rounded p-2">
+        
+        <label class="font-medium">Nội dung trả lời</label>
+        <textarea name="noiDung" rows="5" th:text="${cauHoi.noiDungTraLoi}" required class="border rounded p-2"></textarea>
+        
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Cập nhật</button>
+        <a href="/consultation" class="text-center text-gray-500 hover:underline">Quay lại</a>
+    </form>
+</div>
+</body>
+</html>

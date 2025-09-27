@@ -1,7 +1,9 @@
 package com.viettridao.vaccination.dto.request.adminPanel;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
@@ -40,8 +42,16 @@ public class LichTiemRequest {
 	private String doTuoiKhuyenCao;
 
 	@Size(max = 500, message = "Ghi chú tối đa 500 ký tự")
-	private String ghiChu;
+	private String moTa;
 
 	@NotNull(message = "Phải chọn ít nhất 1 bác sĩ")
-    private List<String> danhSachBacSiIds;
+	private List<String> danhSachBacSiIds;
+
+	public String getGioString() {
+		if (ngayGio != null) {
+			return ngayGio.format(DateTimeFormatter.ofPattern("HH:mm"));
+		}
+		return "";
+	}
+
 }

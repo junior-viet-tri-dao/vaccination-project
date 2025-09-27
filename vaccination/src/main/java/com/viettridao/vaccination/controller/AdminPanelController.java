@@ -109,7 +109,22 @@ public class AdminPanelController {
                                RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
+            // Thêm lại các attribute cần thiết để render form
             model.addAttribute("pageTitle", "Quản lý lịch tiêm chủng");
+            model.addAttribute("lichList", lichTiemService.getAllLichTiemDangHoatDong());
+            model.addAttribute("bacSiList", taiKhoanService.getAllDoctors());
+            model.addAttribute("vacXinList", vacXinService.getAllActiveVaccines());
+
+            List<LichTiemResponse> lichs = lichTiemService.getAllLichTiemDangHoatDong();
+            List<DonThuocDto> allPatients = lichTiemService.getAllDonThuoc();
+            List<DonThuocDto> patientsWithoutSchedule = allPatients.stream()
+                    .filter(don -> lichs.stream().noneMatch(lich ->
+                            lich.getDanhSachDonThuoc().stream()
+                                    .anyMatch(d -> d.getMaDon().equals(don.getMaDon()))
+                    ))
+                    .collect(Collectors.toList());
+            model.addAttribute("patientsWithoutSchedule", patientsWithoutSchedule);
+
             return "adminpanel/schedule";
         }
 
@@ -121,7 +136,6 @@ public class AdminPanelController {
             redirectAttributes.addFlashAttribute("error", "Thêm lịch thất bại: " + e.getMessage());
         }
 
-
-        return "redirect:/adminpanel/schedule";
+        return "redirect:/adminpanel/dashboard";
     }
 }

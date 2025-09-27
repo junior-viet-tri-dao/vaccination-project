@@ -42,7 +42,7 @@ public class LichTiemEntity {
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     private String moTa;
 
-    @Column(name = "ngay_gio", nullable = false)
+    @Column(name = "ngay_gio")
     private LocalDateTime ngayGio;
 
     @Column(name = "dia_diem")
@@ -80,6 +80,5 @@ public class LichTiemEntity {
         inverseJoinColumns = @JoinColumn(name = "tai_khoan_id")
     )
     private Set<TaiKhoanEntity> bacSis = new HashSet<>();
-
 
 }

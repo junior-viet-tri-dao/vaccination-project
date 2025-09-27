@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm kết quả tiêm chủng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-4">Thêm mới kết quả tiêm chủng</h1>
+
+    <form th:action="@{/employee/add}" th:object="${ketQuaTiemRequest}" method="post" class="space-y-4">
+        <!-- Bệnh nhân -->
+        <div>
+            <label class="block mb-1 font-semibold">Tên bệnh nhân</label>
+            <select th:field="*{tenBenhNhan}" name="tenBenhNhan" class="w-full border p-2 rounded" >
+                <option value="" disabled th:selected="${ketQuaTiemRequest.tenBenhNhan == null}">-- Tên bệnh nhân --</option>
+                <option th:each="bn : ${benhNhanList}" th:value="${bn}" th:text="${bn}"
+                        th:selected="${bn == ketQuaTiemRequest.tenBenhNhan}"></option>
+            </select>
+        </div>
+
+        <!-- Vắc xin -->
+        <div>
+            <label class="block mb-1 font-semibold">Tên Vắc xin</label>
+            <select th:field="*{tenVacXin}" name="tenVacXin" class="w-full border p-2 rounded" disabled>
+                <option value="" disabled th:selected="${ketQuaTiemRequest.tenVacXin == null}">-- Tên vắc xin --</option>
+                <option th:each="vx : ${vacXinList}" th:value="${vx}" th:text="${vx}"
+                        th:selected="${vx == ketQuaTiemRequest.tenVacXin}"></option>
+            </select>
+        </div>
+
+        <!-- Ngày tiêm -->
+        <div>
+            <label class="block mb-1 font-semibold">Ngày tiêm</label>
+            <input type="datetime-local" th:field="*{ngayTiem}" name="ngayTiem"
+                   th:value="${formattedNgayTiem}" class="w-full border p-2 rounded"readonly/>
+        </div>
+
+        <!-- Người thực hiện -->
+        <div>
+            <label class="block mb-1 font-semibold">Người thực hiện</label>
+            <select th:field="*{nguoiThucHien}" name="nguoiThucHien" class="w-full border p-2 rounded" disabled>
+                <option value="" disabled th:selected="${ketQuaTiemRequest.nguoiThucHien == null}">-- Người thực hiện --</option>
+                <option th:each="nt : ${nguoiThucHienList}" th:value="${nt}" th:text="${nt}"
+                        th:selected="${nt == ketQuaTiemRequest.nguoiThucHien}"></option>
+            </select>
+        </div>
+
+        <!-- Tình trạng -->
+        <div>
+		    <label class="block mb-1 font-semibold">Tình trạng</label>
+		    <select th:field="*{tinhTrang}" class="w-full border p-2 rounded">
+		        <option value="" disabled th:selected="${ketQuaTiemRequest.tinhTrang == null}">-- Chọn tình trạng --</option>
+		        <option value="HOAN_THANH" th:selected="${ketQuaTiemRequest.tinhTrang == 'HOAN_THANH'}">Hoàn thành</option>
+		        <option value="HUY" th:selected="${ketQuaTiemRequest.tinhTrang == 'HUY'}">Hủy</option>
+		        <option value="CHUA_TIEM" th:selected="${ketQuaTiemRequest.tinhTrang == 'CHUA_TIEM'}">Chưa tiêm</option>
+		    </select>
+		</div>
+
+        <!-- Phản ứng sau tiêm -->
+        <div>
+            <label class="block mb-1 font-semibold">Phản ứng sau tiêm</label>
+            <input type="text" th:field="*{phanUngSauTiem}" class="w-full border p-2 rounded"/>
+        </div>
+
+        <!-- Ghi chú -->
+        <div>
+            <label class="block mb-1 font-semibold">Ghi chú</label>
+            <textarea th:field="*{ghiChu}" class="w-full border p-2 rounded"></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="flex justify-end gap-2">
+    <button type="submit"
+            class="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+        Thêm mới
+    </button>
+    <a href="/employee/list"
+       class="px-6 py-2 bg-gray-400 text-white font-semibold rounded hover:bg-gray-500 transition-colors">
+        Hủy
+    </a>
+</div>
+
+    </form>
+</div>
+
+<!-- JS tự động cập nhật khi chọn bệnh nhân -->
+<script>
+    const tenBenhNhanSelect = document.querySelector('select[name="tenBenhNhan"]');
+    const vacXinSelect = document.querySelector('select[name="tenVacXin"]');
+    const nguoiThucHienSelect = document.querySelector('select[name="nguoiThucHien"]');
+    const ngayTiemInput = document.querySelector('input[name="ngayTiem"]');
+
+    tenBenhNhanSelect.addEventListener('change', function () {
+        const tenBenhNhan = this.value;
+        if (!tenBenhNhan) return;
+
+        fetch(`/employee/benh-nhan-info?tenBenhNhan=${encodeURIComponent(tenBenhNhan)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.tenVacXin) vacXinSelect.value = data.tenVacXin;
+                if (data.nguoiThucHien) nguoiThucHienSelect.value = data.nguoiThucHien;
+                if (data.ngayTiem) {
+                    const dt = new Date(data.ngayTiem);
+                    const formatted = dt.toISOString().slice(0, 16); 
+                    ngayTiemInput.value = formatted;
+                }
+            })
+            .catch(err => console.error(err));
+    });
+</script>
+</body>
+</html>
