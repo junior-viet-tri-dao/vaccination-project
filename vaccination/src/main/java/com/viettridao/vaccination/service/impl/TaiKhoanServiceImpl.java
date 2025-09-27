@@ -87,13 +87,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public List<TaiKhoanEntity> getTatCaBacSiHoatDong() {
         return taiKhoanRepository.findByVaiTro_TenAndHoatDongTrue("DOCTER");
     }
-	@Override
-	public List<TaiKhoanEntity> getAll() {
-		return taiKhoanRepository.findAll();
-	}
 
-	 @Override
-	    public List<TaiKhoanEntity> getAllDoctors() {
-	        return taiKhoanRepository.findByVaiTro_TenAndVaiTroIsDeletedFalse("DOCTER");
-	    }
+    @Override
+    public List<TaiKhoanEntity> getAllDoctors() {
+        return taiKhoanRepository.findByVaiTro_TenAndVaiTroIsDeletedFalse("DOCTER");
+    }
 }

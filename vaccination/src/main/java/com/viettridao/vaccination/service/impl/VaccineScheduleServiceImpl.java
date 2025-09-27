@@ -48,11 +48,14 @@ public class VaccineScheduleServiceImpl implements VaccineScheduleService {
                     // Lấy địa điểm từ lịch tiêm chủng (theo mã vắc xin và ngày giờ)
                     String diaDiem = "";
                     if (don.getVacXin() != null && don.getHenTiemLai() != null) {
-                        Optional<LichTiemEntity> lichTiemOpt = lichTiemRepository.findByVacXinIdAndNgayGio(
+                        List<LichTiemEntity> lichTiemList = lichTiemRepository.findByVacXinIdAndNgayGio(
                                 don.getVacXin().getId(),
                                 don.getHenTiemLai()
                         );
-                        diaDiem = lichTiemOpt.map(LichTiemEntity::getDiaDiem).orElse("");
+                        if (!lichTiemList.isEmpty()) {
+                            // Nếu có nhiều lịch, lấy bản đầu tiên hoặc xử lý theo nhu cầu thực tế
+                            diaDiem = lichTiemList.get(0).getDiaDiem();
+                        }
                     }
                     dto.setDiaDiem(diaDiem);
 

@@ -33,8 +33,10 @@
             <tbody class="bg-white">
             <tr th:each="schedule : ${schedules}" class="hover:bg-gray-50">
                 <td class="border px-3 py-2 text-center" th:text="${schedule.stt}">1</td>
-                <td class="border px-3 py-2 text-center" th:text="${#temporals.format(schedule.thoiGian, 'HH:mm')}"></td>
-                <td class="border px-3 py-2 text-center" th:text="${#temporals.format(schedule.ngayTiem, 'dd/MM/yyyy')}"></td>
+                <td class="border px-3 py-2 text-center"
+                    th:text="${#temporals.format(schedule.thoiGian, 'HH:mm')}"></td>
+                <td class="border px-3 py-2 text-center"
+                    th:text="${#temporals.format(schedule.ngayTiem, 'dd/MM/yyyy')}"></td>
                 <td class="border px-3 py-2 text-center" th:text="${schedule.diaDiem}"></td>
                 <td class="border px-3 py-2 text-center" th:text="${schedule.tenVacXin}"></td>
                 <td class="border px-3 py-2 text-center" th:text="${schedule.loaiVacXin}"></td>
@@ -55,6 +57,7 @@
     <!-- OK button -->
     <div class="mt-6 text-center">
         <button type="button"
+                onclick="window.location.href='/normalUser/dashboard'"
                 class="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg shadow">
             OK
         </button>
