@@ -35,7 +35,7 @@
             document.getElementById("feedbackForm").addEventListener('submit', validateForm);
             document.getElementById("cancelBtn").addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = '/normalUser/view-profile';
+                window.location.href = '/normalUser/dashboard';
             });
         });
     </script>
@@ -46,7 +46,8 @@
         Phản hồi <span class="not-italic font-bold">cấp cao</span>
     </h2>
 
-    <form th:action="@{/normalUser/feedback-highlevel}" th:object="${phanHoiCapCaoRequest}" method="post" id="feedbackForm" novalidate>
+    <form th:action="@{/normalUser/feedback-highlevel}" th:object="${phanHoiCapCaoRequest}" method="post"
+          id="feedbackForm" novalidate>
         <!-- Loại phản hồi -->
         <div class="mb-4">
             <label for="loaiPhanHoi" class="block text-gray-700 font-medium mb-1">Loại phản hồi</label>
@@ -54,7 +55,16 @@
                     th:field="*{loaiPhanHoi}"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-blue-300">
                 <option value="" th:text="'-- Chọn loại phản hồi --'"></option>
-                <option th:each="loai : ${dsLoaiPhanHoi}" th:value="${loai}" th:text="${loai}"></option>
+                <option th:each="loai : ${dsLoaiPhanHoi}" th:value="${loai}">
+                    <span th:switch="${loai}">
+                        <span th:case="'DONG_VIEN'">Động viên</span>
+                        <span th:case="'PHAN_NAN'">Phàn nàn</span>
+                        <span th:case="'GOP_Y'">Góp ý</span>
+                        <span th:case="'CAU_HOI'">Câu hỏi</span>
+                        <span th:case="*"
+                              th:text="${loai}">Khác</span>
+                    </span>
+                </option>
             </select>
             <p id="loaiPhanHoiError" class="text-red-500 text-sm"></p>
             <p th:if="${#fields.hasErrors('loaiPhanHoi')}" th:errors="*{loaiPhanHoi}" class="text-red-500 text-sm"></p>
@@ -72,7 +82,8 @@
         </div>
 
         <!-- Thông báo thành công/lỗi BE -->
-        <div th:if="${successMessage}" class="text-green-600 text-center mb-4 font-semibold" th:text="${successMessage}"></div>
+        <div th:if="${successMessage}" class="text-green-600 text-center mb-4 font-semibold"
+             th:text="${successMessage}"></div>
         <div th:if="${hasError}" class="text-red-600 text-center mb-4 font-semibold" th:text="${errorMessage}"></div>
 
         <!-- Nút -->
@@ -80,7 +91,8 @@
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg">
                 Gửi
             </button>
-            <button type="button" id="cancelBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg">
+            <button onclick="window.location.href='/normalUser/dashboard'" type="button" id="cancelBtn"
+                    class="bg-gray-400 hover:bg-gray-500 text-white font-semibold px-6 py-2 rounded-lg">
                 Hủy bỏ
             </button>
         </div>

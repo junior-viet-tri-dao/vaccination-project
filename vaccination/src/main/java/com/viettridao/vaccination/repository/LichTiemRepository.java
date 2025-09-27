@@ -14,24 +14,24 @@ import com.viettridao.vaccination.model.VacXinEntity;
 
 @Repository
 public interface LichTiemRepository extends JpaRepository<LichTiemEntity, String> {
-	
-	List<LichTiemEntity> findAllByIsDeletedFalse();
 
-	Optional<LichTiemEntity> findByVacXinTen(String tenVacXin);
+    List<LichTiemEntity> findAllByIsDeletedFalse();
 
-	// Tìm lịch tiêm theo id vắc xin + thời gian chỉ định, lọc bản ghi chưa xóa
-	@Query("SELECT l FROM LichTiemEntity l WHERE l.vacXin.id = :vacXinId AND l.ngayGio = :ngayGio AND (l.isDeleted = false OR l.isDeleted IS NULL)")
-	Optional<LichTiemEntity> findByVacXinIdAndNgayGio(@Param("vacXinId") String vacXinId,
-			@Param("ngayGio") LocalDateTime ngayGio);
+    Optional<LichTiemEntity> findByVacXinTen(String tenVacXin);
 
-	// Lấy lịch tiêm sớm nhất của một loại vắc xin
-	LichTiemEntity findTopByVacXinOrderByNgayGioAsc(VacXinEntity vacXin);
-	
+    // Tìm lịch tiêm theo id vắc xin + thời gian chỉ định, lọc bản ghi chưa xóa
+    @Query("SELECT l FROM LichTiemEntity l WHERE l.vacXin.id = :vacXinId AND l.ngayGio = :ngayGio AND (l.isDeleted = false OR l.isDeleted IS NULL)")
+    List<LichTiemEntity> findByVacXinIdAndNgayGio(@Param("vacXinId") String vacXinId,
+                                                  @Param("ngayGio") LocalDateTime ngayGio);
+
+    // Lấy lịch tiêm sớm nhất của một loại vắc xin
+    LichTiemEntity findTopByVacXinOrderByNgayGioAsc(VacXinEntity vacXin);
+
     List<LichTiemEntity> findByIsDeletedFalse();
-    
+
     @Query("SELECT DISTINCT l.vacXin.ten FROM LichTiemEntity l WHERE l.isDeleted = false")
     List<String> findDistinctLoaiVacXin();
 
-    
+
     List<LichTiemEntity> findByNgayGioBetweenAndIsDeletedFalse(LocalDateTime start, LocalDateTime end);
 }

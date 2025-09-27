@@ -1,14 +1,17 @@
 package com.viettridao.vaccination.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import com.viettridao.vaccination.dto.request.LoginRequest;
 import com.viettridao.vaccination.service.LoginService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * AuthController
@@ -26,9 +29,17 @@ public class LoginController {
      * Hiển thị form đăng nhập.
      */
     @GetMapping("")
-    public String showLoginForm(Model model) {
+    public String showLoginForm(Model model,
+                                @RequestParam(value = "error", required = false) String error,
+                                @RequestParam(value = "logout", required = false) String logout) {
+        if (error != null) {
+            model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
+        }
+        if (logout != null) {
+            model.addAttribute("success", "Đăng xuất thành công!");
+        }
         model.addAttribute("login", new LoginRequest());
-        return "login"; // Trả về template login
+        return "login";
     }
 
 //    /**

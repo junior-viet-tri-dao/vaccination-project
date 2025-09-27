@@ -14,69 +14,90 @@
         <p class="text-gray-500 mt-2">Nhập thông tin để tạo người dùng mới</p>
     </div>
     <form th:action="@{/adminpanel/register}" th:object="${taiKhoanCreateRequest}" method="post" class="space-y-5"
-          novalidate>
+          novalidate id="registerForm">
         <!-- Username -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Tên đăng nhập</label>
-            <input th:field="*{tenDangNhap}" type="text" required minlength="4" maxlength="20"
+            <input th:field="*{tenDangNhap}" id="tenDangNhap"
+                   type="text" required minlength="4" maxlength="20"
+                   oninvalid="this.setCustomValidity('Tên đăng nhập phải từ 4-20 ký tự, không được để trống')"
+                   oninput="this.setCustomValidity('')"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Nhập tên đăng nhập"/>
             <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('tenDangNhap')}"
-                 th:errors="*{tenDangNhap}"></div>
+                 th:errors="*{tenDangNhap}" id="tenDangNhapError"></div>
         </div>
         <!-- Password -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Mật khẩu</label>
-            <input th:field="*{matKhauRaw}" type="password" required minlength="6" maxlength="20"
+            <input th:field="*{matKhauRaw}" id="matKhauRaw"
+                   type="password" required minlength="6" maxlength="20"
+                   oninvalid="this.setCustomValidity('Mật khẩu phải từ 6-20 ký tự, không được để trống')"
+                   oninput="this.setCustomValidity('')"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Nhập mật khẩu"/>
-            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('matKhauRaw')}"
-                 th:errors="*{matKhauRaw}"></div>
+            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('matKhauRaw')}" th:errors="*{matKhauRaw}"
+                 id="matKhauRawError"></div>
         </div>
         <!-- Phân quyền (multi-select nếu cho nhiều quyền) -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Vai trò</label>
             <select th:field="*{vaiTroIds}" required
+                    oninvalid="this.setCustomValidity('Vui lòng chọn vai trò')"
+                    oninput="this.setCustomValidity('')"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 <option value="">-- Chọn Vai Trò --</option>
                 <option th:each="role : ${danhSachVaiTro}" th:value="${role.id}" th:text="${role.ten}"></option>
             </select>
-            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('vaiTroIds')}"
-                 th:errors="*{vaiTroIds}"></div>
+            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('vaiTroIds')}" th:errors="*{vaiTroIds}"
+                 id="vaiTroIdsError"></div>
         </div>
         <!-- Họ tên -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Họ tên</label>
-            <input th:field="*{hoTen}" type="text" required minlength="2" maxlength="20"
+            <input th:field="*{hoTen}" id="hoTen"
+                   type="text" required minlength="2" maxlength="20"
+                   oninvalid="this.setCustomValidity('Họ tên phải từ 2-20 ký tự, không được để trống')"
+                   oninput="this.setCustomValidity('')"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Nhập họ tên"/>
-            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}"></div>
+            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}"
+                 id="hoTenError"></div>
         </div>
         <!-- CMND -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">CMND</label>
-            <input th:field="*{soCmnd}" type="text" required pattern="\d{9,12}"
+            <input th:field="*{soCmnd}" id="soCmnd"
+                   type="text" required pattern="\d{9,12}"
+                   oninvalid="this.setCustomValidity('CMND phải là số, từ 9-12 số, không được để trống')"
+                   oninput="this.setCustomValidity('')"
+                   maxlength="12"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Nhập số CMND (9-12 chữ số)"/>
-            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('soCmnd')}" th:errors="*{soCmnd}"></div>
+            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('soCmnd')}" th:errors="*{soCmnd}"
+                 id="soCmndError"></div>
         </div>
         <!-- Nơi ở -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Nơi ở</label>
-            <input th:field="*{diaChi}" type="text" required minlength="5" maxlength="30"
+            <input th:field="*{diaChi}" id="diaChi"
+                   type="text" required minlength="5" maxlength="30"
+                   oninvalid="this.setCustomValidity('Nơi ở từ 5-30 ký tự, không được để trống')"
+                   oninput="this.setCustomValidity('')"
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                    placeholder="Nhập nơi ở"/>
-            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('diaChi')}" th:errors="*{diaChi}"></div>
+            <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('diaChi')}" th:errors="*{diaChi}"
+                 id="diaChiError"></div>
         </div>
         <!-- Description -->
         <div>
             <label class="block text-gray-700 font-medium mb-1">Mô tả</label>
-            <textarea th:field="*{description}" rows="3"
+            <textarea th:field="*{description}" id="description"
                       maxlength="255"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       placeholder="Nhập mô tả (nếu có)"></textarea>
             <div class="text-red-600 text-sm mt-1" th:if="${#fields.hasErrors('description')}"
-                 th:errors="*{description}"></div>
+                 th:errors="*{description}" id="descriptionError"></div>
         </div>
         <div class="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
             <button type="submit"
@@ -91,5 +112,12 @@
         </div>
     </form>
 </div>
+<script>
+    // Đặt focus vào ô đầu tiên khi load
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstInput = document.getElementById('tenDangNhap');
+        if(firstInput) firstInput.focus();
+    });
+</script>
 </body>
 </html>

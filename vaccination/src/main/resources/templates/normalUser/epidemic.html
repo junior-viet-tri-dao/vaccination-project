@@ -9,7 +9,7 @@
 <div class="bg-white shadow-2xl rounded-2xl w-full max-w-[90rem] p-8 relative">
 
     <!-- Icon đóng (góc trên bên trái) -->
-    <button onclick="window.close()"
+    <button onclick="window.location.href='/normalUser/dashboard'"
             class="absolute top-4 right-4 text-red-600 hover:text-red-800 text-2xl font-bold">
         ✖
     </button>
@@ -40,7 +40,8 @@
             <!-- Lặp danh sách dịch bệnh -->
             <tr th:each="dichBenh, stat : ${dichBenhPage.content}" class="hover:bg-blue-50 transition">
                 <td class="border px-4 py-3" th:text="${stat.index + 1 + dichBenhPage.number * dichBenhPage.size}"></td>
-                <td class="border px-4 py-3" th:text="${#temporals.format(dichBenh.thoiDiemKhaoSat, 'dd/MM/yyyy')}"></td>
+                <td class="border px-4 py-3"
+                    th:text="${#temporals.format(dichBenh.thoiDiemKhaoSat, 'dd/MM/yyyy')}"></td>
                 <td class="border px-4 py-3" th:text="${dichBenh.diaChi}"></td>
                 <td class="border px-4 py-3" th:text="${dichBenh.tenBenh}"></td>
                 <td class="border px-4 py-3" th:text="${dichBenh.soNguoiBiNhiem}"></td>

@@ -51,7 +51,7 @@ public class WarehouseController {
             @RequestParam(value = "searchType", required = false) String searchType,
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "3") int size,
+            @RequestParam(value = "size", defaultValue = "10") int size,
             Model model,
             Authentication authentication) {
 
@@ -137,7 +137,7 @@ public class WarehouseController {
     @GetMapping("/exportvaccine")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('WAREHOUSE') and hasAuthority('CREATE_EXPORT_WAREHOUSE'))")
     public String showExportVaccineForm(@RequestParam(value = "page", defaultValue = "0") int page,
-                                        @RequestParam(value = "size", defaultValue = "5") int size, Model model, Authentication authentication) {
+                                        @RequestParam(value = "size", defaultValue = "10") int size, Model model, Authentication authentication) {
         Page<WarehouseResponse> warehousePage = warehouseService.getWarehouses(null, null, page, size);
 
         if (page != warehousePage.getNumber()) {
